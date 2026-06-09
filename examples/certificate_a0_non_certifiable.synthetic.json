@@ -1,0 +1,51 @@
+{
+  "schema_version": "arcana.certificate.v0.2",
+  "certificate_id": "arcana-cert-demo-a0-001",
+  "certificate_type": "demo_non_certifiable_certificate",
+  "risk_model_version": "arcana.risk.v0.2",
+  "calibration_profile": {
+    "profile_id": "arcana.cal.A0.synthetic_demo_001",
+    "level": "A0",
+    "source": ["synthetic_demo"],
+    "confidence": 0.1,
+    "certification_status": "non_certifiable"
+  },
+  "decision_horizon": {
+    "id": "demo_session_5m",
+    "duration_seconds": 300,
+    "context": "synthetic demo session"
+  },
+  "verdict": "observe_only",
+  "rho_interval": {
+    "lower": 0.2,
+    "mean": 0.5,
+    "upper": 0.9,
+    "threshold": 0.8
+  },
+  "loss_bounds": {
+    "aar_99_upper": 1200,
+    "aes_99_upper": 1800,
+    "max_allowed_aar_99": 2500,
+    "max_allowed_aes_99": 3000
+  },
+  "fastgate": {
+    "mode": "observe_only"
+  },
+  "evidence": {
+    "source_type": "synthetic_fixture",
+    "source_id": "arcana-public-demo-certificate-001",
+    "evidence_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+    "synthetic": true
+  },
+  "reason_codes": [
+    "ARCANA_REQUIRE_OBSERVE_ONLY",
+    "ARCANA_INFO_A0_NON_CERTIFIABLE",
+    "ARCANA_INFO_SYNTHETIC_FIXTURE"
+  ],
+  "issued_at": "2026-06-09T00:00:00Z",
+  "expires_at": "2026-06-09T00:05:00Z",
+  "caveats": [
+    "A0 synthetic demo certificate is non-certifiable.",
+    "No operational admission claim is made."
+  ]
+}

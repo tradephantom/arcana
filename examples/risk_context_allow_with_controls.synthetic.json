@@ -1,0 +1,51 @@
+{
+  "schema_version": "arcana.context.v0.2",
+  "risk_model_version": "arcana.risk.v0.2",
+  "calibration_profile_id": "arcana.cal.A1.synthetic_static_prior_001",
+  "calibration_level": "A1",
+  "decision_horizon": {
+    "id": "demo_session_5m",
+    "duration_seconds": 300,
+    "context": "synthetic demo session"
+  },
+  "graph_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "rho_interval": {
+    "lower": 0.31,
+    "mean": 0.52,
+    "upper": 0.72,
+    "threshold": 0.8
+  },
+  "loss_bounds": {
+    "aar_99_upper": 1200,
+    "aes_99_upper": 1800,
+    "max_allowed_aar_99": 2500,
+    "max_allowed_aes_99": 3000
+  },
+  "fastgate": {
+    "mode": "perron_collatz_bound",
+    "positive_vector_method": "scc_decomposition",
+    "upper_bound": 0.72
+  },
+  "decision": "allow_with_controls",
+  "reason_codes": [
+    "ARCANA_ALLOW_WITH_CONTROLS",
+    "ARCANA_INFO_SYNTHETIC_FIXTURE"
+  ],
+  "required_controls": [
+    "read_only_input",
+    "deny_memory_write"
+  ],
+  "evidence": {
+    "source_type": "synthetic_fixture",
+    "source_id": "arcana-public-demo-context-001",
+    "evidence_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "synthetic": true
+  },
+  "autonomy_budget": {
+    "max_delta_rho_upper": 0.05,
+    "max_external_requests": 0,
+    "max_memory_writes": 0,
+    "max_output_bytes": 65536,
+    "expires_at": "2026-06-09T00:05:00Z"
+  }
+}

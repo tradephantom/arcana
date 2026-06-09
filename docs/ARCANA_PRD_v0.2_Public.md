@@ -529,8 +529,7 @@ Reference implementation work under `src/` should start only after the public PR
 
 ## 18. Next Artifacts
 
-1. Public schema draft v0.2.
-2. Formal model v0.2.
-3. Calibration methodology v0.1.
-4. Public demo/reference implementation plan.
-5. ARCANA-Bench v0.1 scenario schema.
+1. Formal model v0.2.
+2. Calibration methodology v0.1.
+3. Public demo/reference implementation plan.
+4. ARCANA-Bench v0.1 scenario expansion.

@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcana.tradephantom.com/schemas/ARCANA_CalibrationProfile.schema.v0.2.json",
+  "title": "ARCANA Calibration Profile v0.2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "risk_model_version",
+    "level",
+    "decision_horizon",
+    "source",
+    "confidence",
+    "uncertainty",
+    "edge_weight_policy",
+    "caveats",
+    "certification_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "arcana.calibration_profile.v0.2"
+    },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^arcana\\.cal\\.[A-Za-z0-9_.:-]+$"
+    },
+    "risk_model_version": {
+      "type": "string",
+      "pattern": "^arcana\\.risk\\.v[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+    },
+    "level": {
+      "type": "string",
+      "enum": ["A0", "A1", "A2", "A3"]
+    },
+    "decision_horizon": {
+      "type": "object",
+      "required": ["id", "duration_seconds", "context"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "duration_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "context": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "synthetic_demo",
+          "static_conservative_prior",
+          "controlled_redteam",
+          "adversarial_replay",
+          "public_benchmark",
+          "runtime_observation"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "last_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "uncertainty": {
+      "type": "object",
+      "required": ["rho_lower", "rho_mean", "rho_upper"],
+      "properties": {
+        "rho_lower": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rho_mean": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rho_upper": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "edge_weight_policy": {
+      "type": "object",
+      "required": [
+        "unknown_means_risky",
+        "use_upper_bound_for_risk",
+        "use_lower_bound_for_controls"
+      ],
+      "properties": {
+        "unknown_means_risky": {
+          "type": "boolean",
+          "const": true
+        },
+        "use_upper_bound_for_risk": {
+          "type": "boolean",
+          "const": true
+        },
+        "use_lower_bound_for_controls": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "certification_status": {
+      "type": "string",
+      "enum": ["non_certifiable", "certifiable_under_profile"]
+    },
+    "caveats": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "A0"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "certification_status": {
+            "const": "non_certifiable"
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

@@ -54,7 +54,7 @@ Blocking status:
 - public roadmap review is still required;
 - public glossary is drafted;
 - public reason-code registry is drafted;
-- public schema IDs are not finalized;
+- public schema drafts use public IDs;
 - no reference implementation is approved yet.
 
 ## 4. Milestone 0 - Boundary Freeze
@@ -206,6 +206,8 @@ Exit criteria:
 - schema validation rejects malformed reason codes.
 
 Implementation gate: reference code may not emit certificates before schemas are reviewed.
+
+Status: draft complete, review pending.
 
 ## 9. Milestone 5 - Formal Model v0.2
 
@@ -461,6 +463,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Public schema drafts v0.2.
-2. Formal model v0.2.
-3. Calibration methodology v0.1.
+1. Formal model v0.2.
+2. Calibration methodology v0.1.

@@ -1,0 +1,301 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcana.tradephantom.com/schemas/ARCANA_Certificate.schema.v0.2.json",
+  "title": "ARCANA Bounded Autonomy Certificate v0.2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "certificate_id",
+    "certificate_type",
+    "risk_model_version",
+    "calibration_profile",
+    "decision_horizon",
+    "verdict",
+    "rho_interval",
+    "loss_bounds",
+    "evidence",
+    "reason_codes",
+    "issued_at",
+    "caveats"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "arcana.certificate.v0.2"
+    },
+    "certificate_id": {
+      "type": "string",
+      "pattern": "^arcana-cert-[A-Za-z0-9_.:-]+$"
+    },
+    "certificate_type": {
+      "type": "string",
+      "enum": [
+        "bounded_autonomy_certificate",
+        "subcritical_under_model_certificate",
+        "demo_non_certifiable_certificate"
+      ]
+    },
+    "risk_model_version": {
+      "type": "string",
+      "pattern": "^arcana\\.risk\\.v[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+    },
+    "calibration_profile": {
+      "type": "object",
+      "required": ["profile_id", "level", "source", "confidence", "certification_status"],
+      "properties": {
+        "profile_id": {
+          "type": "string",
+          "pattern": "^arcana\\.cal\\.[A-Za-z0-9_.:-]+$"
+        },
+        "level": {
+          "type": "string",
+          "enum": ["A0", "A1", "A2", "A3"]
+        },
+        "source": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "certification_status": {
+          "type": "string",
+          "enum": ["non_certifiable", "certifiable_under_profile"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "A0"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "certification_status": {
+                "const": "non_certifiable"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "decision_horizon": {
+      "$ref": "#/$defs/decision_horizon"
+    },
+    "verdict": {
+      "$ref": "#/$defs/verdict"
+    },
+    "rho_interval": {
+      "$ref": "#/$defs/rho_interval"
+    },
+    "loss_bounds": {
+      "$ref": "#/$defs/loss_bounds"
+    },
+    "fastgate": {
+      "$ref": "#/$defs/fastgate"
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidence"
+    },
+    "reason_codes": {
+      "$ref": "#/$defs/reason_codes"
+    },
+    "required_controls": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "caveats": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "calibration_profile": {
+            "properties": {
+              "level": {
+                "const": "A0"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "certificate_type": {
+            "const": "demo_non_certifiable_certificate"
+          },
+          "reason_codes": {
+            "contains": {
+              "const": "ARCANA_INFO_A0_NON_CERTIFIABLE"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256_hash": {
+      "type": "string",
+      "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+    },
+    "decision_horizon": {
+      "type": "object",
+      "required": ["id", "duration_seconds", "context"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "duration_seconds": { "type": "integer", "minimum": 1 },
+        "context": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "rho_interval": {
+      "type": "object",
+      "required": ["lower", "mean", "upper", "threshold"],
+      "properties": {
+        "lower": { "type": "number", "minimum": 0 },
+        "mean": { "type": "number", "minimum": 0 },
+        "upper": { "type": "number", "minimum": 0 },
+        "threshold": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "loss_bounds": {
+      "type": "object",
+      "required": [
+        "aar_99_upper",
+        "aes_99_upper",
+        "max_allowed_aar_99",
+        "max_allowed_aes_99"
+      ],
+      "properties": {
+        "aar_99_upper": { "type": "number", "minimum": 0 },
+        "aes_99_upper": { "type": "number", "minimum": 0 },
+        "max_allowed_aar_99": { "type": "number", "minimum": 0 },
+        "max_allowed_aes_99": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "fastgate": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["perron_collatz_bound", "exact_recompute", "observe_only"]
+        },
+        "positive_vector_method": {
+          "type": "string",
+          "enum": [
+            "irreducible_perron_vector",
+            "scc_decomposition",
+            "epsilon_floor",
+            "component_local_gate",
+            "fallback_exact"
+          ]
+        },
+        "upper_bound": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "allow_bounded_autonomy",
+        "allow_with_controls",
+        "require_scope_reduction",
+        "require_human_gate",
+        "observe_only",
+        "deny"
+      ]
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "ARCANA_ALLOW_BOUNDED_AUTONOMY",
+          "ARCANA_ALLOW_WITH_CONTROLS",
+          "ARCANA_DENY_CALIBRATION_INSUFFICIENT",
+          "ARCANA_DENY_RISK_MODEL_UNSUPPORTED",
+          "ARCANA_DENY_CONTEXT_STALE",
+          "ARCANA_DENY_GRAPH_HASH_MISMATCH",
+          "ARCANA_DENY_DECISION_HORIZON_MISMATCH",
+          "ARCANA_DENY_RHO_UPPER_BOUND",
+          "ARCANA_DENY_AAR_UPPER_BOUND",
+          "ARCANA_DENY_AES_UPPER_BOUND",
+          "ARCANA_DENY_BUDGET_EXHAUSTED",
+          "ARCANA_DENY_FASTGATE_UNCERTAIN",
+          "ARCANA_DENY_FASTGATE_VECTOR_INVALID",
+          "ARCANA_DENY_DISTILLATION_RISK",
+          "ARCANA_REQUIRE_HUMAN_GATE",
+          "ARCANA_REQUIRE_SCOPE_REDUCTION",
+          "ARCANA_REQUIRE_OBSERVE_ONLY",
+          "ARCANA_INFO_A0_NON_CERTIFIABLE",
+          "ARCANA_INFO_SYNTHETIC_FIXTURE"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["source_type", "source_id", "synthetic"],
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": [
+            "synthetic_fixture",
+            "public_benchmark",
+            "controlled_test",
+            "hash_bound_context"
+          ]
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_hash": {
+          "$ref": "#/$defs/sha256_hash"
+        },
+        "synthetic": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

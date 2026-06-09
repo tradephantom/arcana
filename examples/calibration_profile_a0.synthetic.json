@@ -1,0 +1,29 @@
+{
+  "schema_version": "arcana.calibration_profile.v0.2",
+  "profile_id": "arcana.cal.A0.synthetic_demo_001",
+  "risk_model_version": "arcana.risk.v0.2",
+  "level": "A0",
+  "decision_horizon": {
+    "id": "demo_session_5m",
+    "duration_seconds": 300,
+    "context": "synthetic demo session"
+  },
+  "source": ["synthetic_demo"],
+  "confidence": 0.1,
+  "last_updated_at": "2026-06-09T00:00:00Z",
+  "uncertainty": {
+    "rho_lower": 0.2,
+    "rho_mean": 0.5,
+    "rho_upper": 0.9
+  },
+  "edge_weight_policy": {
+    "unknown_means_risky": true,
+    "use_upper_bound_for_risk": true,
+    "use_lower_bound_for_controls": true
+  },
+  "certification_status": "non_certifiable",
+  "caveats": [
+    "Synthetic A0 profile for public schema demonstration only.",
+    "No operational certification is implied."
+  ]
+}

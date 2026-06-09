@@ -18,6 +18,23 @@ Public-safe draft documentation is in progress. No production implementation is 
 - `docs/REASON_CODES.md`
 - `PUBLIC_MANIFEST.md`
 
+## Schemas
+
+- `schemas/ARCANA_CalibrationProfile.schema.v0.2.json`
+- `schemas/ARCANA_Context.schema.v0.2.json`
+- `schemas/ARCANA_Certificate.schema.v0.2.json`
+- `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json`
+
+## Local Checks
+
+Run:
+
+```sh
+make check
+```
+
+The local gate runs public-boundary audit and schema/example validation.
+
 ## Core Claim Discipline
 
 Allowed:
@@ -34,7 +51,6 @@ absolute-safety or risk-elimination claims
 
 ## Not Yet Present
 
-- public schemas v0.2;
 - formal model v0.2;
 - calibration methodology v0.1;
 - reference implementation.

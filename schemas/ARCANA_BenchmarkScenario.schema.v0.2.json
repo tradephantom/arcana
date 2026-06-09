@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcana.tradephantom.com/schemas/ARCANA_BenchmarkScenario.schema.v0.2.json",
+  "title": "ARCANA Benchmark Scenario v0.2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "scenario_id",
+    "title",
+    "summary",
+    "synthetic",
+    "threat_class",
+    "calibration_level",
+    "initial_rho_upper",
+    "graph_fixture",
+    "expected_arcana_response",
+    "reported_metrics"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "arcana.benchmark_scenario.v0.2"
+    },
+    "scenario_id": {
+      "type": "string",
+      "pattern": "^arcana-bench-[A-Za-z0-9_.:-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "synthetic": {
+      "type": "boolean",
+      "const": true
+    },
+    "threat_class": {
+      "type": "string",
+      "enum": [
+        "indirect_prompt_injection",
+        "persistent_memory_poisoning",
+        "privilege_escalation",
+        "unsafe_delegation_loop",
+        "tool_misuse",
+        "benchmark_gaming",
+        "data_exfiltration_attempt",
+        "resource_exhaustion",
+        "stale_context",
+        "over_scoped_operation",
+        "dynamic_execution_abuse"
+      ]
+    },
+    "calibration_level": {
+      "type": "string",
+      "enum": ["A0", "A1", "A2", "A3"]
+    },
+    "initial_rho_upper": {
+      "type": "number",
+      "minimum": 0
+    },
+    "graph_fixture": {
+      "type": "object",
+      "required": ["graph_hash", "node_count", "edge_count"],
+      "properties": {
+        "graph_hash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+        },
+        "node_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "edge_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "expected_arcana_response": {
+      "type": "object",
+      "required": ["verdict", "reason_codes"],
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "allow_bounded_autonomy",
+            "allow_with_controls",
+            "require_scope_reduction",
+            "require_human_gate",
+            "observe_only",
+            "deny"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ARCANA_ALLOW_BOUNDED_AUTONOMY",
+              "ARCANA_ALLOW_WITH_CONTROLS",
+              "ARCANA_DENY_CALIBRATION_INSUFFICIENT",
+              "ARCANA_DENY_RISK_MODEL_UNSUPPORTED",
+              "ARCANA_DENY_CONTEXT_STALE",
+              "ARCANA_DENY_GRAPH_HASH_MISMATCH",
+              "ARCANA_DENY_DECISION_HORIZON_MISMATCH",
+              "ARCANA_DENY_RHO_UPPER_BOUND",
+              "ARCANA_DENY_AAR_UPPER_BOUND",
+              "ARCANA_DENY_AES_UPPER_BOUND",
+              "ARCANA_DENY_BUDGET_EXHAUSTED",
+              "ARCANA_DENY_FASTGATE_UNCERTAIN",
+              "ARCANA_DENY_FASTGATE_VECTOR_INVALID",
+              "ARCANA_DENY_DISTILLATION_RISK",
+              "ARCANA_REQUIRE_HUMAN_GATE",
+              "ARCANA_REQUIRE_SCOPE_REDUCTION",
+              "ARCANA_REQUIRE_OBSERVE_ONLY",
+              "ARCANA_INFO_A0_NON_CERTIFIABLE",
+              "ARCANA_INFO_SYNTHETIC_FIXTURE"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "reported_metrics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "task_success_rate",
+          "unsafe_action_rate",
+          "policy_violation_rate",
+          "delta_rho_upper",
+          "rho_peak",
+          "AaR_99_upper",
+          "AES_99_upper",
+          "containment_time_steps",
+          "autonomy_budget_consumed",
+          "human_intervention_efficiency",
+          "certificate_validity_rate"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}
