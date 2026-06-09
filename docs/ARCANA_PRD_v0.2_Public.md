@@ -529,7 +529,7 @@ Reference implementation work under `src/` should start only after the public PR
 
 ## 18. Next Artifacts
 
-1. Formal model v0.2.
-2. Calibration methodology v0.1.
+1. Calibration methodology v0.1.
+2. FastGate design v0.1.
 3. Public demo/reference implementation plan.
 4. ARCANA-Bench v0.1 scenario expansion.

@@ -114,6 +114,21 @@ Use when:
 
 Actionable guidance: provide a supported risk model version and rerun the evaluation.
 
+### `ARCANA_DENY_MODEL_INPUT_INVALID`
+
+Meaning: graph, matrix, interval, threshold, or required model input is malformed.
+
+Use when:
+
+- propagation matrix is not square;
+- matrix entries are negative or nonnumeric;
+- interval bounds violate lower <= mean <= upper;
+- required model input is absent;
+- thresholds are malformed;
+- node ordering is not bound to graph state.
+
+Actionable guidance: correct the malformed model input, bind it to the intended graph state, and rerun evaluation.
+
 ### `ARCANA_DENY_CONTEXT_STALE`
 
 Meaning: the risk context is expired or older than the allowed freshness window.
@@ -173,6 +188,19 @@ Use when:
 - `AaR_upper` or equivalent configured quantile exceeds the allowed bound.
 
 Actionable guidance: reduce loss exposure, restrict affected resources, narrow output authority, or strengthen controls.
+
+### `ARCANA_DENY_LOSS_MODEL_INVALID`
+
+Meaning: the loss model is required but missing, malformed, unsupported, or horizon-incompatible.
+
+Use when:
+
+- loss is in scope but no loss model is provided;
+- loss bounds are malformed;
+- loss model horizon does not match the decision horizon;
+- loss model values are negative, nonnumeric, or unsupported by the evaluator.
+
+Actionable guidance: provide a compatible loss model or explicitly declare loss out of scope where policy permits.
 
 ### `ARCANA_DENY_AES_UPPER_BOUND`
 
@@ -310,11 +338,13 @@ Actionable guidance: label the source clearly and avoid operational claims.
 | `ARCANA_ALLOW_WITH_CONTROLS` | allow | `allow_with_controls` | Decision is bounded only if required controls are applied. |
 | `ARCANA_DENY_CALIBRATION_INSUFFICIENT` | deny | `deny` | Calibration level or evidence quality is insufficient. |
 | `ARCANA_DENY_RISK_MODEL_UNSUPPORTED` | deny | `deny` | Risk model version is missing, malformed, unknown, disabled, or incompatible. |
+| `ARCANA_DENY_MODEL_INPUT_INVALID` | deny | `deny` | Graph, matrix, interval, threshold, or required model input is malformed. |
 | `ARCANA_DENY_CONTEXT_STALE` | deny | `deny` | Risk context is expired or too old. |
 | `ARCANA_DENY_GRAPH_HASH_MISMATCH` | deny | `deny` | Graph state does not match the bound decision context. |
 | `ARCANA_DENY_DECISION_HORIZON_MISMATCH` | deny | `deny` | Decision horizons are missing or incompatible. |
 | `ARCANA_DENY_RHO_UPPER_BOUND` | deny | `deny` | Upper-bound propagation risk exceeds threshold or budget. |
 | `ARCANA_DENY_AAR_UPPER_BOUND` | deny | `deny` | Upper-bound Autonomy-at-Risk exceeds limit. |
+| `ARCANA_DENY_LOSS_MODEL_INVALID` | deny | `deny` | Required loss model is missing, malformed, unsupported, or horizon-incompatible. |
 | `ARCANA_DENY_AES_UPPER_BOUND` | deny | `deny` | Upper-bound Agentic Expected Shortfall exceeds limit. |
 | `ARCANA_DENY_BUDGET_EXHAUSTED` | deny | `deny` | Autonomy budget is exhausted or expired. |
 | `ARCANA_DENY_FASTGATE_UNCERTAIN` | deny | `deny` | FastGate cannot prove admission conservatively. |

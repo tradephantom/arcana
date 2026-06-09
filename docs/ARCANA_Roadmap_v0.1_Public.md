@@ -146,11 +146,13 @@ Required public reason-code families:
 
 - calibration failures;
 - unsupported model failures;
+- malformed model input failures;
 - stale or mismatched context failures;
 - graph/evidence mismatch failures;
 - decision-horizon mismatch failures;
 - propagation-risk upper-bound failures;
 - loss upper-bound failures;
+- invalid loss model failures;
 - budget exhaustion;
 - FastGate uncertainty;
 - FastGate vector invalidity;
@@ -235,6 +237,8 @@ Exit criteria:
 - all uncertainty-handling rules are explicit.
 
 Implementation gate: spectral risk calculator should not be implemented before this model is reviewed.
+
+Status: draft complete, review pending.
 
 ## 10. Milestone 6 - ARCANA-Cal v0.1
 
@@ -463,5 +467,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Formal model v0.2.
-2. Calibration methodology v0.1.
+1. Calibration methodology v0.1.
+2. FastGate design v0.1.

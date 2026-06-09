@@ -16,6 +16,7 @@ Public-safe draft documentation is in progress. No production implementation is 
 - `docs/ARCANA_Roadmap_v0.1_Public.md`
 - `docs/GLOSSARY.md`
 - `docs/REASON_CODES.md`
+- `docs/FORMAL_MODEL_v0.2.md`
 - `PUBLIC_MANIFEST.md`
 
 ## Schemas
@@ -51,6 +52,5 @@ absolute-safety or risk-elimination claims
 
 ## Not Yet Present
 
-- formal model v0.2;
 - calibration methodology v0.1;
 - reference implementation.

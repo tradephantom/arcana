@@ -8,11 +8,12 @@ Current order:
 2. `ARCANA_Roadmap_v0.1_Public.md`
 3. `GLOSSARY.md`
 4. `REASON_CODES.md`
+5. `FORMAL_MODEL_v0.2.md`
 
 Next public documents:
 
-1. formal model v0.2;
-2. calibration methodology v0.1.
+1. calibration methodology v0.1;
+2. FastGate design v0.1.
 
 Schema drafts live in `../schemas/`.
 

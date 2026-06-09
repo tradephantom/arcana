@@ -23,6 +23,7 @@ Only files listed here are part of this public release candidate tree.
 | `docs/ARCANA_Roadmap_v0.1_Public.md` | public-safe draft | Public roadmap draft; review required before remote publication. |
 | `docs/GLOSSARY.md` | public-safe draft | Public ARCANA vocabulary. |
 | `docs/REASON_CODES.md` | public-safe draft | Public ARCANA reason-code registry. |
+| `docs/FORMAL_MODEL_v0.2.md` | public-safe draft | Public ARCANA formal model contract. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe draft | Public benchmark scenario schema. |
 | `schemas/ARCANA_CalibrationProfile.schema.v0.2.json` | public-safe draft | Public calibration profile schema. |
