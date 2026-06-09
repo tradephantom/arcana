@@ -8,7 +8,7 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 
 ## Current Status
 
-Public-safe draft documentation is in progress. Reference implementation Slice 0 project scaffold is present. No production implementation is present in this public release tree.
+Public-safe draft documentation is in progress. Reference implementation Slice 1 typed contracts and schema validation are present. No production implementation is present in this public release tree.
 
 ## Documents
 

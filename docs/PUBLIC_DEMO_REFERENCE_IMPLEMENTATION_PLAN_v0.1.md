@@ -2,7 +2,7 @@
 
 > Status: public implementation plan v0.1 draft
 > Scope: local-first public demo and standalone reference implementation plan
-> Implementation status: Slice 0 project scaffold may exist after review; no domain behavior is approved by this document
+> Implementation status: Slice 1 typed contracts and schema validation may exist after review; no spectral or decision behavior is approved by this document
 
 This document defines the first public ARCANA demo and reference implementation plan. It selects the implementation language, dependency policy, module boundaries, synthetic fixture strategy, CLI behavior, and test matrix required before code begins.
 
@@ -451,6 +451,8 @@ Exit criteria:
 - schema examples pass;
 - malformed fixture tests fail with specific reason codes.
 
+Status: implemented, review pending.
+
 ### Slice 2 - Matrix and Spectral Calculator
 
 Deliverables:
@@ -533,8 +535,8 @@ Before starting Slice 0, reviewers should confirm:
 
 ## 20. Next Phase
 
-After Slice 0 is reviewed, the next roadmap phase is:
+After Slice 1 is reviewed, the next roadmap phase is:
 
 ```text
-Reference Implementation v0.1 - Slice 1 Typed Contracts and Schema Validation
+Reference Implementation v0.1 - Slice 2 Matrix and Spectral Calculator
 ```

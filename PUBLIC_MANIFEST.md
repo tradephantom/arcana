@@ -34,6 +34,7 @@ Only files listed here are part of this public release candidate tree.
 | `schemas/ARCANA_Certificate.schema.v0.2.json` | public-safe draft | Public certificate schema. |
 | `schemas/ARCANA_Context.schema.v0.2.json` | public-safe draft | Public risk context schema. |
 | `src/arcana/__init__.py` | public-staging | ARCANA package entrypoint. |
+| `src/arcana/_validation.py` | public-staging | Internal validation helpers for typed public contracts. |
 | `src/arcana/calibration.py` | public-staging | Calibration module boundary. |
 | `src/arcana/certificate.py` | public-staging | Certificate module boundary. |
 | `src/arcana/decision.py` | public-staging | Decision module boundary. |
@@ -45,6 +46,8 @@ Only files listed here are part of this public release candidate tree.
 | `src/arcana/model.py` | public-staging | Graph and horizon model boundary. |
 | `src/arcana/schemas.py` | public-staging | Public schema module boundary. |
 | `tests/test_project_scaffold.py` | public-staging | Slice 0 scaffold verification tests. |
+| `tests/test_schema_validation.py` | public-staging | Slice 1 schema validation tests. |
+| `tests/test_typed_contracts.py` | public-staging | Slice 1 typed contract tests. |
 | `tools/audit_public.py` | public-staging | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public-staging | Public schema and synthetic example validator. |
 

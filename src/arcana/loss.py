@@ -2,4 +2,6 @@
 
 from __future__ import annotations
 
-__all__: tuple[str, ...] = ()
+from arcana.model import LossBounds
+
+__all__ = ["LossBounds"]
