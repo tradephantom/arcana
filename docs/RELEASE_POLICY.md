@@ -36,10 +36,19 @@ The remote public repository is a publication channel, not the development autho
 
 ## Required Local Gate
 
+Optional local environment setup:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e ".[dev]"
+```
+
 Run:
 
 ```sh
 make check
+make test
 ```
 
 before every commit and before any remote push.

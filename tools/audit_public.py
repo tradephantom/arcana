@@ -15,6 +15,7 @@ REASON_CODE_REGISTRY = ROOT / "docs" / "REASON_CODES.md"
 
 SKIP_DIRS = {
     ".git",
+    ".venv",
     "__pycache__",
     ".pytest_cache",
     ".mypy_cache",

@@ -8,7 +8,7 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 
 ## Current Status
 
-Public-safe draft documentation is in progress. No production implementation is present in this public release tree.
+Public-safe draft documentation is in progress. Reference implementation Slice 0 project scaffold is present. No production implementation is present in this public release tree.
 
 ## Documents
 
@@ -31,13 +31,22 @@ Public-safe draft documentation is in progress. No production implementation is 
 
 ## Local Checks
 
+Optional local environment setup:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e ".[dev]"
+```
+
 Run:
 
 ```sh
 make check
+make test
 ```
 
-The local gate runs public-boundary audit and schema/example validation.
+The local gate runs public-boundary audit, schema/example validation, and scaffold tests.
 
 ## Core Claim Discipline
 

@@ -13,6 +13,7 @@ Only files listed here are part of this public release candidate tree.
 | `PUBLIC_MANIFEST.md` | public-staging | Manifest of public release candidates. |
 | `.gitignore` | public-staging | Local development exclusions. |
 | `Makefile` | public-staging | Local check entrypoint. |
+| `pyproject.toml` | public-staging | Python package and dependency declaration. |
 | `examples/README.md` | public-staging | Synthetic example index. |
 | `examples/calibration_profile_a0.synthetic.json` | public-safe draft | Synthetic A0 calibration profile example. |
 | `examples/risk_context_allow_with_controls.synthetic.json` | public-safe draft | Synthetic risk context example. |
@@ -32,6 +33,18 @@ Only files listed here are part of this public release candidate tree.
 | `schemas/ARCANA_CalibrationProfile.schema.v0.2.json` | public-safe draft | Public calibration profile schema. |
 | `schemas/ARCANA_Certificate.schema.v0.2.json` | public-safe draft | Public certificate schema. |
 | `schemas/ARCANA_Context.schema.v0.2.json` | public-safe draft | Public risk context schema. |
+| `src/arcana/__init__.py` | public-staging | ARCANA package entrypoint. |
+| `src/arcana/calibration.py` | public-staging | Calibration module boundary. |
+| `src/arcana/certificate.py` | public-staging | Certificate module boundary. |
+| `src/arcana/decision.py` | public-staging | Decision module boundary. |
+| `src/arcana/demo.py` | public-staging | Demo entrypoint boundary. |
+| `src/arcana/errors.py` | public-staging | Error and reason-code module boundary. |
+| `src/arcana/fastgate.py` | public-staging | FastGate module boundary. |
+| `src/arcana/loss.py` | public-staging | Loss module boundary. |
+| `src/arcana/matrices.py` | public-staging | Matrix module boundary. |
+| `src/arcana/model.py` | public-staging | Graph and horizon model boundary. |
+| `src/arcana/schemas.py` | public-staging | Public schema module boundary. |
+| `tests/test_project_scaffold.py` | public-staging | Slice 0 scaffold verification tests. |
 | `tools/audit_public.py` | public-staging | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public-staging | Public schema and synthetic example validator. |
 

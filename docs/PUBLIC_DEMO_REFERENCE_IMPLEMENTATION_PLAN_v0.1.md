@@ -2,7 +2,7 @@
 
 > Status: public implementation plan v0.1 draft
 > Scope: local-first public demo and standalone reference implementation plan
-> Implementation status: no `src/` code is approved by this document
+> Implementation status: Slice 0 project scaffold may exist after review; no domain behavior is approved by this document
 
 This document defines the first public ARCANA demo and reference implementation plan. It selects the implementation language, dependency policy, module boundaries, synthetic fixture strategy, CLI behavior, and test matrix required before code begins.
 
@@ -533,8 +533,8 @@ Before starting Slice 0, reviewers should confirm:
 
 ## 20. Next Phase
 
-After this plan is reviewed, the next roadmap phase is:
+After Slice 0 is reviewed, the next roadmap phase is:
 
 ```text
-Reference Implementation v0.1 - Slice 0 Project Scaffold
+Reference Implementation v0.1 - Slice 1 Typed Contracts and Schema Validation
 ```

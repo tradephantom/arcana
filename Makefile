@@ -1,9 +1,14 @@
-.PHONY: check public-audit schema-check
+.PHONY: check public-audit schema-check test
+
+PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 
 check: public-audit schema-check
 
 public-audit:
-	python3 tools/audit_public.py
+	$(PYTHON) tools/audit_public.py
 
 schema-check:
-	python3 tools/validate_schemas.py
+	$(PYTHON) tools/validate_schemas.py
+
+test:
+	$(PYTHON) -m pytest
