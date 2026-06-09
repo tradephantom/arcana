@@ -12,10 +12,11 @@ Current order:
 6. `CALIBRATION_METHODOLOGY_v0.1.md`
 7. `FASTGATE_DESIGN_v0.1.md`
 8. `PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md`
+9. `ARCANA_BENCH_v0.1.md`
 
 Next public documents:
 
-1. ARCANA-Bench v0.1 scenario expansion.
+1. Public Integration Contract v0.1.
 
 Schema drafts live in `../schemas/`.
 

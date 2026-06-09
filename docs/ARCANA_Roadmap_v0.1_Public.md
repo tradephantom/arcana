@@ -5,7 +5,7 @@
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
 > Classification: open-candidate, redaction review required before public release
-> Implementation status: local reference implementation through Slice 5 exists; roadmap remains review pending before remote publication
+> Implementation status: local reference implementation through Slice 5 and ARCANA-Bench v0.1 scenario expansion exist; roadmap remains review pending before remote publication
 
 ## 1. Roadmap Rule
 
@@ -65,7 +65,8 @@ Blocking status:
 - reference implementation Slice 3 decision evaluator is present;
 - reference implementation Slice 4 certificate/demo output is present;
 - reference implementation Slice 5 FastGate prototype is present;
-- ARCANA-Bench expanded scenario set is not present yet.
+- ARCANA-Bench v0.1 synthetic scenario expansion is present;
+- public integration contract is not present yet.
 
 ## 4. Milestone 0 - Boundary Freeze
 
@@ -383,6 +384,8 @@ Exit criteria:
 - risk-bound status is visible for each scenario;
 - certificate validity can be evaluated independently of task success.
 
+Status: synthetic scenario expansion implemented, review pending.
+
 ## 14. Milestone 10 - Public Integration Contract v0.1
 
 Goal: describe how ARCANA can integrate with enforcement systems without publishing private operational mechanics.
@@ -485,5 +488,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. ARCANA-Bench v0.1 scenario expansion.
-2. Public Integration Contract v0.1.
+1. Public Integration Contract v0.1.
+2. Whitepaper / Paper v0.2 outline.

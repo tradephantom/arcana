@@ -19,6 +19,11 @@ Only files listed here are part of this public release candidate tree.
 | `examples/risk_context_allow_with_controls.synthetic.json` | public-safe draft | Synthetic risk context example. |
 | `examples/certificate_a0_non_certifiable.synthetic.json` | public-safe draft | Synthetic non-certifiable A0 certificate example. |
 | `examples/benchmark_prompt_injection.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
+| `examples/benchmark_memory_poisoning.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
+| `examples/benchmark_tool_misuse.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
+| `examples/benchmark_delegation_cascade.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
+| `examples/benchmark_gaming.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
+| `examples/benchmark_dynamic_execution.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
 | `docs/README.md` | public-staging | Public documentation index. |
 | `docs/ARCANA_PRD_v0.2_Public.md` | public-safe draft | Public PRD draft; review required before remote publication. |
 | `docs/ARCANA_Roadmap_v0.1_Public.md` | public-safe draft | Public roadmap draft; review required before remote publication. |
@@ -28,6 +33,7 @@ Only files listed here are part of this public release candidate tree.
 | `docs/CALIBRATION_METHODOLOGY_v0.1.md` | public-safe draft | Public ARCANA calibration methodology contract. |
 | `docs/FASTGATE_DESIGN_v0.1.md` | public-safe draft | Public ARCANA FastGate admission design. |
 | `docs/PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md` | public-safe draft | Public demo and reference implementation plan. |
+| `docs/ARCANA_BENCH_v0.1.md` | public-safe draft | Public ARCANA-Bench scenario expansion and scoring notes. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe draft | Public benchmark scenario schema. |
 | `schemas/ARCANA_CalibrationProfile.schema.v0.2.json` | public-safe draft | Public calibration profile schema. |
@@ -35,6 +41,7 @@ Only files listed here are part of this public release candidate tree.
 | `schemas/ARCANA_Context.schema.v0.2.json` | public-safe draft | Public risk context schema. |
 | `src/arcana/__init__.py` | public-staging | ARCANA package entrypoint. |
 | `src/arcana/_validation.py` | public-staging | Internal validation helpers for typed public contracts. |
+| `src/arcana/bench.py` | public-staging | ARCANA-Bench suite loader and coverage validator. |
 | `src/arcana/calibration.py` | public-staging | Calibration module boundary. |
 | `src/arcana/certificate.py` | public-staging | Certificate module boundary. |
 | `src/arcana/decision.py` | public-staging | Decision module boundary. |
@@ -45,6 +52,7 @@ Only files listed here are part of this public release candidate tree.
 | `src/arcana/matrices.py` | public-staging | Matrix module boundary. |
 | `src/arcana/model.py` | public-staging | Graph and horizon model boundary. |
 | `src/arcana/schemas.py` | public-staging | Public schema module boundary. |
+| `tests/test_benchmark_suite.py` | public-staging | ARCANA-Bench scenario coverage and scoring discipline tests. |
 | `tests/test_certificate_emission.py` | public-staging | Slice 4 certificate and context emission tests. |
 | `tests/test_cli_demo.py` | public-staging | Slice 4 deterministic demo CLI tests. |
 | `tests/test_decision_reason_codes.py` | public-staging | Slice 3 decision evaluator and reason-code tests. |
