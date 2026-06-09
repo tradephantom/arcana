@@ -130,6 +130,19 @@ def validate_horizon(path: Path, horizon: Any) -> list[Finding]:
     return findings
 
 
+def validate_evidence_window(path: Path, window: Any) -> list[Finding]:
+    findings: list[Finding] = []
+    if not isinstance(window, dict):
+        return [Finding(rel(path), "evidence_window_invalid", "must be object")]
+    findings.extend(require_keys(path, window, {"observed_after", "observed_before", "max_age_seconds"}))
+    for key in ("observed_after", "observed_before"):
+        if not isinstance(window.get(key), str) or not window.get(key):
+            findings.append(Finding(rel(path), "evidence_window_time_invalid", f"{key}={window.get(key)!r}"))
+    if not isinstance(window.get("max_age_seconds"), int) or window.get("max_age_seconds", 0) < 1:
+        findings.append(Finding(rel(path), "evidence_window_max_age_invalid", str(window.get("max_age_seconds"))))
+    return findings
+
+
 def validate_rho_interval(path: Path, interval: Any) -> list[Finding]:
     findings: list[Finding] = []
     if not isinstance(interval, dict):
@@ -175,7 +188,7 @@ def validate_evidence(path: Path, evidence: Any) -> list[Finding]:
 
 def validate_calibration_profile(path: Path, obj: dict[str, Any], registered: set[str]) -> list[Finding]:
     findings: list[Finding] = []
-    required = {"profile_id", "risk_model_version", "level", "decision_horizon", "source", "confidence", "uncertainty", "edge_weight_policy", "certification_status", "caveats"}
+    required = {"profile_id", "risk_model_version", "level", "decision_horizon", "source", "evidence_window", "confidence", "uncertainty", "edge_weight_policy", "certification_status", "caveats"}
     findings.extend(require_keys(path, obj, required))
     if not CAL_PROFILE_RE.match(str(obj.get("profile_id"))):
         findings.append(Finding(rel(path), "profile_id_invalid", str(obj.get("profile_id"))))
@@ -186,6 +199,7 @@ def validate_calibration_profile(path: Path, obj: dict[str, Any], registered: se
     if obj.get("level") == "A0" and obj.get("certification_status") != "non_certifiable":
         findings.append(Finding(rel(path), "a0_must_be_non_certifiable", str(obj.get("certification_status"))))
     findings.extend(validate_horizon(path, obj.get("decision_horizon")))
+    findings.extend(validate_evidence_window(path, obj.get("evidence_window")))
     findings.extend(validate_rho_interval(path, {
         "lower": obj.get("uncertainty", {}).get("rho_lower") if isinstance(obj.get("uncertainty"), dict) else None,
         "mean": obj.get("uncertainty", {}).get("rho_mean") if isinstance(obj.get("uncertainty"), dict) else None,

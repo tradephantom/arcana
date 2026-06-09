@@ -9,11 +9,11 @@ Current order:
 3. `GLOSSARY.md`
 4. `REASON_CODES.md`
 5. `FORMAL_MODEL_v0.2.md`
+6. `CALIBRATION_METHODOLOGY_v0.1.md`
 
 Next public documents:
 
-1. calibration methodology v0.1;
-2. FastGate design v0.1.
+1. FastGate design v0.1.
 
 Schema drafts live in `../schemas/`.
 

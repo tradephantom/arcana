@@ -10,6 +10,7 @@
     "level",
     "decision_horizon",
     "source",
+    "evidence_window",
     "confidence",
     "uncertainty",
     "edge_weight_policy",
@@ -67,6 +68,25 @@
       },
       "minItems": 1,
       "uniqueItems": true
+    },
+    "evidence_window": {
+      "type": "object",
+      "required": ["observed_after", "observed_before", "max_age_seconds"],
+      "properties": {
+        "observed_after": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "observed_before": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "max_age_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
     },
     "confidence": {
       "type": "number",

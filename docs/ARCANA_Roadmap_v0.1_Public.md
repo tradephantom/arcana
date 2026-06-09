@@ -55,6 +55,8 @@ Blocking status:
 - public glossary is drafted;
 - public reason-code registry is drafted;
 - public schema drafts use public IDs;
+- formal model draft exists;
+- calibration methodology draft exists;
 - no reference implementation is approved yet.
 
 ## 4. Milestone 0 - Boundary Freeze
@@ -266,6 +268,8 @@ Exit criteria:
 
 Implementation gate: certificate generation should not support non-demo outputs before calibration contracts are reviewed.
 
+Status: draft complete, review pending.
+
 ## 11. Milestone 7 - ARCANA-FastGate v0.1
 
 Goal: define low-latency admission semantics without weakening the mathematical gate.
@@ -467,5 +471,4 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Calibration methodology v0.1.
-2. FastGate design v0.1.
+1. FastGate design v0.1.

@@ -491,8 +491,8 @@ Required schemas:
 
 - `ARCANA_Context.schema.v0.2.json`;
 - `ARCANA_Certificate.schema.v0.2.json`;
-- future `ARCANA_CalibrationProfile.schema.v0.2.json`;
-- future `ARCANA_BenchmarkScenario.schema.v0.2.json`.
+- `ARCANA_CalibrationProfile.schema.v0.2.json`;
+- `ARCANA_BenchmarkScenario.schema.v0.2.json`.
 
 Public schema constraints:
 
@@ -512,24 +512,23 @@ ARCANA v0.2 public documentation is releasable when:
 - public roadmap v0.1 exists;
 - public-safe glossary exists;
 - public reason-code registry exists;
+- formal model exists;
+- calibration methodology exists;
 - schemas use public IDs;
 - examples are synthetic and marked non-production;
 - claim discipline is verified;
 - license, contribution policy, security policy, and limitations are added.
 
-Reference implementation work under `src/` should start only after the public PRD and roadmap are reviewed.
+Reference implementation work under `src/` should start only after the public PRD, roadmap, formal model, calibration methodology, and FastGate design are reviewed.
 
 ## 17. Open Questions
 
-- What public schema namespace should replace current internal schema IDs?
-- Which calibration level is the minimum for non-demo certificate examples?
 - Which ARCANA-Bench scenarios should be included in v0.1 versus deferred?
 - Should public certificate vocabulary use `certifies bounded autonomy` or prefer `attests bounded autonomy` for lower claim risk?
 - What minimal reference implementation language and dependency set should be selected?
 
 ## 18. Next Artifacts
 
-1. Calibration methodology v0.1.
-2. FastGate design v0.1.
-3. Public demo/reference implementation plan.
-4. ARCANA-Bench v0.1 scenario expansion.
+1. FastGate design v0.1.
+2. Public demo/reference implementation plan.
+3. ARCANA-Bench v0.1 scenario expansion.

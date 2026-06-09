@@ -17,6 +17,7 @@ Public-safe draft documentation is in progress. No production implementation is 
 - `docs/GLOSSARY.md`
 - `docs/REASON_CODES.md`
 - `docs/FORMAL_MODEL_v0.2.md`
+- `docs/CALIBRATION_METHODOLOGY_v0.1.md`
 - `PUBLIC_MANIFEST.md`
 
 ## Schemas
@@ -52,5 +53,5 @@ absolute-safety or risk-elimination claims
 
 ## Not Yet Present
 
-- calibration methodology v0.1;
+- FastGate design v0.1;
 - reference implementation.

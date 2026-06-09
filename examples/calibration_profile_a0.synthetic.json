@@ -9,6 +9,11 @@
     "context": "synthetic demo session"
   },
   "source": ["synthetic_demo"],
+  "evidence_window": {
+    "observed_after": "2026-06-09T00:00:00Z",
+    "observed_before": "2026-06-09T00:00:00Z",
+    "max_age_seconds": 86400
+  },
   "confidence": 0.1,
   "last_updated_at": "2026-06-09T00:00:00Z",
   "uncertainty": {
