@@ -10,10 +10,11 @@ Current order:
 4. `REASON_CODES.md`
 5. `FORMAL_MODEL_v0.2.md`
 6. `CALIBRATION_METHODOLOGY_v0.1.md`
+7. `FASTGATE_DESIGN_v0.1.md`
 
 Next public documents:
 
-1. FastGate design v0.1.
+1. Public demo/reference implementation plan v0.1.
 
 Schema drafts live in `../schemas/`.
 

@@ -228,6 +228,20 @@
           "minimum": 0
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "perron_collatz_bound"
+              }
+            }
+          },
+          "then": {
+            "required": ["positive_vector_method", "upper_bound"]
+          }
+        }
+      ],
       "additionalProperties": false
     },
     "verdict": {

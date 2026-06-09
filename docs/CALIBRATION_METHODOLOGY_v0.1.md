@@ -548,8 +548,10 @@ No implementation should issue a certifiable non-demo artifact before this metho
 
 ## 22. Next Artifact
 
-The next public artifact should be:
+This artifact is followed by FastGate design before reference implementation work.
+
+The next implementation-planning artifact should be:
 
 ```text
-ARCANA-FastGate Design v0.1
+Public Demo and Reference Implementation Plan v0.1
 ```

@@ -514,6 +514,7 @@ ARCANA v0.2 public documentation is releasable when:
 - public reason-code registry exists;
 - formal model exists;
 - calibration methodology exists;
+- FastGate design exists;
 - schemas use public IDs;
 - examples are synthetic and marked non-production;
 - claim discipline is verified;
@@ -529,6 +530,5 @@ Reference implementation work under `src/` should start only after the public PR
 
 ## 18. Next Artifacts
 
-1. FastGate design v0.1.
-2. Public demo/reference implementation plan.
-3. ARCANA-Bench v0.1 scenario expansion.
+1. Public demo/reference implementation plan v0.1.
+2. ARCANA-Bench v0.1 scenario expansion.

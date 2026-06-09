@@ -57,6 +57,7 @@ Blocking status:
 - public schema drafts use public IDs;
 - formal model draft exists;
 - calibration methodology draft exists;
+- FastGate design draft exists;
 - no reference implementation is approved yet.
 
 ## 4. Milestone 0 - Boundary Freeze
@@ -296,6 +297,8 @@ Exit criteria:
 
 Implementation gate: FastGate prototype should not start before this design is reviewed.
 
+Status: draft complete, review pending.
+
 ## 12. Milestone 8 - Reference Implementation v0.1
 
 Goal: build a minimal standalone public implementation that reproduces the core ARCANA calculations.
@@ -457,6 +460,8 @@ Before any `src/` implementation starts, these must be true:
 - public reason-code registry drafted;
 - public schemas have draft IDs and required fields;
 - formal model draft exists for `K`, `L`, `H`, and upper-bound decisions;
+- calibration methodology draft exists;
+- FastGate design draft exists;
 - implementation language and dependency policy are selected;
 - tests are planned for every public reason code.
 
@@ -471,4 +476,4 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. FastGate design v0.1.
+1. Public demo/reference implementation plan v0.1.

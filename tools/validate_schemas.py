@@ -40,6 +40,14 @@ VERDICTS = {
 }
 
 LEVELS = {"A0", "A1", "A2", "A3"}
+FASTGATE_MODES = {"perron_collatz_bound", "exact_recompute", "observe_only"}
+FASTGATE_POSITIVE_VECTOR_METHODS = {
+    "irreducible_perron_vector",
+    "scc_decomposition",
+    "epsilon_floor",
+    "component_local_gate",
+    "fallback_exact",
+}
 
 
 @dataclass(frozen=True)
@@ -173,6 +181,32 @@ def validate_loss_bounds(path: Path, bounds: Any) -> list[Finding]:
     return findings
 
 
+def validate_fastgate(path: Path, fastgate: Any) -> list[Finding]:
+    findings: list[Finding] = []
+    if not isinstance(fastgate, dict):
+        return [Finding(rel(path), "fastgate_invalid", "must be object")]
+
+    mode = fastgate.get("mode")
+    if mode not in FASTGATE_MODES:
+        findings.append(Finding(rel(path), "fastgate_mode_invalid", str(mode)))
+
+    method = fastgate.get("positive_vector_method")
+    if method is not None and method not in FASTGATE_POSITIVE_VECTOR_METHODS:
+        findings.append(Finding(rel(path), "fastgate_positive_vector_method_invalid", str(method)))
+
+    upper_bound = fastgate.get("upper_bound")
+    if upper_bound is not None and (not isinstance(upper_bound, (int, float)) or upper_bound < 0):
+        findings.append(Finding(rel(path), "fastgate_upper_bound_invalid", str(upper_bound)))
+
+    if mode == "perron_collatz_bound":
+        if method is None:
+            findings.append(Finding(rel(path), "fastgate_positive_vector_method_missing", "perron_collatz_bound requires positive_vector_method"))
+        if upper_bound is None:
+            findings.append(Finding(rel(path), "fastgate_upper_bound_missing", "perron_collatz_bound requires upper_bound"))
+
+    return findings
+
+
 def validate_evidence(path: Path, evidence: Any) -> list[Finding]:
     findings: list[Finding] = []
     if not isinstance(evidence, dict):
@@ -227,6 +261,8 @@ def validate_context(path: Path, obj: dict[str, Any], registered: set[str]) -> l
     findings.extend(validate_rho_interval(path, obj.get("rho_interval")))
     if "loss_bounds" in obj:
         findings.extend(validate_loss_bounds(path, obj.get("loss_bounds")))
+    if "fastgate" in obj:
+        findings.extend(validate_fastgate(path, obj.get("fastgate")))
     findings.extend(validate_reason_codes(path, obj.get("reason_codes"), registered))
     findings.extend(validate_evidence(path, obj.get("evidence")))
     return findings
@@ -245,6 +281,8 @@ def validate_certificate(path: Path, obj: dict[str, Any], registered: set[str]) 
     findings.extend(validate_horizon(path, obj.get("decision_horizon")))
     findings.extend(validate_rho_interval(path, obj.get("rho_interval")))
     findings.extend(validate_loss_bounds(path, obj.get("loss_bounds")))
+    if "fastgate" in obj:
+        findings.extend(validate_fastgate(path, obj.get("fastgate")))
     findings.extend(validate_reason_codes(path, obj.get("reason_codes"), registered))
     findings.extend(validate_evidence(path, obj.get("evidence")))
     profile = obj.get("calibration_profile")

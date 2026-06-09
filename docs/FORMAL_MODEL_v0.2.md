@@ -484,8 +484,10 @@ No wildcard branch may silently convert unknown failures into allow-like outcome
 
 ## 19. Next Artifact
 
-The next public artifact should be:
+This artifact is followed by calibration methodology and FastGate design before reference implementation work.
+
+The next implementation-planning artifact should be:
 
 ```text
-ARCANA Calibration Methodology v0.1
+Public Demo and Reference Implementation Plan v0.1
 ```
