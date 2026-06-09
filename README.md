@@ -19,6 +19,7 @@ Public-safe draft documentation is in progress. No production implementation is 
 - `docs/FORMAL_MODEL_v0.2.md`
 - `docs/CALIBRATION_METHODOLOGY_v0.1.md`
 - `docs/FASTGATE_DESIGN_v0.1.md`
+- `docs/PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md`
 - `PUBLIC_MANIFEST.md`
 
 ## Schemas
@@ -54,5 +55,4 @@ absolute-safety or risk-elimination claims
 
 ## Not Yet Present
 
-- public demo/reference implementation plan;
 - reference implementation.

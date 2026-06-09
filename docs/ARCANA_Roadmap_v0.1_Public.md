@@ -58,6 +58,7 @@ Blocking status:
 - formal model draft exists;
 - calibration methodology draft exists;
 - FastGate design draft exists;
+- public demo/reference implementation plan draft exists;
 - no reference implementation is approved yet.
 
 ## 4. Milestone 0 - Boundary Freeze
@@ -420,7 +421,7 @@ Exit criteria:
 
 Hard gates:
 
-- no reference implementation before public PRD and roadmap review;
+- no reference implementation before public PRD, roadmap, formal model, calibration methodology, FastGate design, and implementation plan review;
 - no certificate generator before public schemas exist;
 - no non-demo certificate examples before calibration contract review;
 - no FastGate prototype before FastGate design review;
@@ -476,4 +477,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Public demo/reference implementation plan v0.1.
+1. Reference Implementation v0.1 - Slice 0 project scaffold after review gate.
+2. ARCANA-Bench v0.1 scenario expansion.

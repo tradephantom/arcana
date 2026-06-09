@@ -26,6 +26,7 @@ Only files listed here are part of this public release candidate tree.
 | `docs/FORMAL_MODEL_v0.2.md` | public-safe draft | Public ARCANA formal model contract. |
 | `docs/CALIBRATION_METHODOLOGY_v0.1.md` | public-safe draft | Public ARCANA calibration methodology contract. |
 | `docs/FASTGATE_DESIGN_v0.1.md` | public-safe draft | Public ARCANA FastGate admission design. |
+| `docs/PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md` | public-safe draft | Public demo and reference implementation plan. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe draft | Public benchmark scenario schema. |
 | `schemas/ARCANA_CalibrationProfile.schema.v0.2.json` | public-safe draft | Public calibration profile schema. |

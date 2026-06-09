@@ -493,7 +493,7 @@ The first implementation must include tests for:
 
 ## 20. Next Artifact
 
-The next public artifact should be:
+The next public planning artifact is:
 
 ```text
 Public Demo and Reference Implementation Plan v0.1

@@ -515,12 +515,13 @@ ARCANA v0.2 public documentation is releasable when:
 - formal model exists;
 - calibration methodology exists;
 - FastGate design exists;
+- public demo/reference implementation plan exists;
 - schemas use public IDs;
 - examples are synthetic and marked non-production;
 - claim discipline is verified;
 - license, contribution policy, security policy, and limitations are added.
 
-Reference implementation work under `src/` should start only after the public PRD, roadmap, formal model, calibration methodology, and FastGate design are reviewed.
+Reference implementation work under `src/` should start only after the public PRD, roadmap, formal model, calibration methodology, FastGate design, and public demo/reference implementation plan are reviewed.
 
 ## 17. Open Questions
 
@@ -530,5 +531,5 @@ Reference implementation work under `src/` should start only after the public PR
 
 ## 18. Next Artifacts
 
-1. Public demo/reference implementation plan v0.1.
+1. Reference Implementation v0.1 - Slice 0 project scaffold after review gate.
 2. ARCANA-Bench v0.1 scenario expansion.
