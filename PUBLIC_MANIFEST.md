@@ -35,6 +35,7 @@ Only files listed here are part of this public release candidate tree.
 | `docs/PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md` | public-safe draft | Public demo and reference implementation plan. |
 | `docs/ARCANA_BENCH_v0.1.md` | public-safe draft | Public ARCANA-Bench scenario expansion and scoring notes. |
 | `docs/PUBLIC_INTEGRATION_CONTRACT_v0.1.md` | public-safe draft | Public enforcement-neutral integration contract and reason-code bridge. |
+| `docs/ARCANA_Whitepaper_v0.2_Outline.md` | public-safe draft | Public whitepaper/paper v0.2 outline and claim discipline. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe draft | Public benchmark scenario schema. |
 | `schemas/ARCANA_CalibrationProfile.schema.v0.2.json` | public-safe draft | Public calibration profile schema. |
@@ -63,6 +64,7 @@ Only files listed here are part of this public release candidate tree.
 | `tests/test_public_integration_contract.py` | public-staging | Public integration contract boundary and example tests. |
 | `tests/test_schema_validation.py` | public-staging | Slice 1 schema validation tests. |
 | `tests/test_typed_contracts.py` | public-staging | Slice 1 typed contract tests. |
+| `tests/test_whitepaper_outline.py` | public-staging | Whitepaper/paper outline claim discipline and source coverage tests. |
 | `tools/audit_public.py` | public-staging | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public-staging | Public schema and synthetic example validator. |
 

@@ -8,7 +8,7 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 
 ## Current Status
 
-Public-safe draft documentation is in progress. Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic scenario expansion, and Public Integration Contract v0.1 are present for local evaluation. No production implementation is present in this public release tree.
+Public-safe draft documentation is in progress. Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic scenario expansion, Public Integration Contract v0.1, and Whitepaper / Paper v0.2 outline are present for local evaluation. No production implementation is present in this public release tree.
 
 ## Documents
 
@@ -22,6 +22,7 @@ Public-safe draft documentation is in progress. Reference implementation through
 - `docs/PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md`
 - `docs/ARCANA_BENCH_v0.1.md`
 - `docs/PUBLIC_INTEGRATION_CONTRACT_v0.1.md`
+- `docs/ARCANA_Whitepaper_v0.2_Outline.md`
 - `PUBLIC_MANIFEST.md`
 
 ## Schemas
@@ -69,4 +70,5 @@ absolute-safety or risk-elimination claims
 
 - production implementation;
 - production certificate issuance;
-- whitepaper or paper artifact.
+- final reviewed whitepaper or paper manuscript;
+- release-readiness documents: license, contribution policy, security policy, and limitations document.

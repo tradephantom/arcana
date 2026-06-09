@@ -14,11 +14,12 @@ Current order:
 8. `PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md`
 9. `ARCANA_BENCH_v0.1.md`
 10. `PUBLIC_INTEGRATION_CONTRACT_v0.1.md`
+11. `ARCANA_Whitepaper_v0.2_Outline.md`
 
 Next public documents:
 
-1. Whitepaper / Paper v0.2 outline.
-2. Release-readiness documents: license, contribution policy, security policy, and limitations document.
+1. Release-readiness documents: license, contribution policy, security policy, and limitations document.
+2. Whitepaper / Paper v0.2 full draft after staged review.
 
 Schema drafts live in `../schemas/`.
 
