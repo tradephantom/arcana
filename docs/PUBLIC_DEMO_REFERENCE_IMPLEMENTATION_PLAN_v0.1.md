@@ -2,7 +2,7 @@
 
 > Status: public implementation plan v0.1 draft
 > Scope: local-first public demo and standalone reference implementation plan
-> Implementation status: Slice 4 certificate/demo output may exist after review; FastGate warm-path behavior is not approved by this document
+> Implementation status: Slice 5 FastGate prototype may exist after review; ARCANA-Bench expansion is not approved by this document
 
 This document defines the first public ARCANA demo and reference implementation plan. It selects the implementation language, dependency policy, module boundaries, synthetic fixture strategy, CLI behavior, and test matrix required before code begins.
 
@@ -519,6 +519,8 @@ Exit criteria:
 - invalid vector and uncertain fast path return distinct reason codes;
 - FastGate fields validate in context and certificate outputs.
 
+Status: implemented, review pending.
+
 ## 18. Review Gate Before Code
 
 Before starting Slice 0, reviewers should confirm:
@@ -541,8 +543,8 @@ Before starting Slice 0, reviewers should confirm:
 
 ## 20. Next Phase
 
-After Slice 4 is reviewed, the next roadmap phase is:
+After Slice 5 is reviewed, the next roadmap phase is:
 
 ```text
-Reference Implementation v0.1 - Slice 5 FastGate Prototype
+ARCANA-Bench v0.1 scenario expansion
 ```

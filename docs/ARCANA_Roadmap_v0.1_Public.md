@@ -5,7 +5,7 @@
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
 > Classification: open-candidate, redaction review required before public release
-> Implementation status: local reference implementation through Slice 4 exists; roadmap remains review pending before remote publication
+> Implementation status: local reference implementation through Slice 5 exists; roadmap remains review pending before remote publication
 
 ## 1. Roadmap Rule
 
@@ -64,7 +64,8 @@ Blocking status:
 - reference implementation Slice 2 matrix validation and spectral calculator are present;
 - reference implementation Slice 3 decision evaluator is present;
 - reference implementation Slice 4 certificate/demo output is present;
-- no FastGate warm-path implementation is present yet.
+- reference implementation Slice 5 FastGate prototype is present;
+- ARCANA-Bench expanded scenario set is not present yet.
 
 ## 4. Milestone 0 - Boundary Freeze
 
@@ -340,6 +341,8 @@ Exit criteria:
 - A0 demo certificate is marked non-certifiable;
 - unsupported model, stale context, horizon mismatch, graph mismatch, threshold breach, calibration insufficiency, budget exhaustion, FastGate uncertainty, and invalid vector all have distinct paths.
 
+Status: local slices 0-5 implemented, review pending.
+
 ## 13. Milestone 9 - ARCANA-Bench v0.1
 
 Goal: demonstrate why autonomy risk accounting is different from task-success evaluation.
@@ -482,5 +485,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Reference Implementation v0.1 - Slice 3 decision evaluator after review gate.
-2. ARCANA-Bench v0.1 scenario expansion.
+1. ARCANA-Bench v0.1 scenario expansion.
+2. Public Integration Contract v0.1.

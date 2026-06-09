@@ -48,6 +48,7 @@ Only files listed here are part of this public release candidate tree.
 | `tests/test_certificate_emission.py` | public-staging | Slice 4 certificate and context emission tests. |
 | `tests/test_cli_demo.py` | public-staging | Slice 4 deterministic demo CLI tests. |
 | `tests/test_decision_reason_codes.py` | public-staging | Slice 3 decision evaluator and reason-code tests. |
+| `tests/test_fastgate.py` | public-staging | Slice 5 FastGate prototype tests. |
 | `tests/test_matrix_validation.py` | public-staging | Slice 2 matrix and spectral calculator tests. |
 | `tests/test_project_scaffold.py` | public-staging | Slice 0 scaffold verification tests. |
 | `tests/test_schema_validation.py` | public-staging | Slice 1 schema validation tests. |
