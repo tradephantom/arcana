@@ -5,7 +5,7 @@
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
 > Classification: open-candidate, redaction review required before public release
-> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, and Whitepaper / Paper v0.2 outline exist; roadmap remains review pending before remote publication
+> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline, and release-readiness documents exist; roadmap remains review pending before remote publication
 
 ## 1. Roadmap Rule
 
@@ -69,7 +69,8 @@ Blocking status:
 - public integration contract v0.1 is present;
 - whitepaper or paper v0.2 outline is present;
 - final reviewed whitepaper or paper manuscript is not present yet;
-- release-readiness documents are not present yet.
+- release-readiness document drafts are present;
+- final license approval and public security channel configuration are not present yet.
 
 ## 4. Milestone 0 - Boundary Freeze
 
@@ -446,6 +447,15 @@ Hard gates:
 - no whitepaper before reference implementation and benchmark evidence exist;
 - no public release before boundary, license, contribution policy, security policy, and limitations document exist.
 
+Release-readiness status:
+
+- draft license notice exists;
+- draft contribution policy exists;
+- draft security policy exists;
+- draft limitations document exists;
+- final license approval is still required before remote publication;
+- private security reporting channel must be configured before public remote release.
+
 Review checkpoints:
 
 1. Boundary + PRD + Roadmap.
@@ -495,5 +505,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Release-readiness documents: license, contribution policy, security policy, and limitations document.
-2. Whitepaper / Paper v0.2 full draft after staged review.
+1. Whitepaper / Paper v0.2 full draft after staged review.
+2. Public remote preflight checklist after final license approval.

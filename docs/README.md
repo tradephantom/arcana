@@ -4,22 +4,26 @@ This folder contains public release candidate documentation for ARCANA.
 
 Current order:
 
-1. `ARCANA_PRD_v0.2_Public.md`
-2. `ARCANA_Roadmap_v0.1_Public.md`
-3. `GLOSSARY.md`
-4. `REASON_CODES.md`
-5. `FORMAL_MODEL_v0.2.md`
-6. `CALIBRATION_METHODOLOGY_v0.1.md`
-7. `FASTGATE_DESIGN_v0.1.md`
-8. `PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md`
-9. `ARCANA_BENCH_v0.1.md`
-10. `PUBLIC_INTEGRATION_CONTRACT_v0.1.md`
-11. `ARCANA_Whitepaper_v0.2_Outline.md`
+1. `../LICENSE.md`
+2. `../CONTRIBUTING.md`
+3. `../SECURITY.md`
+4. `ARCANA_PRD_v0.2_Public.md`
+5. `ARCANA_Roadmap_v0.1_Public.md`
+6. `GLOSSARY.md`
+7. `REASON_CODES.md`
+8. `FORMAL_MODEL_v0.2.md`
+9. `CALIBRATION_METHODOLOGY_v0.1.md`
+10. `FASTGATE_DESIGN_v0.1.md`
+11. `PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md`
+12. `ARCANA_BENCH_v0.1.md`
+13. `PUBLIC_INTEGRATION_CONTRACT_v0.1.md`
+14. `ARCANA_Whitepaper_v0.2_Outline.md`
+15. `LIMITATIONS_v0.1.md`
 
 Next public documents:
 
-1. Release-readiness documents: license, contribution policy, security policy, and limitations document.
-2. Whitepaper / Paper v0.2 full draft after staged review.
+1. Whitepaper / Paper v0.2 full draft after staged review.
+2. Public remote preflight checklist after final license approval.
 
 Schema drafts live in `../schemas/`.
 
