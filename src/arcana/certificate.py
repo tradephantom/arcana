@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
@@ -17,8 +18,9 @@ from arcana._validation import (
     fail,
     require_value,
 )
+from arcana.calibration import CalibrationProfile
 from arcana.errors import CalibrationLevel, CertificationStatus, ReasonCode, Verdict
-from arcana.model import DecisionHorizon, EvidenceReference, FastGateContext, LossBounds, RhoInterval
+from arcana.model import AutonomyBudget, DecisionHorizon, EvidenceReference, FastGateContext, LossBounds, RhoInterval, RiskContext
 
 
 class CertificateType(str, Enum):
@@ -118,8 +120,253 @@ class BoundedAutonomyCertificate:
         )
 
 
+def risk_context_to_mapping(context: RiskContext) -> dict[str, Any]:
+    if not isinstance(context, RiskContext):
+        fail("risk_context_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "context must be RiskContext", ("risk_context",))
+    document: dict[str, Any] = {
+        "schema_version": "arcana.context.v0.2",
+        "risk_model_version": context.risk_model_version,
+        "calibration_profile_id": context.calibration_profile_id,
+        "calibration_level": context.calibration_level.value,
+        "decision_horizon": _decision_horizon_to_mapping(context.decision_horizon),
+        "graph_hash": context.graph_hash,
+        "rho_interval": _rho_interval_to_mapping(context.rho_interval),
+        "decision": context.decision.value,
+        "reason_codes": _reason_codes_to_values(context.reason_codes),
+        "evidence": _evidence_to_mapping(context.evidence),
+        "autonomy_budget": _autonomy_budget_to_mapping(context.autonomy_budget),
+    }
+    if context.loss_bounds is not None:
+        document["loss_bounds"] = _loss_bounds_to_mapping(context.loss_bounds)
+    if context.fastgate is not None:
+        document["fastgate"] = _fastgate_to_mapping(context.fastgate)
+    if context.required_controls:
+        document["required_controls"] = list(context.required_controls)
+    RiskContext.from_mapping(document)
+    return document
+
+
+def certificate_to_mapping(certificate: BoundedAutonomyCertificate) -> dict[str, Any]:
+    if not isinstance(certificate, BoundedAutonomyCertificate):
+        fail("certificate_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "certificate must be BoundedAutonomyCertificate", ("certificate",))
+    document: dict[str, Any] = {
+        "schema_version": "arcana.certificate.v0.2",
+        "certificate_id": certificate.certificate_id,
+        "certificate_type": certificate.certificate_type.value,
+        "risk_model_version": certificate.risk_model_version,
+        "calibration_profile": _certificate_calibration_profile_to_mapping(certificate.calibration_profile),
+        "decision_horizon": _decision_horizon_to_mapping(certificate.decision_horizon),
+        "verdict": certificate.verdict.value,
+        "rho_interval": _rho_interval_to_mapping(certificate.rho_interval),
+        "loss_bounds": _loss_bounds_to_mapping(certificate.loss_bounds),
+        "evidence": _evidence_to_mapping(certificate.evidence),
+        "reason_codes": _reason_codes_to_values(certificate.reason_codes),
+        "issued_at": certificate.issued_at,
+        "caveats": list(certificate.caveats),
+    }
+    if certificate.fastgate is not None:
+        document["fastgate"] = _fastgate_to_mapping(certificate.fastgate)
+    if certificate.required_controls:
+        document["required_controls"] = list(certificate.required_controls)
+    if certificate.expires_at is not None:
+        document["expires_at"] = certificate.expires_at
+    BoundedAutonomyCertificate.from_mapping(document)
+    return document
+
+
+def build_demo_non_certifiable_certificate(
+    *,
+    certificate_id: str,
+    context: RiskContext,
+    calibration_profile: CalibrationProfile,
+    issued_at: str,
+    caveats: Sequence[str],
+) -> BoundedAutonomyCertificate:
+    expect_certificate_id(certificate_id, ("certificate_id",))
+    if not isinstance(context, RiskContext):
+        fail("risk_context_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "context must be RiskContext", ("risk_context",))
+    if not isinstance(calibration_profile, CalibrationProfile):
+        fail(
+            "calibration_profile_invalid",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "calibration_profile must be CalibrationProfile",
+            ("calibration_profile",),
+        )
+    if calibration_profile.level is not CalibrationLevel.A0:
+        fail(
+            "demo_certificate_requires_a0",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "demo_non_certifiable_certificate requires A0 calibration",
+            ("calibration_profile", "level"),
+        )
+    if calibration_profile.certification_status is not CertificationStatus.NON_CERTIFIABLE:
+        fail(
+            "a0_must_be_non_certifiable",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "A0 calibration must be non_certifiable",
+            ("calibration_profile", "certification_status"),
+        )
+    if context.calibration_level is not CalibrationLevel.A0:
+        fail(
+            "demo_context_requires_a0",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "demo certificate context must use A0 calibration",
+            ("risk_context", "calibration_level"),
+        )
+    if context.decision is not Verdict.OBSERVE_ONLY:
+        fail(
+            "a0_certificate_verdict_invalid",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "A0 demo certificate must be observe_only",
+            ("risk_context", "decision"),
+        )
+    if context.loss_bounds is None:
+        fail(
+            "demo_certificate_loss_bounds_missing",
+            ReasonCode.DENY_LOSS_MODEL_INVALID,
+            "demo certificate requires explicit loss_bounds",
+            ("risk_context", "loss_bounds"),
+        )
+    if not context.evidence.synthetic:
+        fail(
+            "demo_certificate_evidence_not_synthetic",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "demo certificate evidence must be synthetic",
+            ("risk_context", "evidence", "synthetic"),
+        )
+    reason_codes = _merge_reason_codes(
+        context.reason_codes,
+        (
+            ReasonCode.REQUIRE_OBSERVE_ONLY,
+            ReasonCode.INFO_A0_NON_CERTIFIABLE,
+            ReasonCode.INFO_SYNTHETIC_FIXTURE,
+        ),
+    )
+    certificate = BoundedAutonomyCertificate(
+        certificate_id=certificate_id,
+        certificate_type=CertificateType.DEMO_NON_CERTIFIABLE_CERTIFICATE,
+        risk_model_version=context.risk_model_version,
+        calibration_profile=CertificateCalibrationProfile(
+            profile_id=calibration_profile.profile_id,
+            level=calibration_profile.level,
+            source=calibration_profile.source,
+            confidence=calibration_profile.confidence,
+            certification_status=calibration_profile.certification_status,
+        ),
+        decision_horizon=context.decision_horizon,
+        verdict=context.decision,
+        rho_interval=context.rho_interval,
+        loss_bounds=context.loss_bounds,
+        evidence=context.evidence,
+        reason_codes=reason_codes,
+        issued_at=expect_datetime_string(issued_at, ("issued_at",), ReasonCode.DENY_CONTEXT_STALE),
+        caveats=expect_string_list(list(caveats), ("caveats",), ReasonCode.DENY_MODEL_INPUT_INVALID, min_items=1),
+        fastgate=context.fastgate,
+        required_controls=context.required_controls,
+        expires_at=context.autonomy_budget.expires_at,
+    )
+    certificate_to_mapping(certificate)
+    return certificate
+
+
+def _decision_horizon_to_mapping(horizon: DecisionHorizon) -> dict[str, Any]:
+    return {
+        "id": horizon.id,
+        "duration_seconds": horizon.duration_seconds,
+        "context": horizon.context,
+    }
+
+
+def _rho_interval_to_mapping(interval: RhoInterval) -> dict[str, Any]:
+    return {
+        "lower": interval.lower,
+        "mean": interval.mean,
+        "upper": interval.upper,
+        "threshold": interval.threshold,
+    }
+
+
+def _loss_bounds_to_mapping(loss_bounds: LossBounds) -> dict[str, Any]:
+    return {
+        "aar_99_upper": loss_bounds.aar_99_upper,
+        "aes_99_upper": loss_bounds.aes_99_upper,
+        "max_allowed_aar_99": loss_bounds.max_allowed_aar_99,
+        "max_allowed_aes_99": loss_bounds.max_allowed_aes_99,
+    }
+
+
+def _fastgate_to_mapping(fastgate: FastGateContext) -> dict[str, Any]:
+    document: dict[str, Any] = {"mode": fastgate.mode.value}
+    if fastgate.positive_vector_method is not None:
+        document["positive_vector_method"] = fastgate.positive_vector_method.value
+    if fastgate.upper_bound is not None:
+        document["upper_bound"] = fastgate.upper_bound
+    return document
+
+
+def _evidence_to_mapping(evidence: EvidenceReference) -> dict[str, Any]:
+    document: dict[str, Any] = {
+        "source_type": evidence.source_type,
+        "source_id": evidence.source_id,
+        "synthetic": evidence.synthetic,
+    }
+    if evidence.evidence_hash is not None:
+        document["evidence_hash"] = evidence.evidence_hash
+    return document
+
+
+def _autonomy_budget_to_mapping(budget: AutonomyBudget) -> dict[str, Any]:
+    document: dict[str, Any] = {"expires_at": budget.expires_at}
+    if budget.max_delta_rho_upper is not None:
+        document["max_delta_rho_upper"] = budget.max_delta_rho_upper
+    if budget.max_external_requests is not None:
+        document["max_external_requests"] = budget.max_external_requests
+    if budget.max_memory_writes is not None:
+        document["max_memory_writes"] = budget.max_memory_writes
+    if budget.max_output_bytes is not None:
+        document["max_output_bytes"] = budget.max_output_bytes
+    return document
+
+
+def _certificate_calibration_profile_to_mapping(profile: CertificateCalibrationProfile) -> dict[str, Any]:
+    return {
+        "profile_id": profile.profile_id,
+        "level": profile.level.value,
+        "source": list(profile.source),
+        "confidence": profile.confidence,
+        "certification_status": profile.certification_status.value,
+    }
+
+
+def _reason_codes_to_values(reason_codes: Sequence[ReasonCode]) -> list[str]:
+    values: list[str] = []
+    for index, reason_code in enumerate(reason_codes):
+        if not isinstance(reason_code, ReasonCode):
+            fail(
+                "reason_code_invalid",
+                ReasonCode.DENY_MODEL_INPUT_INVALID,
+                "reason_codes must contain ReasonCode values",
+                ("reason_codes", index),
+            )
+        values.append(reason_code.value)
+    return values
+
+
+def _merge_reason_codes(existing: Sequence[ReasonCode], required: Sequence[ReasonCode]) -> tuple[ReasonCode, ...]:
+    merged: list[ReasonCode] = []
+    for reason_code in (*existing, *required):
+        if not isinstance(reason_code, ReasonCode):
+            fail("reason_code_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "reason_codes must contain ReasonCode values", ("reason_codes",))
+        if reason_code not in merged:
+            merged.append(reason_code)
+    return tuple(merged)
+
+
 __all__ = [
     "BoundedAutonomyCertificate",
     "CertificateCalibrationProfile",
     "CertificateType",
+    "build_demo_non_certifiable_certificate",
+    "certificate_to_mapping",
+    "risk_context_to_mapping",
 ]

@@ -1,4 +1,4 @@
-.PHONY: check public-audit schema-check test
+.PHONY: check public-audit schema-check test demo
 
 PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 
@@ -12,3 +12,6 @@ schema-check:
 
 test:
 	$(PYTHON) -m pytest
+
+demo:
+	$(PYTHON) -m arcana.demo --scenario synthetic_prompt_injection > /dev/null

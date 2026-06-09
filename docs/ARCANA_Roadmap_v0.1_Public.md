@@ -5,7 +5,7 @@
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
 > Classification: open-candidate, redaction review required before public release
-> Implementation status: local reference implementation through Slice 3 exists; roadmap remains review pending before remote publication
+> Implementation status: local reference implementation through Slice 4 exists; roadmap remains review pending before remote publication
 
 ## 1. Roadmap Rule
 
@@ -63,7 +63,8 @@ Blocking status:
 - reference implementation Slice 1 typed contracts and schema validation are present;
 - reference implementation Slice 2 matrix validation and spectral calculator are present;
 - reference implementation Slice 3 decision evaluator is present;
-- no certificate/demo output or FastGate warm-path implementation is present yet.
+- reference implementation Slice 4 certificate/demo output is present;
+- no FastGate warm-path implementation is present yet.
 
 ## 4. Milestone 0 - Boundary Freeze
 

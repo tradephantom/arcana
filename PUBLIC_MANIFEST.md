@@ -12,7 +12,7 @@ Only files listed here are part of this public release candidate tree.
 | `README.md` | public-staging | Public release workspace instructions. |
 | `PUBLIC_MANIFEST.md` | public-staging | Manifest of public release candidates. |
 | `.gitignore` | public-staging | Local development exclusions. |
-| `Makefile` | public-staging | Local check entrypoint. |
+| `Makefile` | public-staging | Local check, test, and demo entrypoint. |
 | `pyproject.toml` | public-staging | Python package and dependency declaration. |
 | `examples/README.md` | public-staging | Synthetic example index. |
 | `examples/calibration_profile_a0.synthetic.json` | public-safe draft | Synthetic A0 calibration profile example. |
@@ -45,6 +45,8 @@ Only files listed here are part of this public release candidate tree.
 | `src/arcana/matrices.py` | public-staging | Matrix module boundary. |
 | `src/arcana/model.py` | public-staging | Graph and horizon model boundary. |
 | `src/arcana/schemas.py` | public-staging | Public schema module boundary. |
+| `tests/test_certificate_emission.py` | public-staging | Slice 4 certificate and context emission tests. |
+| `tests/test_cli_demo.py` | public-staging | Slice 4 deterministic demo CLI tests. |
 | `tests/test_decision_reason_codes.py` | public-staging | Slice 3 decision evaluator and reason-code tests. |
 | `tests/test_matrix_validation.py` | public-staging | Slice 2 matrix and spectral calculator tests. |
 | `tests/test_project_scaffold.py` | public-staging | Slice 0 scaffold verification tests. |
