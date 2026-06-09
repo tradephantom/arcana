@@ -34,6 +34,7 @@ Only files listed here are part of this public release candidate tree.
 | `docs/FASTGATE_DESIGN_v0.1.md` | public-safe draft | Public ARCANA FastGate admission design. |
 | `docs/PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md` | public-safe draft | Public demo and reference implementation plan. |
 | `docs/ARCANA_BENCH_v0.1.md` | public-safe draft | Public ARCANA-Bench scenario expansion and scoring notes. |
+| `docs/PUBLIC_INTEGRATION_CONTRACT_v0.1.md` | public-safe draft | Public enforcement-neutral integration contract and reason-code bridge. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe draft | Public benchmark scenario schema. |
 | `schemas/ARCANA_CalibrationProfile.schema.v0.2.json` | public-safe draft | Public calibration profile schema. |
@@ -59,6 +60,7 @@ Only files listed here are part of this public release candidate tree.
 | `tests/test_fastgate.py` | public-staging | Slice 5 FastGate prototype tests. |
 | `tests/test_matrix_validation.py` | public-staging | Slice 2 matrix and spectral calculator tests. |
 | `tests/test_project_scaffold.py` | public-staging | Slice 0 scaffold verification tests. |
+| `tests/test_public_integration_contract.py` | public-staging | Public integration contract boundary and example tests. |
 | `tests/test_schema_validation.py` | public-staging | Slice 1 schema validation tests. |
 | `tests/test_typed_contracts.py` | public-staging | Slice 1 typed contract tests. |
 | `tools/audit_public.py` | public-staging | Public release-boundary audit script. |

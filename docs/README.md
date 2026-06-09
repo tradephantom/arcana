@@ -13,10 +13,12 @@ Current order:
 7. `FASTGATE_DESIGN_v0.1.md`
 8. `PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md`
 9. `ARCANA_BENCH_v0.1.md`
+10. `PUBLIC_INTEGRATION_CONTRACT_v0.1.md`
 
 Next public documents:
 
-1. Public Integration Contract v0.1.
+1. Whitepaper / Paper v0.2 outline.
+2. Release-readiness documents: license, contribution policy, security policy, and limitations document.
 
 Schema drafts live in `../schemas/`.
 
