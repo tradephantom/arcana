@@ -16,6 +16,8 @@ Only files listed here are part of this public release candidate tree.
 | `docs/README.md` | public-staging | Public documentation index. |
 | `docs/ARCANA_PRD_v0.2_Public.md` | public-safe draft | Public PRD draft; review required before remote publication. |
 | `docs/ARCANA_Roadmap_v0.1_Public.md` | public-safe draft | Public roadmap draft; review required before remote publication. |
+| `docs/GLOSSARY.md` | public-safe draft | Public ARCANA vocabulary. |
+| `docs/REASON_CODES.md` | public-safe draft | Public ARCANA reason-code registry. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
 | `tools/audit_public.py` | public-staging | Public release-boundary audit script. |
 

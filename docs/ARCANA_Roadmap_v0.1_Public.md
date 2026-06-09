@@ -52,8 +52,8 @@ Already produced in this workspace:
 Blocking status:
 
 - public roadmap review is still required;
-- public glossary is not created;
-- public reason-code registry is not created;
+- public glossary is drafted;
+- public reason-code registry is drafted;
 - public schema IDs are not finalized;
 - no reference implementation is approved yet.
 
@@ -167,6 +167,8 @@ Exit criteria:
 - private adapter reason-code mappings are excluded.
 
 Implementation gate: schemas may not finalize before this registry exists.
+
+Status: draft complete, review pending.
 
 ## 8. Milestone 4 - Public Schema Draft v0.2
 
@@ -459,8 +461,6 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Public-safe glossary.
-2. Public reason-code registry.
-3. Public schema drafts v0.2.
-4. Formal model v0.2.
-5. Calibration methodology v0.1.
+1. Public schema drafts v0.2.
+2. Formal model v0.2.
+3. Calibration methodology v0.1.

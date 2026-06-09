@@ -14,6 +14,8 @@ Public-safe draft documentation is in progress. No production implementation is 
 
 - `docs/ARCANA_PRD_v0.2_Public.md`
 - `docs/ARCANA_Roadmap_v0.1_Public.md`
+- `docs/GLOSSARY.md`
+- `docs/REASON_CODES.md`
 - `PUBLIC_MANIFEST.md`
 
 ## Core Claim Discipline
@@ -32,8 +34,6 @@ absolute-safety or risk-elimination claims
 
 ## Not Yet Present
 
-- public glossary;
-- public reason-code registry;
 - public schemas v0.2;
 - formal model v0.2;
 - calibration methodology v0.1;

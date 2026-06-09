@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "PUBLIC_MANIFEST.md"
+REASON_CODE_REGISTRY = ROOT / "docs" / "REASON_CODES.md"
 
 SKIP_DIRS = {
     ".git",
@@ -36,6 +37,8 @@ BINARY_SUFFIXES = {
     ".mp4",
     ".m4a",
 }
+
+PUBLIC_REASON_CODE_RE = re.compile(r"\bARCANA_(?:ALLOW|DENY|REQUIRE|INFO)_[A-Z0-9_]+\b")
 
 
 @dataclass(frozen=True)
@@ -126,9 +129,44 @@ def audit_manifest(files: list[Path]) -> list[Finding]:
     return findings
 
 
+def load_registered_reason_codes() -> set[str]:
+    text = read_text(REASON_CODE_REGISTRY)
+    codes: set[str] = set()
+    for line in text.splitlines():
+        match = re.match(r"\|\s*`(ARCANA_(?:ALLOW|DENY|REQUIRE|INFO)_[A-Z0-9_]+)`\s*\|", line)
+        if match:
+            codes.add(match.group(1))
+    return codes
+
+
+def audit_reason_codes(files: list[Path]) -> list[Finding]:
+    findings: list[Finding] = []
+    registered = load_registered_reason_codes()
+
+    if not registered:
+        findings.append(Finding(REASON_CODE_REGISTRY.relative_to(ROOT), 0, "reason_registry_empty", "no reason codes found in registry table"))
+        return findings
+
+    for path in files:
+        if path.suffix.lower() in BINARY_SUFFIXES:
+            continue
+        try:
+            text = read_text(path)
+        except ValueError:
+            continue
+        rel = path.relative_to(ROOT)
+        for line_no, line in enumerate(text.splitlines(), start=1):
+            for code in PUBLIC_REASON_CODE_RE.findall(line):
+                if code not in registered:
+                    findings.append(Finding(rel, line_no, "unknown_reason_code", f"{code} is not registered in docs/REASON_CODES.md"))
+
+    return findings
+
+
 def audit() -> list[Finding]:
     files = iter_files()
     findings = audit_manifest(files)
+    findings.extend(audit_reason_codes(files))
 
     for path in files:
         rel = path.relative_to(ROOT)
