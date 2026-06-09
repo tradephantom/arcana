@@ -5,7 +5,7 @@
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
 > Classification: open-candidate, redaction review required before public release
-> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline, and release-readiness documents exist; roadmap remains review pending before remote publication
+> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and full draft, and release-readiness documents exist; roadmap remains review pending before remote publication
 
 ## 1. Roadmap Rule
 
@@ -68,6 +68,7 @@ Blocking status:
 - ARCANA-Bench v0.1 synthetic scenario expansion is present;
 - public integration contract v0.1 is present;
 - whitepaper or paper v0.2 outline is present;
+- whitepaper or paper v0.2 full draft is present;
 - final reviewed whitepaper or paper manuscript is not present yet;
 - release-readiness document drafts are present;
 - final license approval and public security channel configuration are not present yet.
@@ -434,7 +435,7 @@ Exit criteria:
 - all certificate language is model-bounded;
 - public artifact is ready for staged expert review.
 
-Status: whitepaper/paper outline implemented, full manuscript review pending.
+Status: whitepaper/paper full draft implemented, staged expert review pending.
 
 ## 16. Sequencing Gates
 
@@ -505,5 +506,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Whitepaper / Paper v0.2 full draft after staged review.
-2. Public remote preflight checklist after final license approval.
+1. Public remote preflight checklist after final license approval.
+2. Final reviewed whitepaper or paper publication after expert review.

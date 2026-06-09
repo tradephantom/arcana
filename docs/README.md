@@ -18,12 +18,13 @@ Current order:
 12. `ARCANA_BENCH_v0.1.md`
 13. `PUBLIC_INTEGRATION_CONTRACT_v0.1.md`
 14. `ARCANA_Whitepaper_v0.2_Outline.md`
-15. `LIMITATIONS_v0.1.md`
+15. `ARCANA_Whitepaper_v0.2_Draft.md`
+16. `LIMITATIONS_v0.1.md`
 
 Next public documents:
 
-1. Whitepaper / Paper v0.2 full draft after staged review.
-2. Public remote preflight checklist after final license approval.
+1. Public remote preflight checklist after final license approval.
+2. Final reviewed whitepaper or paper publication after expert review.
 
 Schema drafts live in `../schemas/`.
 
