@@ -8,7 +8,7 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 
 ## Current Status
 
-Public-safe draft documentation is in progress. Reference implementation Slice 2 matrix validation and spectral calculator are present. No production implementation is present in this public release tree.
+Public-safe draft documentation is in progress. Reference implementation Slice 3 decision evaluator, budget validation, loss-bound validation, and required-control handling are present. No production implementation is present in this public release tree.
 
 ## Documents
 
@@ -64,4 +64,6 @@ absolute-safety or risk-elimination claims
 
 ## Not Yet Present
 
-- reference implementation.
+- production implementation;
+- certificate/demo output implementation;
+- FastGate warm-path prototype.

@@ -45,6 +45,7 @@ Only files listed here are part of this public release candidate tree.
 | `src/arcana/matrices.py` | public-staging | Matrix module boundary. |
 | `src/arcana/model.py` | public-staging | Graph and horizon model boundary. |
 | `src/arcana/schemas.py` | public-staging | Public schema module boundary. |
+| `tests/test_decision_reason_codes.py` | public-staging | Slice 3 decision evaluator and reason-code tests. |
 | `tests/test_matrix_validation.py` | public-staging | Slice 2 matrix and spectral calculator tests. |
 | `tests/test_project_scaffold.py` | public-staging | Slice 0 scaffold verification tests. |
 | `tests/test_schema_validation.py` | public-staging | Slice 1 schema validation tests. |
