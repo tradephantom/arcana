@@ -2,7 +2,7 @@
 
 > Status: public implementation plan v0.1 draft
 > Scope: local-first public demo and standalone reference implementation plan
-> Implementation status: Slice 1 typed contracts and schema validation may exist after review; no spectral or decision behavior is approved by this document
+> Implementation status: Slice 2 matrix validation and spectral calculator may exist after review; no decision behavior is approved by this document
 
 This document defines the first public ARCANA demo and reference implementation plan. It selects the implementation language, dependency policy, module boundaries, synthetic fixture strategy, CLI behavior, and test matrix required before code begins.
 
@@ -468,6 +468,8 @@ Exit criteria:
 - malformed matrix tests return `ARCANA_DENY_MODEL_INPUT_INVALID`;
 - near-threshold tests do not allow without margin.
 
+Status: implemented, review pending.
+
 ### Slice 3 - Decision Evaluator
 
 Deliverables:
@@ -535,8 +537,8 @@ Before starting Slice 0, reviewers should confirm:
 
 ## 20. Next Phase
 
-After Slice 1 is reviewed, the next roadmap phase is:
+After Slice 2 is reviewed, the next roadmap phase is:
 
 ```text
-Reference Implementation v0.1 - Slice 2 Matrix and Spectral Calculator
+Reference Implementation v0.1 - Slice 3 Decision Evaluator
 ```

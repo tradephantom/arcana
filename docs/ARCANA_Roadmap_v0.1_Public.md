@@ -61,6 +61,7 @@ Blocking status:
 - public demo/reference implementation plan draft exists;
 - reference implementation Slice 0 scaffold is present;
 - reference implementation Slice 1 typed contracts and schema validation are present;
+- reference implementation Slice 2 matrix validation and spectral calculator are present;
 - no domain behavior implementation is approved yet.
 
 ## 4. Milestone 0 - Boundary Freeze
@@ -479,5 +480,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Reference Implementation v0.1 - Slice 2 matrix and spectral calculator after review gate.
+1. Reference Implementation v0.1 - Slice 3 decision evaluator after review gate.
 2. ARCANA-Bench v0.1 scenario expansion.
