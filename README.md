@@ -28,7 +28,15 @@ Public-safe draft documentation is in progress. Reference implementation through
 - `docs/ARCANA_Whitepaper_v0.2_Outline.md`
 - `docs/ARCANA_Whitepaper_v0.2_Draft.md`
 - `docs/LIMITATIONS_v0.1.md`
+- `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
 - `PUBLIC_MANIFEST.md`
+
+## License
+
+- Code, tests, tools, schemas, examples, and build files: `Apache-2.0`
+- Public documentation: `CC-BY-4.0`
+
+See `LICENSE.md` for the file-scope license profile.
 
 ## Schemas
 
@@ -76,5 +84,5 @@ absolute-safety or risk-elimination claims
 - production implementation;
 - production certificate issuance;
 - final reviewed whitepaper or paper publication;
-- final approved public license grant;
-- configured public security reporting channel.
+- public remote repository;
+- GitHub Private Vulnerability Reporting enabled on a public remote.

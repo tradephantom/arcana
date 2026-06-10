@@ -1,10 +1,10 @@
 # Contributing to ARCANA
 
-> Status: contribution policy v0.1 draft
+> Status: contribution policy v0.2
 > Scope: local public release candidate
-> Publication status: contribution intake is not open yet
+> Publication status: contribution intake is not open until public remote setup is complete
 
-ARCANA is being prepared as an open research/reference project for model-bounded autonomy accounting. Contribution intake must remain closed until license terms, security reporting, and public-boundary review are complete.
+ARCANA is being prepared as an open research/reference project for model-bounded autonomy accounting. Contribution intake must remain closed until public remote setup, GitHub Private Vulnerability Reporting, and maintainer review are complete.
 
 ## 1. Contribution Rule
 
@@ -22,7 +22,16 @@ Contributions may be accepted only when they preserve ARCANA's public boundary:
 
 Unknown provenance means risky. It must be rejected or held for maintainer review.
 
-## 2. Before Submitting
+## 2. License Compatibility
+
+Contributions must follow `LICENSE.md`:
+
+- code, tests, tools, schemas, examples, build files, and validation fixtures must be compatible with Apache-2.0;
+- documentation must be compatible with CC-BY-4.0;
+- contributors must have the right to submit the material under the applicable license;
+- private, restricted, customer, or non-public material must not be submitted.
+
+## 3. Before Submitting
 
 Run the local gate:
 
@@ -41,7 +50,7 @@ git diff --check
 
 Do not submit changes that fail local validation or rely on network-only behavior.
 
-## 3. Public Boundary Checklist
+## 4. Public Boundary Checklist
 
 Every contribution must answer:
 
@@ -56,7 +65,7 @@ Every contribution must answer:
 - Are FastGate uncertain paths fail-closed?
 - Are public artifact fields separated from integration-private fields?
 
-## 4. Code Standards
+## 5. Code Standards
 
 Implementation contributions must:
 
@@ -72,7 +81,7 @@ Implementation contributions must:
 
 Distinct failure modes need distinct reason codes and tests. Do not reuse a generic denial for missing input, stale context, graph mismatch, calibration gap, threshold breach, invalid loss model, budget exhaustion, FastGate uncertainty, or invalid vector state.
 
-## 5. Documentation Standards
+## 6. Documentation Standards
 
 Documentation contributions must:
 
@@ -83,7 +92,7 @@ Documentation contributions must:
 - keep benchmarks separate from task-success marketing;
 - include limitations and non-goals when a claim could be overread.
 
-## 6. Security and Sensitive Material
+## 7. Security and Sensitive Material
 
 Do not submit:
 
@@ -99,7 +108,7 @@ Do not submit:
 
 If sensitive material is found, stop work and follow `SECURITY.md`.
 
-## 7. Review Expectations
+## 8. Review Expectations
 
 Maintainers should review contributions in this order:
 

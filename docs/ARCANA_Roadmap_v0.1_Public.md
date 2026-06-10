@@ -5,7 +5,7 @@
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
 > Classification: open-candidate, redaction review required before public release
-> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and full draft, and release-readiness documents exist; roadmap remains review pending before remote publication
+> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and full draft, release-readiness documents, and public remote preflight checklist exist; roadmap remains review pending before remote publication
 
 ## 1. Roadmap Rule
 
@@ -71,7 +71,9 @@ Blocking status:
 - whitepaper or paper v0.2 full draft is present;
 - final reviewed whitepaper or paper manuscript is not present yet;
 - release-readiness document drafts are present;
-- final license approval and public security channel configuration are not present yet.
+- final license profile is present;
+- public remote preflight checklist is present;
+- public remote and GitHub Private Vulnerability Reporting are not configured yet.
 
 ## 4. Milestone 0 - Boundary Freeze
 
@@ -450,12 +452,12 @@ Hard gates:
 
 Release-readiness status:
 
-- draft license notice exists;
-- draft contribution policy exists;
-- draft security policy exists;
+- final file-scope license profile exists;
+- contribution policy exists;
+- security policy exists;
 - draft limitations document exists;
-- final license approval is still required before remote publication;
-- private security reporting channel must be configured before public remote release.
+- public remote preflight checklist exists;
+- GitHub Private Vulnerability Reporting must be enabled before public remote announcement.
 
 Review checkpoints:
 
@@ -506,5 +508,5 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Public remote preflight checklist after final license approval.
+1. Maintainer-approved public remote creation run.
 2. Final reviewed whitepaper or paper publication after expert review.

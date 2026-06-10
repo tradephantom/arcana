@@ -1,38 +1,78 @@
-# ARCANA License Notice
+# ARCANA License
 
-> Status: license notice draft
-> Scope: local public release candidate
-> Publication status: not a final public license grant
+> Status: final public license profile v1.0
+> Decision date: 2026-06-10
+> Scope: ARCANA public release-candidate repository
+> Remote gate: public remote publication still requires the remote preflight checklist and GitHub Private Vulnerability Reporting.
 
-ARCANA is intended to be released as open research/reference material, but this local release candidate is not a public distribution until the maintainer approves the final license terms.
+ARCANA uses a file-scope license profile.
 
-## 1. Current License Status
+## 1. License Profile
 
-This file records the intended license structure for review. It does not by itself authorize remote publication or public reuse before final maintainer approval.
+Unless a file states otherwise, this repository uses:
 
-Until a final license file is approved and committed:
-
-- do not publish this repository as a public remote;
-- do not treat this release candidate as a public grant of rights;
-- do not accept external contributions;
-- do not reuse private, customer, or non-public material in ARCANA public files.
-
-## 2. Intended Release Profile
-
-The intended public release profile is:
-
-| Material | Intended license | Rationale |
+| Material | License | SPDX identifier |
 | --- | --- | --- |
-| Source code under `src/`, `tests/`, and `tools/` | Apache-2.0 | Permissive reference implementation license with patent terms. |
-| Public documentation under `docs/` | CC-BY-4.0 | Attribution-friendly research and documentation reuse. |
-| Public schemas under `schemas/` | CC0-1.0 or Apache-2.0 | Machine-readable contracts should be easy to implement. |
-| Synthetic examples under `examples/` | CC0-1.0 or Apache-2.0 | Synthetic fixtures should be reusable for validation. |
+| Source code under `src/`, `tests/`, and `tools/` | Apache License 2.0 | `Apache-2.0` |
+| Build and development files, including `Makefile`, `pyproject.toml`, and `.gitignore` | Apache License 2.0 | `Apache-2.0` |
+| Public schemas under `schemas/` | Apache License 2.0 | `Apache-2.0` |
+| Synthetic examples under `examples/` | Apache License 2.0 | `Apache-2.0` |
+| Public documentation under `docs/` | Creative Commons Attribution 4.0 International | `CC-BY-4.0` |
+| Top-level public documentation, including `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, and `PUBLIC_MANIFEST.md` | Creative Commons Attribution 4.0 International | `CC-BY-4.0` |
 
-Final license text must be added before remote publication. If the final license split differs from this table, `README.md`, `PUBLIC_MANIFEST.md`, and contribution policy must be updated in the same change.
+Repository-level SPDX summary:
 
-## 3. No Private Material Grant
+```text
+Apache-2.0 for code, schemas, examples, build files, and validation tooling.
+CC-BY-4.0 for public documentation.
+```
 
-No license notice in this public release candidate applies to:
+## 2. Apache-2.0 Scope
+
+The Apache License 2.0 applies to:
+
+- reference implementation source code;
+- tests;
+- validation and audit tools;
+- build and packaging metadata;
+- public JSON schemas;
+- synthetic JSON fixtures and examples.
+
+Use of Apache-2.0 is intended to make ARCANA's public reference implementation and machine-readable contracts practical for research and independent implementations.
+
+The canonical Apache License 2.0 text is available from the Apache Software Foundation:
+
+```text
+https://www.apache.org/licenses/LICENSE-2.0
+```
+
+## 3. CC-BY-4.0 Scope
+
+Creative Commons Attribution 4.0 International applies to:
+
+- public product and roadmap documents;
+- formal model documentation;
+- calibration methodology;
+- reason-code registry;
+- FastGate design;
+- benchmark documentation;
+- integration contract;
+- whitepaper/paper drafts;
+- limitations and release-readiness documents.
+
+Attribution should identify ARCANA and preserve the public claim boundary. Reuse must not imply that ARCANA proves safety, provides production enforcement, or issues production certificates.
+
+The canonical CC-BY-4.0 legal code is available from Creative Commons:
+
+```text
+https://creativecommons.org/licenses/by/4.0/legalcode
+```
+
+## 4. No Private Material Grant
+
+This license profile applies only to files intentionally included in this public release-candidate repository.
+
+No license in this repository applies to:
 
 - private operational implementations;
 - customer data;
@@ -41,27 +81,26 @@ No license notice in this public release candidate applies to:
 - non-public calibration profiles;
 - private evidence payloads;
 - private lab or enterprise integration material;
-- trademarks, names, or branding not explicitly included in the public release.
+- trademarks, names, or branding not explicitly included in this public release.
 
-## 4. Contributor Boundary
+## 5. Contribution Compatibility
 
-External contribution intake must not begin until:
+Contributions must be compatible with this license profile:
 
-- final license terms are approved;
-- `CONTRIBUTING.md` is reviewed;
-- `SECURITY.md` is reviewed;
-- `docs/LIMITATIONS_v0.1.md` is reviewed;
-- public-boundary audit passes;
-- every public file is listed in `PUBLIC_MANIFEST.md`.
+- code, schemas, examples, build files, tests, and tooling must be compatible with Apache-2.0;
+- documentation must be compatible with CC-BY-4.0;
+- no contribution may include private, restricted, customer, or non-public material.
 
-Contributions must be compatible with the final license terms and must not include private or restricted material.
+External contribution intake still requires maintainer approval and the security channel described in `SECURITY.md`.
 
-## 5. Release Gate
+## 6. Remote Publication Gate
 
-Before this repository is published remotely, the maintainer must choose one of these outcomes:
+This final license profile removes the previous license-review blocker.
 
-1. replace this notice with final license text;
-2. keep this notice and explicitly mark the remote as source-available review material with no public reuse grant;
-3. delay remote publication.
+Public remote publication still requires:
 
-Outcome 1 is the preferred path for an open public ARCANA repository.
+- `make check`, `make test`, and `make demo` passing locally;
+- all public files listed in `PUBLIC_MANIFEST.md`;
+- public-boundary audit passing;
+- GitHub Private Vulnerability Reporting enabled on the public remote before announcement;
+- no paid GitHub feature enabled unless explicitly reviewed.

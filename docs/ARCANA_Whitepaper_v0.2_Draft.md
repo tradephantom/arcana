@@ -534,7 +534,7 @@ Before this draft becomes a release candidate, reviewers should verify:
 - reproduction commands are current;
 - public integration language remains enforcement-neutral;
 - limitations appear before any broad claim;
-- final license approval and security reporting channel are handled before remote publication.
+- final license profile and GitHub Private Vulnerability Reporting are handled before remote publication.
 
 ## 21. Draft Status
 
@@ -548,5 +548,5 @@ Open review items:
 - FastGate numerical and graph-edge-case review;
 - benchmark scenario coverage review;
 - independent reproduction of local tests and demo;
-- final license approval;
-- security reporting channel configuration before public remote release.
+- public remote preflight validation;
+- GitHub Private Vulnerability Reporting configuration before public remote announcement.

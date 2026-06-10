@@ -151,9 +151,9 @@ Limitations:
 
 Before a public remote release:
 
-- license terms must be approved;
+- final license profile must be present;
 - contribution policy must be reviewed;
-- security reporting channel must be configured;
+- GitHub Private Vulnerability Reporting must be enabled;
 - this limitations document must be reviewed;
 - all files must be listed in `PUBLIC_MANIFEST.md`;
 - `make check`, `make test`, and `make demo` must pass;

@@ -12,7 +12,11 @@ The internal ARCANA research workspace is separate. This repository should conta
 Do not create or push a remote repository until:
 
 - `make check` passes locally;
+- `make test` passes locally;
+- `make demo` passes locally;
 - all files are listed in `PUBLIC_MANIFEST.md`;
+- `LICENSE.md` contains the final license profile;
+- `SECURITY.md` names GitHub Private Vulnerability Reporting;
 - public schemas use public IDs;
 - examples and fixtures are synthetic or public-source safe;
 - no private enterprise, customer, or lab details are present;
@@ -24,6 +28,7 @@ Initial remote publication should use:
 - no Git LFS;
 - no Packages;
 - no Codespaces;
+- no GitHub Pages;
 - no larger hosted runners.
 
 CI can be added later only after local checks are stable and billing controls are explicitly reviewed.
@@ -49,6 +54,7 @@ Run:
 ```sh
 make check
 make test
+make demo
 ```
 
 before every commit and before any remote push.

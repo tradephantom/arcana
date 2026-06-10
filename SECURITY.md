@@ -1,8 +1,9 @@
 # ARCANA Security Policy
 
-> Status: security policy v0.1 draft
-> Scope: local public release candidate
-> Publication status: private reporting channel must be configured before public remote release
+> Status: security policy v0.2
+> Scope: ARCANA public release-candidate repository
+> Security channel decision: use GitHub Private Vulnerability Reporting and GitHub Security Advisories.
+> Remote gate: enable GitHub Private Vulnerability Reporting before public remote announcement.
 
 ARCANA is a public research/reference project for model-bounded autonomy accounting. Security reporting must preserve user safety, private material boundaries, and calibration integrity.
 
@@ -24,17 +25,30 @@ Reports about private deployments, private integrations, customer systems, or no
 
 ## 2. Reporting Rule
 
-Before any public remote release, the maintainer must configure a private security reporting channel.
+When the public GitHub repository exists, use:
 
-Until that channel exists:
+```text
+GitHub Private Vulnerability Reporting
+GitHub Security Advisories
+```
+
+Do not use public issues for sensitive vulnerability reports.
+
+Before the public remote is announced, maintainers must verify:
+
+- GitHub Private Vulnerability Reporting is enabled for the repository;
+- `SECURITY.md` is present on the default branch;
+- maintainers can receive private vulnerability reports;
+- public issue templates do not request sensitive exploit details;
+- security reports can be reproduced with synthetic or minimized public-safe inputs.
+
+Until the public remote and private reporting channel exist:
 
 - do not publish sensitive vulnerability details in public issues;
 - do not include exploit payloads in public comments;
 - do not attach credentials, tokens, customer data, private logs, or raw sensitive evidence;
 - preserve enough detail for maintainers to reproduce the issue using synthetic or minimized inputs;
 - mark the report as security-sensitive.
-
-When a public remote exists, use the repository's private security advisory workflow or another maintainer-approved private channel.
 
 ## 3. Report Template
 

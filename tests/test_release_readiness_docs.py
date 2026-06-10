@@ -21,17 +21,18 @@ def test_release_readiness_documents_exist() -> None:
         assert path.exists(), f"{path.relative_to(ROOT)} is missing"
 
 
-def test_license_notice_is_draft_and_blocks_premature_publication() -> None:
+def test_license_profile_is_final_and_file_scoped() -> None:
     text = _read("license")
 
     required_phrases = [
-        "license notice draft",
-        "not a final public license grant",
-        "do not publish this repository as a public remote",
+        "final public license profile v1.0",
         "Apache-2.0",
         "CC-BY-4.0",
-        "CC0-1.0",
-        "Final license text must be added before remote publication",
+        "Source code under `src/`, `tests/`, and `tools/`",
+        "Public schemas under `schemas/`",
+        "Synthetic examples under `examples/`",
+        "Public documentation under `docs/`",
+        "This final license profile removes the previous license-review blocker",
     ]
 
     for phrase in required_phrases:
@@ -42,8 +43,10 @@ def test_contributing_policy_preserves_public_boundary_and_gates() -> None:
     text = _read("contributing")
 
     required_phrases = [
-        "contribution intake is not open yet",
+        "contribution intake is not open until public remote setup is complete",
         "Unknown provenance means risky",
+        "Apache-2.0",
+        "CC-BY-4.0",
         "make check",
         "make test",
         "make demo",
@@ -60,7 +63,8 @@ def test_security_policy_covers_arcana_specific_failure_classes() -> None:
     text = _read("security")
 
     required_phrases = [
-        "private security reporting channel",
+        "GitHub Private Vulnerability Reporting",
+        "GitHub Security Advisories",
         "public-safe reproduction steps",
         "Schema bypass",
         "Reason-code collapse",
@@ -91,7 +95,8 @@ def test_limitations_document_keeps_arcana_model_bounded() -> None:
         "FastGate is a conservative optimization path",
         "task success is not an ARCANA safety score",
         "Public integration guidance is enforcement-neutral",
-        "license terms must be approved",
+        "final license profile must be present",
+        "GitHub Private Vulnerability Reporting must be enabled",
     ]
 
     for phrase in required_phrases:

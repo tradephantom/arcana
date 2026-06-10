@@ -11,9 +11,9 @@ Only files listed here are part of this public release candidate tree.
 | --- | --- | --- |
 | `README.md` | public-staging | Public release workspace instructions. |
 | `PUBLIC_MANIFEST.md` | public-staging | Manifest of public release candidates. |
-| `LICENSE.md` | public-staging | Draft license notice and final-license gate. |
-| `CONTRIBUTING.md` | public-staging | Public contribution policy draft. |
-| `SECURITY.md` | public-staging | Public security reporting policy draft. |
+| `LICENSE.md` | public-staging | Final file-scope license profile. |
+| `CONTRIBUTING.md` | public-staging | Public contribution policy. |
+| `SECURITY.md` | public-staging | Public security reporting policy and GitHub Private Vulnerability Reporting decision. |
 | `.gitignore` | public-staging | Local development exclusions. |
 | `Makefile` | public-staging | Local check, test, and demo entrypoint. |
 | `pyproject.toml` | public-staging | Python package and dependency declaration. |
@@ -42,6 +42,7 @@ Only files listed here are part of this public release candidate tree.
 | `docs/ARCANA_Whitepaper_v0.2_Draft.md` | public-safe draft | Public whitepaper/paper v0.2 full draft for staged expert review. |
 | `docs/LIMITATIONS_v0.1.md` | public-safe draft | Public limitations and non-goals document. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
+| `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md` | public-staging | Public remote publication preflight checklist. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe draft | Public benchmark scenario schema. |
 | `schemas/ARCANA_CalibrationProfile.schema.v0.2.json` | public-safe draft | Public calibration profile schema. |
 | `schemas/ARCANA_Certificate.schema.v0.2.json` | public-safe draft | Public certificate schema. |
@@ -67,6 +68,7 @@ Only files listed here are part of this public release candidate tree.
 | `tests/test_matrix_validation.py` | public-staging | Slice 2 matrix and spectral calculator tests. |
 | `tests/test_project_scaffold.py` | public-staging | Slice 0 scaffold verification tests. |
 | `tests/test_public_integration_contract.py` | public-staging | Public integration contract boundary and example tests. |
+| `tests/test_public_remote_preflight.py` | public-staging | Public remote preflight checklist tests. |
 | `tests/test_release_readiness_docs.py` | public-staging | Release-readiness document boundary and gate tests. |
 | `tests/test_schema_validation.py` | public-staging | Slice 1 schema validation tests. |
 | `tests/test_typed_contracts.py` | public-staging | Slice 1 typed contract tests. |
