@@ -127,12 +127,15 @@ Do not treat deletion alone as sufficient when sensitive material may have been 
 
 ## 9. Current Publication Status
 
-As of 2026-06-10:
+As of 2026-07-01:
 
 - final license profile is decided;
 - security channel is decided;
-- local gates pass at the latest checked commit;
+- local gates pass in the latest preflight review;
 - no public remote is configured;
+- remote creation is not yet authorized;
+- public announcement is not yet authorized;
 - GitHub Private Vulnerability Reporting is not yet enabled because no public remote exists.
 
-The next publication action is a maintainer-approved remote creation run, not additional implementation work.
+The next publication action is a maintainer-approved publication decision after
+the local public-track worktree is clean and the preflight gates are rerun.

@@ -162,6 +162,11 @@ Calibration uncertainty is a first-class limitation, not an appendix caveat.
 
 A0 must be described as demo-only and non-certifiable.
 
+The paper should also state that A1 is not a commercial certificate basis in
+the public track, A2 is conditional on separate empirical review, and A3 is a
+runtime-calibration design target unless separately reviewed with segmented
+runtime evidence.
+
 ### 5.6 Decision Semantics and Reason Codes
 
 This section should show how model outputs become explicit verdicts:
@@ -200,6 +205,13 @@ Required boundary:
 
 ```text
 A0 artifacts are non-certifiable and cannot support production certificate issuance.
+```
+
+Additional boundary:
+
+```text
+Public certificate-like examples demonstrate schema and reasoning contracts;
+they do not authorize production certificate issuance.
 ```
 
 ### 5.8 FastGate

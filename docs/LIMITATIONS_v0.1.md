@@ -70,6 +70,21 @@ A0 is demo-only and always non-certifiable.
 
 A1, A2, and A3 require review before any certifiable-under-profile language is used.
 
+Public documentation may describe A1-A3 semantics, but it must not imply that a
+public example, local demo, or synthetic benchmark is production calibration.
+Any deployment-specific calibration review remains outside the public reference
+repository and must be represented publicly only through redacted limitations.
+
+Current public claim boundary:
+
+- A1 is a conservative prior level, not a commercial certificate basis.
+- A2 may be described as empirically reviewable, but public text must not claim
+  certificate issuance from A2 without a separate issuance process.
+- A3 may be described as a runtime-calibration design target, not as active
+  public production evidence.
+- Private review outcomes do not disclose private thresholds, formulas,
+  runtime distributions, telemetry, or deployment mechanics.
+
 ## 5. Decision Limits
 
 ARCANA admission-like decisions use upper bounds.
@@ -103,6 +118,12 @@ Every certificate-like artifact must include:
 - expiry when applicable.
 
 A0 artifacts are non-certifiable and cannot support production certificate issuance.
+
+A1 artifacts are also not commercial-certificate artifacts in this public
+track. A2 or A3 language must remain conditional unless a separate, reviewed
+certificate issuance process is explicitly documented. Certificate-like examples
+in this repository are schema and reasoning demonstrations, not production
+certificates.
 
 ## 7. FastGate Limits
 
@@ -160,3 +181,9 @@ Before a public remote release:
 - public-boundary audit must pass.
 
 No release artifact should be published when its claim boundary is unclear.
+
+This limitations document includes a redacted post-review update for public
+claim discipline: private production-readiness review may inform what public
+limitations must say, but it does not make the public repository a production
+enforcement system, a commercial certificate issuer, or evidence that any
+deployment is safe.

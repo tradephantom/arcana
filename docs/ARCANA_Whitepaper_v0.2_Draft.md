@@ -261,6 +261,18 @@ A0 is demo-only. A0 outputs must preserve:
 ARCANA_INFO_A0_NON_CERTIFIABLE
 ```
 
+The public claim boundary after internal production-readiness review is:
+
+- A1 is a conservative prior level and is not a commercial certificate basis.
+- A2 may support reviewed empirical calibration claims only when scope,
+  evidence, freshness, and horizon match the reviewed profile.
+- A3 remains a runtime-calibration design target unless a separate runtime
+  distribution review is completed.
+- Public examples do not disclose private thresholds, formulas, runtime
+  distributions, telemetry, or deployment mechanics.
+- No public calibration level in this draft authorizes production enforcement or
+  certificate issuance by itself.
+
 If the requested decision requires stronger calibration than the supplied profile, ARCANA returns:
 
 ```text
@@ -340,6 +352,13 @@ Every certificate-like artifact must include:
 - issued time and expiry when applicable.
 
 A0 artifacts are non-certifiable and cannot support production certificate issuance.
+
+In this public draft, A1 artifacts are also non-commercial-certificate
+artifacts. A2 and A3 references are conditional claim boundaries: they describe
+what a reviewed profile would need to bind, not an authorization to issue a
+production certificate from this repository. Certificate issuance, if ever
+implemented by a deployment-specific system, requires a separate issuance
+process, expiry, revocation path, support evidence, and review record.
 
 If a certificate-like artifact is stale, graph-mismatched, horizon-mismatched, evidence-mismatched, or missing required fields, it must be rejected or recomputed.
 
@@ -494,6 +513,9 @@ Core limitations:
 - calibration can be sparse, stale, wrong, or incomplete;
 - synthetic benchmark results do not prove production behavior;
 - A0 output is non-certifiable;
+- A1 output is not a commercial certificate basis in this public track;
+- A2/A3 language remains conditional on separate review, evidence coverage,
+  freshness, horizon compatibility, expiry, and revocation handling;
 - FastGate depends on valid assumptions and fallback paths;
 - evidence hashes bind artifacts but do not prove evidence quality;
 - local policy may be stricter than ARCANA's bounded result;
