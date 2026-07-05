@@ -113,7 +113,7 @@ def test_whitepaper_outline_requires_benchmark_metric_separation() -> None:
         "containment_time_steps",
         "autonomy_budget_consumed",
         "human_intervention_efficiency",
-        "certificate_validity_rate",
+        "artifact_contract_validity_rate",
     ]
 
     for metric in required_metrics:

@@ -40,6 +40,7 @@ Only files listed here are part of this public repository tree.
 | `docs/PUBLIC_INTEGRATION_CONTRACT_v0.1.md` | public-safe draft | Public enforcement-neutral integration contract and reason-code bridge. |
 | `docs/ARCANA_Whitepaper_v0.2_Outline.md` | public-safe draft | Public whitepaper/paper v0.2 outline and claim discipline. |
 | `docs/ARCANA_Whitepaper_v0.2_Draft.md` | public-safe draft | Public whitepaper/paper v0.2 full draft for staged expert review. |
+| `docs/ARCANA_Whitepaper_v0.3_Draft.md` | public-safe draft | Public whitepaper/paper v0.3 draft with contributions, proof sketches, related work, and hardened benchmark language. |
 | `docs/LIMITATIONS_v0.1.md` | public-safe draft | Public limitations and non-goals document. |
 | `docs/PUBLIC_RELEASE_NOTES_v0.1.md` | public-staging | Initial public release note and public claim boundary. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
@@ -75,6 +76,7 @@ Only files listed here are part of this public repository tree.
 | `tests/test_typed_contracts.py` | public-staging | Slice 1 typed contract tests. |
 | `tests/test_whitepaper_draft.py` | public-staging | Whitepaper/paper full draft claim discipline and source coverage tests. |
 | `tests/test_whitepaper_outline.py` | public-staging | Whitepaper/paper outline claim discipline and source coverage tests. |
+| `tests/test_whitepaper_v03_draft.py` | public-staging | Whitepaper/paper v0.3 draft hardening and related-work tests. |
 | `tools/audit_public.py` | public-staging | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public-staging | Public schema and synthetic example validator. |
 

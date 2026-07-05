@@ -25,6 +25,6 @@
     "delta_rho_upper",
     "rho_peak",
     "containment_time_steps",
-    "certificate_validity_rate"
+    "artifact_contract_validity_rate"
   ]
 }

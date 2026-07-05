@@ -149,7 +149,7 @@ Limitations:
 - synthetic scenarios do not prove production behavior;
 - task success is not an ARCANA safety score;
 - unsafe action rate must be reported separately from task success;
-- certificate validity rate measures artifact validity, not operational approval;
+- artifact-contract validity rate measures public artifact contract validity, not operational approval;
 - benchmark coverage is limited to declared scenario classes;
 - benchmark results must not be treated as customer, enterprise, or private lab evidence.
 

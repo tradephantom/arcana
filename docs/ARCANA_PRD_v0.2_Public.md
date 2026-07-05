@@ -462,10 +462,10 @@ containment_time_steps
 autonomy_budget_consumed
 human_intervention_efficiency
 distillation_eligibility_rate
-certificate_validity_rate
+artifact_contract_validity_rate
 ```
 
-Benchmark scenarios must be synthetic or public-source safe. They must not encode private customer, enterprise, or lab workflows.
+Benchmark scenarios must be synthetic or public-source safe. They must not encode private customer, enterprise, or lab workflows. `artifact_contract_validity_rate` measures public artifact contract validity, not production certificate validity.
 
 ## 14. Public Demo Requirements
 

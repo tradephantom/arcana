@@ -99,7 +99,7 @@ def test_whitepaper_draft_preserves_benchmark_and_reproduction_contracts() -> No
         "containment_time_steps",
         "autonomy_budget_consumed",
         "human_intervention_efficiency",
-        "certificate_validity_rate",
+        "artifact_contract_validity_rate",
     ]
     for metric in required_metrics:
         assert metric in text

@@ -1,6 +1,6 @@
 # ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems
 
-> Status: public whitepaper/paper v0.2 draft; final paper gate started
+> Status: public whitepaper/paper v0.3 draft; final paper gate in progress
 > Scope: staged expert-review manuscript for the public ARCANA research/reference track
 > Classification: public-safe draft; not a final publication
 > Implementation status: reference implementation and synthetic benchmark evidence only
@@ -11,7 +11,7 @@ Agentic systems can act through tools, memory, delegation, capability envelopes,
 
 ARCANA models unsafe propagation pressure separately from loss or impact. It represents an agentic system as a capability graph, assigns horizon-bound propagation weights, computes upper-bound spectral propagation risk, evaluates loss-side quantities separately, and emits schema-shaped risk contexts or certificate-like artifacts with explicit caveats. The public reference implementation uses deterministic synthetic fixtures, public schemas, public reason codes, and local reproducibility gates.
 
-This draft does not claim production readiness, production enforcement, universal safety, or production certificate issuance. A0 outputs remain non-certifiable. Benchmark scenarios are synthetic and are intended to show why task success, unsafe action rate, risk-bound status, and artifact-contract validity must be reported separately.
+This draft does not claim production readiness, production enforcement, universal safety, or production certificate issuance. A0 outputs remain non-certifiable. Benchmark scenarios are synthetic and are intended to show why task success, unsafe action rate, risk-bound status, and artifact-contract validity must be reported separately. ARCANA is only as complete as the graph and evidence it is given.
 
 ## 1. Paper Rule
 
@@ -28,6 +28,19 @@ ARCANA estimates bounded autonomy under explicit risk model versions, calibratio
 ```
 
 The draft must not present any agent, workflow, deployment, model, policy, or organization as safe by proof. Every result is scoped by declared assumptions, public schemas, reason codes, evidence, and limitations.
+
+## Contributions
+
+ARCANA contributes:
+
+1. A graph-based model for autonomy-risk propagation in agentic systems.
+2. A strict separation between propagation risk `K` and loss or impact `L`.
+3. A decision-horizon contract that prevents dimensionally ambiguous risk claims.
+4. A calibration-level model that exposes uncertainty and evidence quality.
+5. A conservative upper-bound spectral decision rule.
+6. FastGate, a fail-closed sparse-update path for low-latency admission.
+7. Certificate-like bounded artifacts with reason-code semantics.
+8. ARCANA-Bench, a synthetic benchmark separating task success from autonomy risk.
 
 ## 2. Problem
 
@@ -147,6 +160,24 @@ w_e(H) =
 
 Risk-amplifying factors use conservative upper bounds when unknown. Control factors use conservative lower bounds when unknown.
 
+Expected factor domains:
+
+| Factor | Domain | Meaning |
+| --- | --- | --- |
+| `activation_e(H)` | `>= 0` | Expected unsafe transition pressure over horizon `H`; may exceed `1` only when repeated transition pressure is intentionally modeled. |
+| `p_unsafe_e(H)` | `[0, 1]` | Conditional unsafe-transition likelihood under the declared model. |
+| `exposure_e(H)` | `[0, 1]` | Degree to which the target can be reached by the source under the current operational context. |
+| `capability_e(H)` | `[0, 1]` | Privilege amplification or capability strength if the target is reached. |
+| `scope_e(H)` | `[0, 1]` | Breadth of resources or actions available through the edge. |
+| `detectability_e(H)` | `[0, 1]` | Strength of detection over the horizon. |
+| `gate_effectiveness_e(H)` | `[0, 1]` | Strength of human, policy, or technical gate controls. |
+| `reversibility_e(H)` | `[0, 1]` | Degree to which the transition can be undone or contained. |
+
+Calibration profiles must prevent double-counting between `exposure_e`,
+`capability_e`, and `scope_e`. Each factor should have a definition, domain,
+source, uncertainty rule, conservative default direction, and caveat when
+evidence is sparse or stale.
+
 For `n = |V_t|`, the propagation matrix is:
 
 ```text
@@ -208,6 +239,58 @@ When the upper-bound propagation risk exceeds the threshold or budget, ARCANA re
 ```text
 ARCANA_DENY_RHO_UPPER_BOUND
 ```
+
+## Mathematical Propositions and Proof Sketches
+
+The public model relies on standard facts about nonnegative matrices. These
+propositions are model-bounded statements, not claims about all real-world
+behavior.
+
+### Proposition 1 - Subcritical finite propagation
+
+For a nonnegative propagation matrix `K` with:
+
+```text
+rho(K) < 1
+```
+
+the Neumann series converges:
+
+```text
+sum_{m=0}^{infinity} K^m
+```
+
+Under the declared ARCANA model, this means modeled propagation pressure remains
+finite. It does not prove that unmodeled propagation paths are absent.
+
+### Proposition 2 - Upper-bound monotonicity
+
+If:
+
+```text
+0 <= K <= K_upper
+```
+
+entrywise, then:
+
+```text
+rho(K) <= rho(K_upper)
+```
+
+This justifies using `rho_upper` for admission-like decisions when uncertainty
+is represented through entrywise upper-bound matrices.
+
+### Proposition 3 - FastGate conservative bound
+
+For `A >= 0` and `x > 0`, the Collatz-Wielandt upper bound gives:
+
+```text
+rho(A) <= max_i ((A x)_i / x_i)
+```
+
+FastGate may use this only as a conservative upper bound. If the vector,
+nonnegativity, graph, cache, margin, calibration, or horizon assumptions fail,
+FastGate must not return an allow-like result.
 
 ## 8. Loss Is Separate From Propagation
 
@@ -272,6 +355,12 @@ The public claim boundary after internal production-readiness review is:
   distributions, telemetry, or deployment mechanics.
 - No public calibration level in this draft authorizes production enforcement or
   certificate issuance by itself.
+
+The phrase `certifiable_under_profile` is a bounded public/reference semantic
+state. It means that an artifact may support a bounded-under-profile claim
+inside the declared ARCANA model and calibration profile. It does not imply
+commercial certificate issuance, production enforcement, customer approval, or
+operational authorization.
 
 If the requested decision requires stronger calibration than the supplied profile, ARCANA returns:
 
@@ -457,6 +546,25 @@ artifact_contract_validity_rate
 
 `artifact_contract_validity_rate` measures whether artifacts include required public fields and reason codes. It does not mean production certification or operational approval.
 
+Earlier drafts used the name `certificate_validity_rate`; v0.3 uses
+`artifact_contract_validity_rate` to avoid implying that the metric validates a
+production certificate.
+
+### Negative Controls and Failure Fixtures
+
+ARCANA-Bench should include negative controls that prove the evaluator fails
+closed under distinct failure modes. Required negative controls include:
+
+| Fixture | Required behavior |
+| --- | --- |
+| Missing decision horizon | deny with `ARCANA_DENY_DECISION_HORIZON_MISMATCH`. |
+| Graph hash mismatch | deny with `ARCANA_DENY_GRAPH_HASH_MISMATCH`. |
+| A0 artifact used for admission | observe-only or deny; never production admission. |
+| `rho_mean` below threshold but `rho_upper` above threshold | must not allow. |
+| FastGate inconclusive | fail closed with `ARCANA_DENY_FASTGATE_UNCERTAIN`. |
+| Loss model missing while loss is required | deny with `ARCANA_DENY_LOSS_MODEL_INVALID`. |
+| Stale evidence | recompute, observe-only, or deny according to reason-code contract. |
+
 ## 16. Reference Implementation
 
 The public reference implementation is a local, deterministic implementation of the public contracts. It is intended for review, reproduction, and tests, not production deployment.
@@ -503,9 +611,15 @@ Public integration rules:
 
 ARCANA remains enforcement-neutral. This paper does not define production enforcement, private policy evaluation, private telemetry, or commercial certificate issuance.
 
+ARCANA can be integrated with capability-bound execution systems, policy
+gateways, or runtime brokers, but the public ARCANA reference track remains
+enforcement-neutral.
+
 ## 18. Limitations
 
 ARCANA is useful only inside its declared scope.
+
+ARCANA is only as complete as the graph and evidence it is given.
 
 Core limitations:
 
@@ -524,7 +638,23 @@ Core limitations:
 
 No public release should proceed when claim boundaries are unclear.
 
-## 19. Related Public Artifacts
+## 19. Related Work
+
+ARCANA is positioned as a bounded autonomy-accounting layer, not as a replacement
+for tool protocols, threat taxonomies, governance frameworks, runtime
+verification, proof-carrying authorization, network propagation models, or
+financial tail-risk methods.
+
+| Area | Relationship to ARCANA |
+| --- | --- |
+| Model Context Protocol (MCP) | MCP standardizes how AI applications connect to external systems such as data sources, tools, and workflows. ARCANA does not compete with tool connectivity; it accounts for autonomy risk in operations that such connectivity can enable. Source: https://modelcontextprotocol.io/docs/getting-started/intro |
+| OWASP Agentic AI threats | OWASP's Agentic AI guidance frames emerging agentic threats and mitigations through a threat-model lens. ARCANA can complement such taxonomies with model-bounded risk artifacts, reason codes, and calibration-scoped decisions. Source: https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/ |
+| NIST AI Risk Management Framework | NIST AI RMF is a voluntary framework for managing AI risks to individuals, organizations, and society. ARCANA does not replace AI RMF; it provides a narrower mechanism for bounded-under-model decisions in agentic operations. Source: https://www.nist.gov/itl/ai-risk-management-framework |
+| Runtime verification and authorization | ARCANA can inform runtime checks, but the public reference track does not define private enforcement or authorization infrastructure. |
+| Branching processes and network propagation | ARCANA borrows the subcritical intuition of finite propagation pressure, but every claim remains bound to the declared graph, horizon, and calibration. |
+| VaR and expected shortfall | ARCANA separates propagation risk from loss-side tail quantities such as Autonomy-at-Risk and Agentic Expected Shortfall. |
+
+## 20. Related Public Artifacts
 
 This draft is grounded in the current public research/reference artifacts:
 
@@ -542,7 +672,7 @@ This draft is grounded in the current public research/reference artifacts:
 | `src/arcana/` | Public reference implementation. |
 | `tests/` | Local reproducibility and contract tests. |
 
-## 20. Review Checklist
+## 21. Review Checklist
 
 Before this draft becomes a final paper publication, reviewers should verify:
 
@@ -558,11 +688,11 @@ Before this draft becomes a final paper publication, reviewers should verify:
 - limitations appear before any broad claim;
 - final license profile and GitHub Private Vulnerability Reporting remain in place for the public remote.
 
-## 21. Draft Status
+## 22. Draft Status
 
-This is a v0.2 public manuscript draft. The public repository is live, the
-release note is public, and the final paper publication gate has started. The
-draft remains ready for staged expert review, not final public publication.
+This is a v0.3 public manuscript draft. The public repository is live, the
+release note is public, and the final paper publication gate is in progress.
+The draft remains ready for staged expert review, not final public publication.
 
 Open review items:
 

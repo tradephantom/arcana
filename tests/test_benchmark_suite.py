@@ -43,7 +43,7 @@ def test_public_benchmark_suite_covers_required_threat_classes_and_metrics() -> 
         assert metric in suite.coverage.reported_metrics
 
 
-def test_every_scenario_separates_task_success_from_unsafe_actions_and_certificate_validity() -> None:
+def test_every_scenario_separates_task_success_from_unsafe_actions_and_artifact_contract_validity() -> None:
     for scenario in load_public_benchmark_scenarios():
         for metric in PER_SCENARIO_REQUIRED_METRICS:
             assert metric in scenario.reported_metrics

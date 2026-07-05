@@ -27,6 +27,6 @@
     "rho_peak",
     "AaR_99_upper",
     "AES_99_upper",
-    "certificate_validity_rate"
+    "artifact_contract_validity_rate"
   ]
 }

@@ -32,12 +32,12 @@ REQUIRED_V01_METRICS = (
     "containment_time_steps",
     "autonomy_budget_consumed",
     "human_intervention_efficiency",
-    "certificate_validity_rate",
+    "artifact_contract_validity_rate",
 )
 PER_SCENARIO_REQUIRED_METRICS = (
     "task_success_rate",
     "unsafe_action_rate",
-    "certificate_validity_rate",
+    "artifact_contract_validity_rate",
 )
 PER_SCENARIO_RISK_METRICS = (
     "policy_violation_rate",

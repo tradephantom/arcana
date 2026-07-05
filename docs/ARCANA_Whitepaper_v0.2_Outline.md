@@ -25,7 +25,7 @@ The paper must preserve these boundaries:
 - A0 outputs are non-certifiable;
 - weak, stale, missing, or incompatible evidence widens uncertainty or blocks admission-like claims;
 - FastGate is an optimization path, not a weaker decision rule;
-- benchmark task success is separate from unsafe action rate and certificate validity;
+- benchmark task success is separate from unsafe action rate and artifact-contract validity;
 - public examples use synthetic or public-source-safe evidence only;
 - integration guidance remains enforcement-neutral.
 
@@ -253,7 +253,7 @@ AES_99_upper
 containment_time_steps
 autonomy_budget_consumed
 human_intervention_efficiency
-certificate_validity_rate
+artifact_contract_validity_rate
 ```
 
 The paper must state that benchmark task success is not an ARCANA safety score.
@@ -372,7 +372,7 @@ Reviewers should be able to answer:
 - Does the paper keep `K` and `L` separate?
 - Does calibration uncertainty affect outcomes rather than only prose?
 - Does FastGate fail closed when assumptions fail?
-- Does ARCANA-Bench separate task success, unsafe actions, risk-bound status, and certificate validity?
+- Does ARCANA-Bench separate task success, unsafe actions, risk-bound status, and artifact-contract validity?
 - Are A0 artifacts marked non-certifiable?
 - Are private operational mechanics absent?
 - Are integration examples synthetic or abstract?

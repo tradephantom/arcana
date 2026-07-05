@@ -63,7 +63,7 @@ ALLOWED_BENCHMARK_METRICS = {
     "containment_time_steps",
     "autonomy_budget_consumed",
     "human_intervention_efficiency",
-    "certificate_validity_rate",
+    "artifact_contract_validity_rate",
 }
 
 

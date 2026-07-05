@@ -26,6 +26,6 @@
     "rho_peak",
     "containment_time_steps",
     "autonomy_budget_consumed",
-    "certificate_validity_rate"
+    "artifact_contract_validity_rate"
   ]
 }

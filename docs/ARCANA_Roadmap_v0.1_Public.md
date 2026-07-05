@@ -5,7 +5,7 @@
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
 > Classification: public-safe draft
-> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and full draft, release-readiness documents, public remote preflight checklist, and public release note exist; final paper publication remains separately gated
+> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, release-readiness documents, public remote preflight checklist, and public release note exist; final paper publication remains separately gated
 
 ## 1. Roadmap Rule
 
@@ -69,6 +69,7 @@ Blocking status:
 - public integration contract v0.1 is present;
 - whitepaper or paper v0.2 outline is present;
 - whitepaper or paper v0.2 full draft is present;
+- whitepaper or paper v0.3 draft is present;
 - final reviewed whitepaper or paper manuscript is not present yet;
 - release-readiness document drafts are present;
 - final license profile is present;
@@ -382,7 +383,7 @@ AES_99_upper
 containment_time_steps
 autonomy_budget_consumed
 human_intervention_efficiency
-certificate_validity_rate
+artifact_contract_validity_rate
 ```
 
 Exit criteria:
@@ -391,7 +392,7 @@ Exit criteria:
 - benchmark does not encode private customer, enterprise, or lab workflows;
 - success rate is reported separately from unsafe action rate;
 - risk-bound status is visible for each scenario;
-- certificate validity can be evaluated independently of task success.
+- artifact-contract validity can be evaluated independently of task success.
 
 Status: synthetic scenario expansion implemented, review pending.
 
@@ -481,7 +482,7 @@ Review checkpoints:
 | Private leakage | Public docs expose enterprise or lab mechanics. | Use publication classes and extraction checklist before release. |
 | Reason-code collapse | Distinct failures share a generic denial. | Maintain stable granular public reason-code registry. |
 | Demo misread as production | A synthetic demo appears deployable. | Label demos A0/non-certifiable and require synthetic fixtures. |
-| Benchmark gaming | Task success hides unsafe behavior. | Score unsafe actions, containment, risk delta, and certificate validity separately. |
+| Benchmark gaming | Task success hides unsafe behavior. | Score unsafe actions, containment, risk delta, and artifact-contract validity separately. |
 
 ## 18. First Implementation Entry Criteria
 
