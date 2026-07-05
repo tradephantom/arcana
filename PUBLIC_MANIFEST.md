@@ -1,16 +1,16 @@
 # ARCANA Public Manifest
 
-> Status: public staging manifest v0.1
-> Scope: files intended to seed a future public ARCANA repository
+> Status: public repository manifest v0.1
+> Scope: files included in the public ARCANA repository
 
-Only files listed here are part of this public release candidate tree.
+Only files listed here are part of this public repository tree.
 
 ## Included Files
 
 | Path | Status | Notes |
 | --- | --- | --- |
 | `README.md` | public-staging | Public release workspace instructions. |
-| `PUBLIC_MANIFEST.md` | public-staging | Manifest of public release candidates. |
+| `PUBLIC_MANIFEST.md` | public-staging | Manifest of public repository files. |
 | `LICENSE.md` | public-staging | Final file-scope license profile. |
 | `CONTRIBUTING.md` | public-staging | Public contribution policy. |
 | `SECURITY.md` | public-staging | Public security reporting policy and GitHub Private Vulnerability Reporting decision. |
@@ -41,6 +41,7 @@ Only files listed here are part of this public release candidate tree.
 | `docs/ARCANA_Whitepaper_v0.2_Outline.md` | public-safe draft | Public whitepaper/paper v0.2 outline and claim discipline. |
 | `docs/ARCANA_Whitepaper_v0.2_Draft.md` | public-safe draft | Public whitepaper/paper v0.2 full draft for staged expert review. |
 | `docs/LIMITATIONS_v0.1.md` | public-safe draft | Public limitations and non-goals document. |
+| `docs/PUBLIC_RELEASE_NOTES_v0.1.md` | public-staging | Initial public release note and public claim boundary. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
 | `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md` | public-staging | Public remote publication preflight checklist. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe draft | Public benchmark scenario schema. |
@@ -77,13 +78,13 @@ Only files listed here are part of this public release candidate tree.
 | `tools/audit_public.py` | public-staging | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public-staging | Public schema and synthetic example validator. |
 
-## Release Checklist
+## Release Checklist Status
 
-- [ ] All public files are listed in this manifest.
-- [ ] No file contains local filesystem paths.
-- [ ] No file contains private implementation details.
-- [ ] No file contains private lab or customer operational details.
-- [ ] No file uses private or adapter-specific reason codes as the public default.
-- [ ] No file claims absolute safety, risk elimination, or production certification from demo calibration.
-- [ ] Schema IDs, if present, use public namespaces.
-- [ ] Examples and fixtures, if present, are synthetic or public-source safe.
+- [x] All public files are listed in this manifest.
+- [x] No file contains local filesystem paths.
+- [x] No file contains private implementation details.
+- [x] No file contains private lab or customer operational details.
+- [x] No file uses private or adapter-specific reason codes as the public default.
+- [x] No file claims absolute safety, risk elimination, or production certification from demo calibration.
+- [x] Schema IDs, if present, use public namespaces.
+- [x] Examples and fixtures, if present, are synthetic or public-source safe.

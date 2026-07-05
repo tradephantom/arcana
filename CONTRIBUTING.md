@@ -1,10 +1,10 @@
 # Contributing to ARCANA
 
 > Status: contribution policy v0.2
-> Scope: local public release candidate
-> Publication status: contribution intake is not open until public remote setup is complete
+> Scope: public ARCANA repository
+> Publication status: public remote setup is complete; contribution intake remains maintainer-reviewed
 
-ARCANA is being prepared as an open research/reference project for model-bounded autonomy accounting. Contribution intake must remain closed until public remote setup, GitHub Private Vulnerability Reporting, and maintainer review are complete.
+ARCANA is an open research/reference project for model-bounded autonomy accounting. Public remote setup and GitHub Private Vulnerability Reporting are complete. Contribution intake remains maintainer-reviewed and must preserve the public/private boundary.
 
 ## 1. Contribution Rule
 

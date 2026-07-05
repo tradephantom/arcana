@@ -1,6 +1,6 @@
 # ARCANA Public Docs
 
-This folder contains public release candidate documentation for ARCANA.
+This folder contains public documentation for the ARCANA open research/reference repository.
 
 Current order:
 
@@ -20,12 +20,13 @@ Current order:
 14. `ARCANA_Whitepaper_v0.2_Outline.md`
 15. `ARCANA_Whitepaper_v0.2_Draft.md`
 16. `LIMITATIONS_v0.1.md`
-17. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
+17. `PUBLIC_RELEASE_NOTES_v0.1.md`
+18. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
 
 Next public documents:
 
 1. Final reviewed whitepaper or paper publication after expert review.
-2. Public remote publication notes after maintainer-approved remote creation.
+2. Follow-up release notes after maintainer-approved changes.
 
 Schema drafts live in `../schemas/`.
 

@@ -1,12 +1,12 @@
 # ARCANA Public Remote Preflight v0.1
 
 > Status: public remote preflight checklist v0.1
-> Scope: local checklist before creating or pushing a public GitHub remote
-> Remote status: no remote is configured by this document
+> Scope: checklist for creating, pushing, and validating the public GitHub remote
+> Remote status: public remote is live and validated
 > License decision: final public license profile is defined in `LICENSE.md`
-> Security decision: enable GitHub Private Vulnerability Reporting before public remote announcement
+> Security decision: GitHub Private Vulnerability Reporting is enabled for the public remote
 
-This checklist controls when the local public-track repository can be published to a public GitHub remote.
+This checklist controls when the local public-track repository can be published to a public GitHub remote and how follow-up public updates are validated.
 
 The remote repository is a publication channel. It is not the development authority.
 
@@ -127,15 +127,17 @@ Do not treat deletion alone as sufficient when sensitive material may have been 
 
 ## 9. Current Publication Status
 
-As of 2026-07-01:
+As of 2026-07-05:
 
 - final license profile is decided;
 - security channel is decided;
-- local gates pass in the latest preflight review;
-- no public remote is configured;
-- remote creation is not yet authorized;
-- public announcement is not yet authorized;
-- GitHub Private Vulnerability Reporting is not yet enabled because no public remote exists.
+- public remote is live at `https://github.com/tradephantom/arcana`;
+- GitHub Private Vulnerability Reporting is enabled;
+- GitHub Actions is disabled;
+- GitHub Pages is absent;
+- fresh-clone validation passed with `make check`, `make test`, and `make demo`;
+- public production claims are not authorized;
+- final whitepaper or paper publication is not yet authorized.
 
-The next publication action is a maintainer-approved publication decision after
-the local public-track worktree is clean and the preflight gates are rerun.
+The next publication action is maintainer-approved public-safe messaging or a
+separate final whitepaper/paper publication decision.

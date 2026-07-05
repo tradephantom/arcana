@@ -43,7 +43,8 @@ def test_contributing_policy_preserves_public_boundary_and_gates() -> None:
     text = _read("contributing")
 
     required_phrases = [
-        "contribution intake is not open until public remote setup is complete",
+        "public remote setup is complete",
+        "Contribution intake remains maintainer-reviewed",
         "Unknown provenance means risky",
         "Apache-2.0",
         "CC-BY-4.0",

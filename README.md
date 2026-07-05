@@ -8,7 +8,17 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 
 ## Current Status
 
-Public-safe draft documentation is in progress. Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and full draft, and release-readiness documents are present for local evaluation. No production implementation is present in this public release tree.
+This public repository is live as an open research/reference release for local evaluation.
+
+Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and full draft, release-readiness documents, and the initial public release note are present. No production implementation is present in this public release tree.
+
+Public remote:
+
+```text
+https://github.com/tradephantom/arcana
+```
+
+Security reports should use GitHub Private Vulnerability Reporting, as described in `SECURITY.md`.
 
 ## Documents
 
@@ -28,6 +38,7 @@ Public-safe draft documentation is in progress. Reference implementation through
 - `docs/ARCANA_Whitepaper_v0.2_Outline.md`
 - `docs/ARCANA_Whitepaper_v0.2_Draft.md`
 - `docs/LIMITATIONS_v0.1.md`
+- `docs/PUBLIC_RELEASE_NOTES_v0.1.md`
 - `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
 - `PUBLIC_MANIFEST.md`
 
@@ -84,5 +95,5 @@ absolute-safety or risk-elimination claims
 - production implementation;
 - production certificate issuance;
 - final reviewed whitepaper or paper publication;
-- public remote repository;
-- GitHub Private Vulnerability Reporting enabled on a public remote.
+- public production claim;
+- gateway enforcement mode.

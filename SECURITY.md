@@ -1,9 +1,9 @@
 # ARCANA Security Policy
 
 > Status: security policy v0.2
-> Scope: ARCANA public release-candidate repository
+> Scope: ARCANA public repository
 > Security channel decision: use GitHub Private Vulnerability Reporting and GitHub Security Advisories.
-> Remote gate: enable GitHub Private Vulnerability Reporting before public remote announcement.
+> Remote gate status: GitHub Private Vulnerability Reporting is enabled on the public remote.
 
 ARCANA is a public research/reference project for model-bounded autonomy accounting. Security reporting must preserve user safety, private material boundaries, and calibration integrity.
 
@@ -34,7 +34,7 @@ GitHub Security Advisories
 
 Do not use public issues for sensitive vulnerability reports.
 
-Before the public remote is announced, maintainers must verify:
+Before public announcements or release notes are promoted externally, maintainers must verify:
 
 - GitHub Private Vulnerability Reporting is enabled for the repository;
 - `SECURITY.md` is present on the default branch;
@@ -42,7 +42,7 @@ Before the public remote is announced, maintainers must verify:
 - public issue templates do not request sensitive exploit details;
 - security reports can be reproduced with synthetic or minimized public-safe inputs.
 
-Until the public remote and private reporting channel exist:
+If private reporting is unavailable during a future incident or repository migration:
 
 - do not publish sensitive vulnerability details in public issues;
 - do not include exploit payloads in public comments;

@@ -170,7 +170,7 @@ Limitations:
 
 ## 10. Public Release Limits
 
-Before a public remote release:
+For public remote release and follow-up public updates:
 
 - final license profile must be present;
 - contribution policy must be reviewed;
@@ -180,7 +180,7 @@ Before a public remote release:
 - `make check`, `make test`, and `make demo` must pass;
 - public-boundary audit must pass.
 
-No release artifact should be published when its claim boundary is unclear.
+No release artifact or announcement should be published when its claim boundary is unclear.
 
 This limitations document includes a redacted post-review update for public
 claim discipline: private production-readiness review may inform what public

@@ -73,7 +73,9 @@ Blocking status:
 - release-readiness document drafts are present;
 - final license profile is present;
 - public remote preflight checklist is present;
-- public remote and GitHub Private Vulnerability Reporting are not configured yet.
+- public remote is live;
+- GitHub Private Vulnerability Reporting is configured;
+- public release note v0.1 is present.
 
 ## 4. Milestone 0 - Boundary Freeze
 
@@ -457,7 +459,7 @@ Release-readiness status:
 - security policy exists;
 - draft limitations document exists;
 - public remote preflight checklist exists;
-- GitHub Private Vulnerability Reporting must be enabled before public remote announcement.
+- GitHub Private Vulnerability Reporting is enabled for the public remote.
 
 Review checkpoints:
 
