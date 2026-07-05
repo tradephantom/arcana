@@ -4,8 +4,8 @@
 > Status: public-safe draft for review
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
-> Classification: open-candidate, redaction review required before public release
-> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and full draft, release-readiness documents, and public remote preflight checklist exist; roadmap remains review pending before remote publication
+> Classification: public-safe draft
+> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and full draft, release-readiness documents, public remote preflight checklist, and public release note exist; final paper publication remains separately gated
 
 ## 1. Roadmap Rule
 
@@ -439,7 +439,7 @@ Exit criteria:
 - all certificate language is model-bounded;
 - public artifact is ready for staged expert review.
 
-Status: whitepaper/paper full draft implemented, staged expert review pending.
+Status: whitepaper/paper full draft implemented, final paper gate started, staged expert review pending.
 
 ## 16. Sequencing Gates
 

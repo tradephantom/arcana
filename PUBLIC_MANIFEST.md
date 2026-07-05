@@ -28,8 +28,8 @@ Only files listed here are part of this public repository tree.
 | `examples/benchmark_gaming.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
 | `examples/benchmark_dynamic_execution.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
 | `docs/README.md` | public-staging | Public documentation index. |
-| `docs/ARCANA_PRD_v0.2_Public.md` | public-safe draft | Public PRD draft; review required before remote publication. |
-| `docs/ARCANA_Roadmap_v0.1_Public.md` | public-safe draft | Public roadmap draft; review required before remote publication. |
+| `docs/ARCANA_PRD_v0.2_Public.md` | public-safe draft | Public PRD draft. |
+| `docs/ARCANA_Roadmap_v0.1_Public.md` | public-safe draft | Public roadmap draft. |
 | `docs/GLOSSARY.md` | public-safe draft | Public ARCANA vocabulary. |
 | `docs/REASON_CODES.md` | public-safe draft | Public ARCANA reason-code registry. |
 | `docs/FORMAL_MODEL_v0.2.md` | public-safe draft | Public ARCANA formal model contract. |

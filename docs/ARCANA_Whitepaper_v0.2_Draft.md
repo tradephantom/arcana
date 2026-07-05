@@ -1,6 +1,6 @@
 # ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems
 
-> Status: public whitepaper/paper v0.2 draft
+> Status: public whitepaper/paper v0.2 draft; final paper gate started
 > Scope: staged expert-review manuscript for the public ARCANA research/reference track
 > Classification: public-safe draft; not a final publication
 > Implementation status: reference implementation and synthetic benchmark evidence only
@@ -526,7 +526,7 @@ No public release should proceed when claim boundaries are unclear.
 
 ## 19. Related Public Artifacts
 
-This draft is grounded in the current public release-candidate artifacts:
+This draft is grounded in the current public research/reference artifacts:
 
 | Artifact | Role in this draft |
 | --- | --- |
@@ -544,7 +544,7 @@ This draft is grounded in the current public release-candidate artifacts:
 
 ## 20. Review Checklist
 
-Before this draft becomes a release candidate, reviewers should verify:
+Before this draft becomes a final paper publication, reviewers should verify:
 
 - every claim names or implies model, calibration, horizon, uncertainty, and evidence scope;
 - `rho_upper`, not `rho_mean`, is the admission-like metric;
@@ -556,11 +556,13 @@ Before this draft becomes a release candidate, reviewers should verify:
 - reproduction commands are current;
 - public integration language remains enforcement-neutral;
 - limitations appear before any broad claim;
-- final license profile and GitHub Private Vulnerability Reporting are handled before remote publication.
+- final license profile and GitHub Private Vulnerability Reporting remain in place for the public remote.
 
 ## 21. Draft Status
 
-This is a v0.2 public manuscript draft. It is ready for staged expert review, not final public publication.
+This is a v0.2 public manuscript draft. The public repository is live, the
+release note is public, and the final paper publication gate has started. The
+draft remains ready for staged expert review, not final public publication.
 
 Open review items:
 
@@ -570,5 +572,10 @@ Open review items:
 - FastGate numerical and graph-edge-case review;
 - benchmark scenario coverage review;
 - independent reproduction of local tests and demo;
+
+Completed publication prerequisites:
+
 - public remote preflight validation;
-- GitHub Private Vulnerability Reporting configuration before public remote announcement.
+- GitHub Private Vulnerability Reporting configuration;
+- public release-note publication;
+- fresh-clone validation of `make check`, `make test`, and `make demo`.

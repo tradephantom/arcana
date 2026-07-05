@@ -321,7 +321,7 @@ Required non-goals:
 | --- | --- | --- | --- |
 | Formal model | `docs/FORMAL_MODEL_v0.2.md` | Draft exists. | External mathematical review needed. |
 | Calibration | `docs/CALIBRATION_METHODOLOGY_v0.1.md` | Draft exists. | Evidence-quality and level semantics review needed. |
-| Reason codes | `docs/REASON_CODES.md` | Registry exists. | Stability review before public release. |
+| Reason codes | `docs/REASON_CODES.md` | Registry exists. | Stability review before final paper publication. |
 | Schemas | `schemas/` and `examples/` | Drafts and synthetic examples exist. | Public schema review needed. |
 | FastGate | `docs/FASTGATE_DESIGN_v0.1.md` and `src/arcana/fastgate.py` | Design and prototype exist. | Numerical and graph-edge-case review needed. |
 | Benchmark | `docs/ARCANA_BENCH_v0.1.md` and `examples/benchmark_*.synthetic.json` | Synthetic suite exists. | Scenario coverage and metric review needed. |

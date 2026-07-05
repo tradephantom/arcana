@@ -118,6 +118,22 @@ def test_whitepaper_draft_preserves_benchmark_and_reproduction_contracts() -> No
     assert "The demo does not require network access" in text
 
 
+def test_whitepaper_draft_tracks_final_publication_gate_status() -> None:
+    text = _doc_text()
+
+    required_phrases = [
+        "final paper gate started",
+        "not final public publication",
+        "public remote preflight validation",
+        "GitHub Private Vulnerability Reporting configuration",
+        "public release-note publication",
+        "fresh-clone validation",
+    ]
+
+    for phrase in required_phrases:
+        assert phrase in text
+
+
 def test_whitepaper_draft_references_public_source_artifacts() -> None:
     text = _doc_text()
 

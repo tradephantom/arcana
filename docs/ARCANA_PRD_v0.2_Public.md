@@ -4,7 +4,7 @@
 > Status: public-safe draft for review
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal baseline and publication boundary review
-> Classification: open-candidate, redaction review required before public release
+> Classification: public-safe draft
 > Implementation status: documentation only; no reference implementation is approved by this document
 
 ## 1. Executive Summary
