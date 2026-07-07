@@ -206,6 +206,12 @@ Unknown or incompatible methods return:
 ARCANA_DENY_FASTGATE_VECTOR_INVALID
 ```
 
+The public reference implementation validates `irreducible_perron_vector`
+against the after-state nonnegative graph. A caller declaration is not enough:
+if the after-state matrix is reducible, this method fails closed and the caller
+must use SCC decomposition, epsilon floor, component-local gating, or exact
+recompute.
+
 ## 8. Reducible Graph Handling
 
 Agentic graphs can be reducible. A reducible graph can contain disconnected regions, one-way dependency chains, or isolated components.

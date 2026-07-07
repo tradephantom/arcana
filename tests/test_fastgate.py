@@ -49,12 +49,29 @@ def _before_matrix(graph_hash: str = GRAPH_HASH) -> PropagationMatrix:
     )
 
 
+def _reducible_before_matrix(graph_hash: str = GRAPH_HASH) -> PropagationMatrix:
+    return PropagationMatrix.from_values(
+        [[0.0, 0.2], [0.0, 0.0]],
+        node_order=("agent", "tool"),
+        graph_hash=graph_hash,
+    )
+
+
 def _delta(value: float = 0.1, *, graph_hash: str = GRAPH_HASH, horizon: DecisionHorizon | None = None) -> SparseMatrixDelta:
     return SparseMatrixDelta(
         delta_hash=DELTA_HASH,
         graph_hash=graph_hash,
         decision_horizon=horizon or _horizon(),
         entries=(SparseDeltaEntry(row=0, column=1, value=value),),
+    )
+
+
+def _empty_delta(*, graph_hash: str = GRAPH_HASH, horizon: DecisionHorizon | None = None) -> SparseMatrixDelta:
+    return SparseMatrixDelta(
+        delta_hash=DELTA_HASH,
+        graph_hash=graph_hash,
+        decision_horizon=horizon or _horizon(),
+        entries=(),
     )
 
 
@@ -137,6 +154,7 @@ def test_warm_path_returns_uncertain_when_margin_is_insufficient_and_exact_unava
             delta_upper=_delta(0.59),
             positive_vector=_positive_vector(),
             tolerance_policy=TolerancePolicy(abs_tolerance=0.02, rel_tolerance=0.0),
+            autonomy_budget=_budget(max_delta=10.0),
             exact_recompute_available=False,
         )
     )
@@ -180,6 +198,20 @@ def test_reducible_graph_without_declared_handling_returns_vector_invalid() -> N
     assert evaluation.decision.metrics["issue_code"] == "fastgate_reducible_graph_handling_missing"
 
 
+def test_irreducible_method_rejects_reducible_after_state_even_if_declared() -> None:
+    evaluation = evaluate_fastgate(
+        _request(
+            mode=FastGateMode.PERRON_COLLATZ_BOUND,
+            before_upper=_reducible_before_matrix(),
+            delta_upper=_empty_delta(),
+            positive_vector=_positive_vector(),
+        )
+    )
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_FASTGATE_VECTOR_INVALID)
+    assert evaluation.decision.metrics["issue_code"] == "fastgate_reducible_graph_handling_missing"
+
+
 def test_scc_decomposition_with_valid_closure_allows() -> None:
     evaluation = evaluate_fastgate(
         _request(
@@ -206,6 +238,7 @@ def test_epsilon_floor_with_insufficient_margin_returns_uncertain() -> None:
         _request(
             mode=FastGateMode.PERRON_COLLATZ_BOUND,
             positive_vector=vector,
+            autonomy_budget=_budget(max_delta=1000.0),
             exact_recompute_available=False,
         )
     )
@@ -254,6 +287,60 @@ def test_stale_hot_path_cache_returns_context_stale() -> None:
     assert evaluation.decision.metrics["issue_code"] == "fastgate_cache_expired"
 
 
+def test_hot_path_cache_tolerance_mismatch_returns_context_stale() -> None:
+    cache = FastGateCacheBinding(
+        risk_model_version="arcana.risk.v0.2",
+        calibration_profile_id="arcana.cal.fastgate_a1",
+        decision_horizon_id="fastgate_5m",
+        decision_horizon_duration_seconds=300,
+        graph_hash=GRAPH_HASH,
+        delta_hash=DELTA_HASH,
+        threshold=0.8,
+        positive_vector_method=PositiveVectorMethod.IRREDUCIBLE_PERRON_VECTOR,
+        expires_at="2026-06-09T00:20:00Z",
+        abs_tolerance=0.02,
+        rel_tolerance=0.0,
+        evidence_hash="sha256:" + "a" * 64,
+    )
+
+    evaluation = evaluate_fastgate(
+        _request(
+            mode=FastGateMode.PERRON_COLLATZ_BOUND,
+            positive_vector=_positive_vector(),
+            cache_binding=cache,
+            evidence_hash="sha256:" + "a" * 64,
+        )
+    )
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_CONTEXT_STALE)
+    assert evaluation.decision.metrics["issue_code"] == "fastgate_cache_abs_tolerance_mismatch"
+
+
+def test_hot_path_cache_requires_evidence_binding() -> None:
+    cache = FastGateCacheBinding(
+        risk_model_version="arcana.risk.v0.2",
+        calibration_profile_id="arcana.cal.fastgate_a1",
+        decision_horizon_id="fastgate_5m",
+        decision_horizon_duration_seconds=300,
+        graph_hash=GRAPH_HASH,
+        delta_hash=DELTA_HASH,
+        threshold=0.8,
+        positive_vector_method=PositiveVectorMethod.IRREDUCIBLE_PERRON_VECTOR,
+        expires_at="2026-06-09T00:20:00Z",
+    )
+
+    evaluation = evaluate_fastgate(
+        _request(
+            mode=FastGateMode.PERRON_COLLATZ_BOUND,
+            positive_vector=_positive_vector(),
+            cache_binding=cache,
+        )
+    )
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_CONTEXT_STALE)
+    assert evaluation.decision.metrics["issue_code"] == "fastgate_cache_evidence_binding_missing"
+
+
 def test_graph_hash_mismatch_returns_graph_hash_reason() -> None:
     evaluation = evaluate_fastgate(_request(graph_hash=OTHER_GRAPH_HASH))
 
@@ -280,6 +367,50 @@ def test_budget_exhaustion_returns_budget_reason() -> None:
 
     _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_BUDGET_EXHAUSTED)
     assert evaluation.decision.metrics["issue_code"] == "fastgate_budget_delta_rho_exceeded"
+
+
+def test_budget_delta_exhaustion_precedes_fastgate_uncertain() -> None:
+    evaluation = evaluate_fastgate(
+        _request(
+            mode=FastGateMode.PERRON_COLLATZ_BOUND,
+            delta_upper=_delta(0.59),
+            positive_vector=_positive_vector(),
+            tolerance_policy=TolerancePolicy(abs_tolerance=0.02, rel_tolerance=0.0),
+            autonomy_budget=_budget(max_delta=0.01),
+            exact_recompute_available=False,
+        )
+    )
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_BUDGET_EXHAUSTED)
+    assert evaluation.decision.metrics["issue_code"] == "fastgate_budget_delta_rho_exceeded"
+
+
+def test_empty_budget_returns_budget_reason() -> None:
+    evaluation = evaluate_fastgate(
+        _request(
+            autonomy_budget=AutonomyBudget(expires_at="2026-06-09T00:30:00Z"),
+        )
+    )
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_BUDGET_EXHAUSTED)
+    assert evaluation.decision.metrics["issue_code"] == "fastgate_budget_empty"
+
+
+def test_loss_model_failure_precedes_fastgate_uncertain() -> None:
+    evaluation = evaluate_fastgate(
+        _request(
+            mode=FastGateMode.PERRON_COLLATZ_BOUND,
+            delta_upper=_delta(0.59),
+            positive_vector=_positive_vector(),
+            tolerance_policy=TolerancePolicy(abs_tolerance=0.02, rel_tolerance=0.0),
+            exact_recompute_available=False,
+            loss_in_scope=True,
+            loss_bounds=None,
+        )
+    )
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_LOSS_MODEL_INVALID)
+    assert evaluation.decision.metrics["issue_code"] == "loss_bounds_missing"
 
 
 def test_a0_fastgate_artifact_is_observe_only() -> None:

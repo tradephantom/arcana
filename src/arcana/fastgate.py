@@ -78,6 +78,10 @@ class FastGateCacheBinding:
     threshold: float
     positive_vector_method: PositiveVectorMethod | None
     expires_at: str
+    abs_tolerance: float = 1e-12
+    rel_tolerance: float = 1e-12
+    evidence_hash: str | None = None
+    evidence_source_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -100,6 +104,8 @@ class FastGateRequest:
     exact_recompute_on_uncertain: bool = True
     reducible_graph_declared: bool = False
     cache_binding: FastGateCacheBinding | None = None
+    evidence_hash: str | None = None
+    evidence_source_id: str | None = None
     loss_in_scope: bool = False
     loss_bounds: LossBounds | None = None
     requested_external_requests: int = 0
@@ -171,9 +177,20 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         request.delta_upper.delta_hash,
         threshold,
         request.positive_vector.method if request.positive_vector is not None else None,
+        tolerance_policy,
+        request.evidence_hash,
+        request.evidence_source_id,
     )
     if cache_failure is not None:
         return _evaluation(cache_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
+
+    budget_precondition_failure = _budget_precondition_failure(request.autonomy_budget, decision_time, request)
+    if budget_precondition_failure is not None:
+        return _evaluation(budget_precondition_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
+
+    loss_precondition_failure = _loss_failure(request.loss_in_scope, request.loss_bounds, {})
+    if loss_precondition_failure is not None:
+        return _evaluation(loss_precondition_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
 
     after_values = before_upper.values + delta_matrix
     after_upper = PropagationMatrix.from_values(
@@ -231,7 +248,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         return _exact_recompute_evaluation(request, after_upper, rho_before, threshold, tolerance_policy, decision_time)
 
     if mode is FastGateMode.PERRON_COLLATZ_BOUND:
-        vector_failure = _positive_vector_failure(request.positive_vector, before_upper, graph_hash, request.reducible_graph_declared)
+        vector_failure = _positive_vector_failure(request.positive_vector, after_upper, graph_hash, request.reducible_graph_declared)
         if vector_failure is not None:
             return _evaluation(vector_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
         positive_vector = request.positive_vector
@@ -261,6 +278,9 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
             "rho_margin": tolerance_policy.margin(threshold),
             "delta_rho_upper_bound": max(0.0, bound - rho_before),
         }
+        budget_failure = _budget_failure(request.autonomy_budget, decision_time, metrics["delta_rho_upper_bound"], request)
+        if budget_failure is not None:
+            return _evaluation(budget_failure, fastgate_context, after_upper)
         if not tolerance_policy.below_threshold_with_margin(bound, threshold):
             if request.exact_recompute_available and request.exact_recompute_on_uncertain:
                 return _exact_recompute_evaluation(request, after_upper, rho_before, threshold, tolerance_policy, decision_time)
@@ -274,9 +294,6 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                 fastgate_context,
                 after_upper,
             )
-        budget_failure = _budget_failure(request.autonomy_budget, decision_time, metrics["delta_rho_upper_bound"], request)
-        if budget_failure is not None:
-            return _evaluation(budget_failure, fastgate_context, after_upper)
         loss_failure = _loss_failure(request.loss_in_scope, request.loss_bounds, metrics)
         if loss_failure is not None:
             return _evaluation(loss_failure, fastgate_context, after_upper)
@@ -455,6 +472,9 @@ def _cache_failure(
     delta_hash: str,
     threshold: float,
     positive_vector_method: PositiveVectorMethod | None,
+    tolerance_policy: TolerancePolicy,
+    evidence_hash: str | None,
+    evidence_source_id: str | None,
 ) -> DecisionResult | None:
     if cache is None:
         return None
@@ -481,6 +501,8 @@ def _cache_failure(
         ("delta_hash", cache.delta_hash, delta_hash, ReasonCode.DENY_MODEL_INPUT_INVALID),
         ("threshold", cache.threshold, threshold, ReasonCode.DENY_CONTEXT_STALE),
         ("positive_vector_method", cache.positive_vector_method, positive_vector_method, ReasonCode.DENY_FASTGATE_VECTOR_INVALID),
+        ("abs_tolerance", cache.abs_tolerance, tolerance_policy.abs_tolerance, ReasonCode.DENY_CONTEXT_STALE),
+        ("rel_tolerance", cache.rel_tolerance, tolerance_policy.rel_tolerance, ReasonCode.DENY_CONTEXT_STALE),
     )
     for key, cached, current, reason_code in checks:
         if cached != current:
@@ -490,12 +512,42 @@ def _cache_failure(
                 f"FastGate cache {key} does not match current request",
                 {"cache_key": key},
             )
+    cache_evidence_hash = _validate_optional_hash(cache.evidence_hash, ("cache_binding", "evidence_hash"))
+    request_evidence_hash = _validate_optional_hash(evidence_hash, ("evidence_hash",))
+    cache_evidence_source_id = _validate_optional_source_id(cache.evidence_source_id, ("cache_binding", "evidence_source_id"))
+    request_evidence_source_id = _validate_optional_source_id(evidence_source_id, ("evidence_source_id",))
+    if request_evidence_hash is None and request_evidence_source_id is None:
+        return _deny(
+            ReasonCode.DENY_CONTEXT_STALE,
+            "fastgate_cache_evidence_binding_missing",
+            "FastGate cache reuse requires a current evidence_hash or evidence_source_id",
+        )
+    if cache_evidence_hash is None and cache_evidence_source_id is None:
+        return _deny(
+            ReasonCode.DENY_CONTEXT_STALE,
+            "fastgate_cache_evidence_binding_missing",
+            "FastGate cache binding requires evidence_hash or evidence_source_id",
+        )
+    if cache_evidence_hash != request_evidence_hash:
+        return _deny(
+            ReasonCode.DENY_CONTEXT_STALE,
+            "fastgate_cache_evidence_hash_mismatch",
+            "FastGate cache evidence_hash does not match current request",
+            {"cache_key": "evidence_hash"},
+        )
+    if cache_evidence_source_id != request_evidence_source_id:
+        return _deny(
+            ReasonCode.DENY_CONTEXT_STALE,
+            "fastgate_cache_evidence_source_id_mismatch",
+            "FastGate cache evidence_source_id does not match current request",
+            {"cache_key": "evidence_source_id"},
+        )
     return None
 
 
 def _positive_vector_failure(
     vector: PositiveVector | None,
-    before_upper: PropagationMatrix,
+    after_upper: PropagationMatrix,
     graph_hash: str,
     reducible_graph_declared: bool,
 ) -> DecisionResult | None:
@@ -509,13 +561,13 @@ def _positive_vector_failure(
             "fastgate_positive_vector_graph_hash_mismatch",
             "positive vector graph_hash does not match request",
         )
-    if vector.node_order != before_upper.node_order:
+    if vector.node_order != after_upper.node_order:
         return _deny(
             ReasonCode.DENY_FASTGATE_VECTOR_INVALID,
             "fastgate_positive_vector_node_order_mismatch",
             "positive vector node_order does not match matrix node_order",
         )
-    if len(vector.values) != before_upper.size:
+    if len(vector.values) != after_upper.size:
         return _deny(
             ReasonCode.DENY_FASTGATE_VECTOR_INVALID,
             "fastgate_positive_vector_size_mismatch",
@@ -525,7 +577,7 @@ def _positive_vector_failure(
     if method is None:
         return _deny(ReasonCode.DENY_FASTGATE_VECTOR_INVALID, "fastgate_positive_vector_method_invalid", "positive vector method is invalid")
     if method is PositiveVectorMethod.IRREDUCIBLE_PERRON_VECTOR:
-        if reducible_graph_declared or not vector.irreducible_declared:
+        if reducible_graph_declared or not vector.irreducible_declared or not _is_irreducible_nonnegative_matrix(after_upper):
             return _deny(
                 ReasonCode.DENY_FASTGATE_VECTOR_INVALID,
                 "fastgate_reducible_graph_handling_missing",
@@ -584,10 +636,33 @@ def _collatz_bound(matrix: PropagationMatrix, vector: PositiveVector) -> float:
     return bound
 
 
-def _budget_failure(
+def _validate_optional_hash(value: str | None, path: tuple[str | int, ...]) -> str | None:
+    if value is None:
+        return None
+    return expect_sha256(value, path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
+
+
+def _validate_optional_source_id(value: str | None, path: tuple[str | int, ...]) -> str | None:
+    if value is None:
+        return None
+    return expect_non_empty_string(value, path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
+
+
+def _is_irreducible_nonnegative_matrix(matrix: PropagationMatrix) -> bool:
+    adjacency = matrix.values > 0
+    size = matrix.size
+    if size <= 1:
+        return True
+    reachability = adjacency.copy()
+    np.fill_diagonal(reachability, True)
+    for pivot in range(size):
+        reachability |= reachability[:, [pivot]] & reachability[[pivot], :]
+    return bool(np.all(reachability))
+
+
+def _budget_precondition_failure(
     budget: AutonomyBudget,
     decision_time: datetime,
-    delta_rho_upper: float,
     request: FastGateRequest,
 ) -> DecisionResult | None:
     if not isinstance(budget, AutonomyBudget):
@@ -604,15 +679,7 @@ def _budget_failure(
             "autonomy budget has expired",
             {"budget_expires_at": budget.expires_at},
         )
-    if budget.max_delta_rho_upper is not None:
-        max_delta = expect_number_min(budget.max_delta_rho_upper, 0, ("autonomy_budget", "max_delta_rho_upper"), ReasonCode.DENY_BUDGET_EXHAUSTED)
-        if delta_rho_upper > max_delta:
-            return _deny(
-                ReasonCode.DENY_BUDGET_EXHAUSTED,
-                "fastgate_budget_delta_rho_exceeded",
-                "delta_rho_upper exceeds FastGate budget",
-                {"delta_rho_upper": delta_rho_upper, "max_delta_rho_upper": max_delta},
-            )
+    counters_declared = budget.max_delta_rho_upper is not None
     for budget_field, request_field, allowed, requested in (
         ("max_external_requests", "requested_external_requests", budget.max_external_requests, request.requested_external_requests),
         ("max_memory_writes", "requested_memory_writes", budget.max_memory_writes, request.requested_memory_writes),
@@ -628,6 +695,7 @@ def _budget_failure(
                     {request_field: requested_count},
                 )
             continue
+        counters_declared = True
         allowed_count = expect_int_min(allowed, 0, ("autonomy_budget", budget_field), ReasonCode.DENY_BUDGET_EXHAUSTED)
         if requested_count > allowed_count:
             return _deny(
@@ -635,6 +703,33 @@ def _budget_failure(
                 f"fastgate_budget_{request_field}_exceeded",
                 f"{request_field} exceeds autonomy budget",
                 {request_field: requested_count, budget_field: allowed_count},
+            )
+    if not counters_declared:
+        return _deny(
+            ReasonCode.DENY_BUDGET_EXHAUSTED,
+            "fastgate_budget_empty",
+            "at least one FastGate budget counter is required",
+        )
+    return None
+
+
+def _budget_failure(
+    budget: AutonomyBudget,
+    decision_time: datetime,
+    delta_rho_upper: float,
+    request: FastGateRequest,
+) -> DecisionResult | None:
+    precondition_failure = _budget_precondition_failure(budget, decision_time, request)
+    if precondition_failure is not None:
+        return precondition_failure
+    if budget.max_delta_rho_upper is not None:
+        max_delta = expect_number_min(budget.max_delta_rho_upper, 0, ("autonomy_budget", "max_delta_rho_upper"), ReasonCode.DENY_BUDGET_EXHAUSTED)
+        if delta_rho_upper > max_delta:
+            return _deny(
+                ReasonCode.DENY_BUDGET_EXHAUSTED,
+                "fastgate_budget_delta_rho_exceeded",
+                "delta_rho_upper exceeds FastGate budget",
+                {"delta_rho_upper": delta_rho_upper, "max_delta_rho_upper": max_delta},
             )
     return None
 
@@ -646,7 +741,7 @@ def _loss_failure(loss_in_scope: bool, loss_bounds: LossBounds | None, metrics: 
     return _deny(
         loss_result.reason_code or ReasonCode.DENY_LOSS_MODEL_INVALID,
         loss_result.issue_code or "fastgate_loss_failed",
-        "loss constraints failed after FastGate propagation check",
+        "loss constraints failed for FastGate request",
         {**metrics, **loss_result.metrics},
     )
 
