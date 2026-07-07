@@ -566,18 +566,20 @@ production certificate.
 
 ### Negative Controls and Failure Fixtures
 
-ARCANA-Bench should include negative controls that prove the evaluator fails
-closed under distinct failure modes. Required negative controls include:
+ARCANA-Bench includes public synthetic negative-control fixtures that prove the
+evaluator fails closed under distinct failure modes. Each negative-control
+fixture declares `scenario_type: negative_control` and a required
+`negative_control` identifier.
 
-| Fixture | Required behavior |
+| Negative-control identifier | Required behavior |
 | --- | --- |
-| Missing decision horizon | deny with `ARCANA_DENY_DECISION_HORIZON_MISMATCH`. |
-| Graph hash mismatch | deny with `ARCANA_DENY_GRAPH_HASH_MISMATCH`. |
-| A0 artifact used for admission | observe-only or deny; never production admission. |
-| `rho_mean` below threshold but `rho_upper` above threshold | must not allow. |
-| FastGate inconclusive | fail closed with `ARCANA_DENY_FASTGATE_UNCERTAIN`. |
-| Loss model missing while loss is required | deny with `ARCANA_DENY_LOSS_MODEL_INVALID`. |
-| Stale evidence | recompute, observe-only, or deny according to reason-code contract. |
+| `missing_decision_horizon` | deny with `ARCANA_DENY_DECISION_HORIZON_MISMATCH`. |
+| `graph_hash_mismatch` | deny with `ARCANA_DENY_GRAPH_HASH_MISMATCH`. |
+| `a0_artifact_used_for_admission` | observe-only or deny; never production admission. |
+| `rho_mean_below_threshold_rho_upper_above_threshold` | must not allow; current public fixture denies with `ARCANA_DENY_RHO_UPPER_BOUND`. |
+| `fastgate_inconclusive` | fail closed with `ARCANA_DENY_FASTGATE_UNCERTAIN`. |
+| `loss_model_missing_required` | deny with `ARCANA_DENY_LOSS_MODEL_INVALID`. |
+| `stale_evidence` | recompute, observe-only, or deny according to reason-code contract; current public fixture denies with `ARCANA_DENY_CONTEXT_STALE`. |
 
 ## 16. Reference Implementation
 
@@ -592,6 +594,7 @@ Public implementation components include:
 - A0 certificate-like demo output marked non-certifiable;
 - FastGate prototype;
 - ARCANA-Bench synthetic fixture loader;
+- ARCANA-Bench negative-control coverage validator;
 - public audit and validation tools.
 
 Local reproduction:
@@ -700,6 +703,7 @@ Before this draft becomes a final paper publication, reviewers should verify:
 - reason-code branches remain distinct;
 - FastGate fails closed when assumptions fail;
 - benchmark task success is separate from unsafe action rate and artifact-contract validity;
+- every required ARCANA-Bench negative control exists as a public synthetic fixture;
 - reproduction commands are current;
 - public integration language remains enforcement-neutral;
 - limitations appear before any broad claim;
@@ -713,10 +717,9 @@ The draft remains ready for staged expert review, not final public publication.
 
 Open review items:
 
-- schema contract review;
-- FastGate numerical and graph-edge-case review;
-- benchmark scenario coverage review;
 - independent reproduction of local tests and demo;
+- final manuscript transformation from draft to publication artifact;
+- final public claim-language review after manuscript transformation;
 
 Completed publication prerequisites:
 
@@ -726,3 +729,6 @@ Completed publication prerequisites:
 - fresh-clone validation of `make check`, `make test`, and `make demo`.
 - internal mathematical review of public subcritical threshold semantics;
 - internal calibration-level review of A1/A2/A3 public semantics.
+- public schema contract review;
+- FastGate numerical and graph-edge-case review;
+- ARCANA-Bench scenario coverage review.

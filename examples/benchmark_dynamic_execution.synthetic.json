@@ -4,6 +4,7 @@
   "title": "Synthetic dynamic execution risk",
   "summary": "A synthetic operation proposes runtime-generated execution paths that are not covered by the declared calibration profile.",
   "synthetic": true,
+  "scenario_type": "coverage_scenario",
   "threat_class": "dynamic_execution_abuse",
   "calibration_level": "A0",
   "initial_rho_upper": 0.69,

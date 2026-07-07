@@ -69,13 +69,14 @@ def test_whitepaper_v03_negative_controls_are_specific() -> None:
     text = _doc_text()
 
     required_controls = [
-        "Missing decision horizon",
-        "Graph hash mismatch",
-        "A0 artifact used for admission",
-        "`rho_mean` below threshold but `rho_upper` above threshold",
-        "FastGate inconclusive",
-        "Loss model missing while loss is required",
-        "Stale evidence",
+        "scenario_type: negative_control",
+        "`missing_decision_horizon`",
+        "`graph_hash_mismatch`",
+        "`a0_artifact_used_for_admission`",
+        "`rho_mean_below_threshold_rho_upper_above_threshold`",
+        "`fastgate_inconclusive`",
+        "`loss_model_missing_required`",
+        "`stale_evidence`",
     ]
 
     for control in required_controls:

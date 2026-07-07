@@ -27,6 +27,13 @@ Only files listed here are part of this public repository tree.
 | `examples/benchmark_delegation_cascade.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
 | `examples/benchmark_gaming.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
 | `examples/benchmark_dynamic_execution.synthetic.json` | public-safe draft | Synthetic benchmark scenario example. |
+| `examples/benchmark_negative_a0_artifact_admission.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
+| `examples/benchmark_negative_fastgate_inconclusive.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
+| `examples/benchmark_negative_graph_hash_mismatch.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
+| `examples/benchmark_negative_loss_model_missing.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
+| `examples/benchmark_negative_missing_decision_horizon.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
+| `examples/benchmark_negative_rho_upper_above_threshold.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
+| `examples/benchmark_negative_stale_evidence.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
 | `docs/README.md` | public-staging | Public documentation index. |
 | `docs/ARCANA_PRD_v0.2_Public.md` | public-safe draft | Public PRD draft. |
 | `docs/ARCANA_Roadmap_v0.1_Public.md` | public-safe draft | Public roadmap draft. |

@@ -66,6 +66,19 @@ ALLOWED_BENCHMARK_METRICS = {
     "human_intervention_efficiency",
     "artifact_contract_validity_rate",
 }
+ALLOWED_BENCHMARK_SCENARIO_TYPES = {
+    "coverage_scenario",
+    "negative_control",
+}
+ALLOWED_BENCHMARK_NEGATIVE_CONTROLS = {
+    "missing_decision_horizon",
+    "graph_hash_mismatch",
+    "a0_artifact_used_for_admission",
+    "rho_mean_below_threshold_rho_upper_above_threshold",
+    "fastgate_inconclusive",
+    "loss_model_missing_required",
+    "stale_evidence",
+}
 
 
 class NodeClass(str, Enum):
@@ -434,16 +447,30 @@ class BenchmarkScenario:
     title: str
     summary: str
     synthetic: bool
+    scenario_type: str
     threat_class: str
     calibration_level: CalibrationLevel
     initial_rho_upper: float
     graph_fixture: BenchmarkGraphFixture
     expected_response: DecisionResult
     reported_metrics: tuple[str, ...]
+    negative_control: str | None = None
 
     @classmethod
     def from_mapping(cls, value: Any, path: tuple[str | int, ...] = ()) -> "BenchmarkScenario":
         data = expect_mapping(value, path, ReasonCode.DENY_MODEL_INPUT_INVALID)
+        scenario_type = expect_non_empty_string(require_value(data, "scenario_type", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "scenario_type"), ReasonCode.DENY_MODEL_INPUT_INVALID)
+        if scenario_type not in ALLOWED_BENCHMARK_SCENARIO_TYPES:
+            fail("benchmark_scenario_type_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID, "unsupported benchmark scenario_type", (*path, "scenario_type"))
+        raw_negative_control = data.get("negative_control")
+        if scenario_type == "negative_control":
+            negative_control = expect_non_empty_string(require_value(data, "negative_control", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "negative_control"), ReasonCode.DENY_MODEL_INPUT_INVALID)
+            if negative_control not in ALLOWED_BENCHMARK_NEGATIVE_CONTROLS:
+                fail("benchmark_negative_control_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID, "unsupported benchmark negative_control", (*path, "negative_control"))
+        else:
+            if raw_negative_control is not None:
+                fail("benchmark_negative_control_unexpected", ReasonCode.DENY_MODEL_INPUT_INVALID, "coverage scenarios must not declare negative_control", (*path, "negative_control"))
+            negative_control = None
         threat_class = expect_non_empty_string(require_value(data, "threat_class", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "threat_class"), ReasonCode.DENY_MODEL_INPUT_INVALID)
         if threat_class not in ALLOWED_BENCHMARK_THREAT_CLASSES:
             fail("benchmark_threat_class_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID, "unsupported benchmark threat_class", (*path, "threat_class"))
@@ -456,17 +483,21 @@ class BenchmarkScenario:
             title=expect_non_empty_string(require_value(data, "title", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "title"), ReasonCode.DENY_MODEL_INPUT_INVALID),
             summary=expect_non_empty_string(require_value(data, "summary", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "summary"), ReasonCode.DENY_MODEL_INPUT_INVALID),
             synthetic=expect_bool(require_value(data, "synthetic", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "synthetic"), ReasonCode.DENY_MODEL_INPUT_INVALID),
+            scenario_type=scenario_type,
             threat_class=threat_class,
             calibration_level=expect_enum(CalibrationLevel, require_value(data, "calibration_level", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "calibration_level"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
             initial_rho_upper=expect_number_min(require_value(data, "initial_rho_upper", path, ReasonCode.DENY_MODEL_INPUT_INVALID), 0, (*path, "initial_rho_upper"), ReasonCode.DENY_MODEL_INPUT_INVALID),
             graph_fixture=BenchmarkGraphFixture.from_mapping(require_value(data, "graph_fixture", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "graph_fixture")),
             expected_response=DecisionResult.from_mapping(require_value(data, "expected_arcana_response", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "expected_arcana_response")),
             reported_metrics=reported_metrics,
+            negative_control=negative_control,
         )
 
 
 __all__ = [
     "ALLOWED_BENCHMARK_METRICS",
+    "ALLOWED_BENCHMARK_NEGATIVE_CONTROLS",
+    "ALLOWED_BENCHMARK_SCENARIO_TYPES",
     "ALLOWED_BENCHMARK_THREAT_CLASSES",
     "ALLOWED_EVIDENCE_SOURCE_TYPES",
     "ArcanaValidationError",

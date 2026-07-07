@@ -13,3 +13,10 @@ Current examples:
 - `benchmark_delegation_cascade.synthetic.json`
 - `benchmark_gaming.synthetic.json`
 - `benchmark_dynamic_execution.synthetic.json`
+- `benchmark_negative_a0_artifact_admission.synthetic.json`
+- `benchmark_negative_fastgate_inconclusive.synthetic.json`
+- `benchmark_negative_graph_hash_mismatch.synthetic.json`
+- `benchmark_negative_loss_model_missing.synthetic.json`
+- `benchmark_negative_missing_decision_horizon.synthetic.json`
+- `benchmark_negative_rho_upper_above_threshold.synthetic.json`
+- `benchmark_negative_stale_evidence.synthetic.json`

@@ -368,6 +368,7 @@ Deliverables:
 - delegation-cascade scenario;
 - benchmark-gaming scenario;
 - dynamic-execution-risk scenario;
+- negative-control fixture set for required fail-closed behavior;
 - metrics and scoring notes.
 
 Required metrics:
@@ -392,9 +393,10 @@ Exit criteria:
 - benchmark does not encode private customer, enterprise, or lab workflows;
 - success rate is reported separately from unsafe action rate;
 - risk-bound status is visible for each scenario;
-- artifact-contract validity can be evaluated independently of task success.
+- artifact-contract validity can be evaluated independently of task success;
+- every required negative control is present and rejects allow-like outcomes.
 
-Status: synthetic scenario expansion implemented, review pending.
+Status: synthetic scenario and negative-control expansion implemented, review pending.
 
 ## 14. Milestone 10 - Public Integration Contract v0.1
 

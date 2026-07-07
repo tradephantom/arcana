@@ -10,7 +10,7 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 
 This public repository is live as an open research/reference release for local evaluation.
 
-Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, release-readiness documents, and the initial public release note are present. No production implementation is present in this public release tree.
+Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic scenario and negative-control expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, release-readiness documents, and the initial public release note are present. No production implementation is present in this public release tree.
 
 Public remote:
 

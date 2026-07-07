@@ -54,6 +54,19 @@ EVIDENCE_SOURCE_TYPES = {
     "controlled_test",
     "hash_bound_context",
 }
+BENCHMARK_SCENARIO_TYPES = {
+    "coverage_scenario",
+    "negative_control",
+}
+BENCHMARK_NEGATIVE_CONTROLS = {
+    "missing_decision_horizon",
+    "graph_hash_mismatch",
+    "a0_artifact_used_for_admission",
+    "rho_mean_below_threshold_rho_upper_above_threshold",
+    "fastgate_inconclusive",
+    "loss_model_missing_required",
+    "stale_evidence",
+}
 
 
 @dataclass(frozen=True)
@@ -311,12 +324,21 @@ def validate_certificate(path: Path, obj: dict[str, Any], registered: set[str]) 
 
 def validate_benchmark(path: Path, obj: dict[str, Any], registered: set[str]) -> list[Finding]:
     findings: list[Finding] = []
-    required = {"scenario_id", "title", "summary", "synthetic", "threat_class", "calibration_level", "initial_rho_upper", "graph_fixture", "expected_arcana_response", "reported_metrics"}
+    required = {"scenario_id", "title", "summary", "synthetic", "scenario_type", "threat_class", "calibration_level", "initial_rho_upper", "graph_fixture", "expected_arcana_response", "reported_metrics"}
     findings.extend(require_keys(path, obj, required))
     if not SCENARIO_ID_RE.match(str(obj.get("scenario_id"))):
         findings.append(Finding(rel(path), "scenario_id_invalid", str(obj.get("scenario_id"))))
     if obj.get("synthetic") is not True:
         findings.append(Finding(rel(path), "example_not_synthetic", "benchmark examples must be synthetic"))
+    scenario_type = obj.get("scenario_type")
+    if scenario_type not in BENCHMARK_SCENARIO_TYPES:
+        findings.append(Finding(rel(path), "benchmark_scenario_type_invalid", str(scenario_type)))
+    negative_control = obj.get("negative_control")
+    if scenario_type == "negative_control":
+        if negative_control not in BENCHMARK_NEGATIVE_CONTROLS:
+            findings.append(Finding(rel(path), "benchmark_negative_control_invalid", str(negative_control)))
+    elif negative_control is not None:
+        findings.append(Finding(rel(path), "benchmark_negative_control_unexpected", str(negative_control)))
     graph = obj.get("graph_fixture")
     if isinstance(graph, dict):
         if not SHA256_RE.match(str(graph.get("graph_hash"))):

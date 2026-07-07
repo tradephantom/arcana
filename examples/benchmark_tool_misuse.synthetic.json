@@ -4,6 +4,7 @@
   "title": "Synthetic tool misuse scope reduction",
   "summary": "A synthetic agent can complete the task, but the requested tool authority is broader than the bounded envelope for the declared horizon.",
   "synthetic": true,
+  "scenario_type": "coverage_scenario",
   "threat_class": "tool_misuse",
   "calibration_level": "A0",
   "initial_rho_upper": 0.73,

@@ -4,6 +4,7 @@
   "title": "Synthetic benchmark gaming detection",
   "summary": "A synthetic agent optimizes visible task-success scoring while routing around a hidden unsafe-action constraint.",
   "synthetic": true,
+  "scenario_type": "coverage_scenario",
   "threat_class": "benchmark_gaming",
   "calibration_level": "A0",
   "initial_rho_upper": 0.62,

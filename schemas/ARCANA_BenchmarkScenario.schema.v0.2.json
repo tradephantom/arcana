@@ -9,6 +9,7 @@
     "title",
     "summary",
     "synthetic",
+    "scenario_type",
     "threat_class",
     "calibration_level",
     "initial_rho_upper",
@@ -36,6 +37,25 @@
     "synthetic": {
       "type": "boolean",
       "const": true
+    },
+    "scenario_type": {
+      "type": "string",
+      "enum": [
+        "coverage_scenario",
+        "negative_control"
+      ]
+    },
+    "negative_control": {
+      "type": "string",
+      "enum": [
+        "missing_decision_horizon",
+        "graph_hash_mismatch",
+        "a0_artifact_used_for_admission",
+        "rho_mean_below_threshold_rho_upper_above_threshold",
+        "fastgate_inconclusive",
+        "loss_model_missing_required",
+        "stale_evidence"
+      ]
     },
     "threat_class": {
       "type": "string",
@@ -151,5 +171,35 @@
       "uniqueItems": true
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scenario_type": {
+            "const": "negative_control"
+          }
+        },
+        "required": ["scenario_type"]
+      },
+      "then": {
+        "required": ["negative_control"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "scenario_type": {
+            "const": "coverage_scenario"
+          }
+        },
+        "required": ["scenario_type"]
+      },
+      "then": {
+        "not": {
+          "required": ["negative_control"]
+        }
+      }
+    }
+  ],
   "additionalProperties": false
 }
