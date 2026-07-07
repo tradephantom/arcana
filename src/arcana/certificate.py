@@ -18,7 +18,7 @@ from arcana._validation import (
     fail,
     require_value,
 )
-from arcana.calibration import CalibrationProfile
+from arcana.calibration import CalibrationProfile, validate_calibration_sources_for_level, validate_certification_status_for_level
 from arcana.errors import CalibrationLevel, CertificationStatus, ReasonCode, Verdict
 from arcana.model import AutonomyBudget, DecisionHorizon, EvidenceReference, FastGateContext, LossBounds, RhoInterval, RiskContext
 
@@ -49,12 +49,13 @@ class CertificateCalibrationProfile:
             (*path, "certification_status"),
             ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
         )
-        if level is CalibrationLevel.A0 and status is not CertificationStatus.NON_CERTIFIABLE:
-            fail("a0_must_be_non_certifiable", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "A0 certificate profile must be non_certifiable", (*path, "certification_status"))
+        source = expect_string_list(require_value(data, "source", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "source"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT, min_items=1, unique=True)
+        validate_calibration_sources_for_level(level, source, (*path, "source"))
+        validate_certification_status_for_level(level, status, source, (*path, "certification_status"))
         return cls(
             profile_id=expect_calibration_profile_id(require_value(data, "profile_id", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "profile_id")),
             level=level,
-            source=expect_string_list(require_value(data, "source", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "source"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT, min_items=1, unique=True),
+            source=source,
             confidence=expect_number_range(require_value(data, "confidence", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), 0, 1, (*path, "confidence"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
             certification_status=status,
         )
@@ -95,6 +96,26 @@ class BoundedAutonomyCertificate:
             (*path, "certificate_type"),
             ReasonCode.DENY_MODEL_INPUT_INVALID,
         )
+        verdict = expect_enum(Verdict, require_value(data, "verdict", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "verdict"), ReasonCode.DENY_MODEL_INPUT_INVALID)
+        evidence = EvidenceReference.from_mapping(require_value(data, "evidence", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "evidence"))
+        if certificate_type is CertificateType.DEMO_NON_CERTIFIABLE_CERTIFICATE:
+            if calibration_profile.level is not CalibrationLevel.A0:
+                fail("demo_certificate_requires_a0", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "demo_non_certifiable_certificate requires A0 calibration", (*path, "calibration_profile", "level"))
+            if calibration_profile.certification_status is not CertificationStatus.NON_CERTIFIABLE:
+                fail("demo_certificate_must_be_non_certifiable", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "demo_non_certifiable_certificate requires non_certifiable status", (*path, "calibration_profile", "certification_status"))
+            if verdict is not Verdict.OBSERVE_ONLY:
+                fail("demo_certificate_verdict_invalid", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "demo_non_certifiable_certificate must use observe_only verdict", (*path, "verdict"))
+            if not evidence.synthetic:
+                fail("demo_certificate_evidence_not_synthetic", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "demo_non_certifiable_certificate requires synthetic evidence", (*path, "evidence", "synthetic"))
+        else:
+            if calibration_profile.level not in {CalibrationLevel.A2, CalibrationLevel.A3}:
+                fail("certificate_calibration_level_insufficient", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "non-demo certificate-like artifacts require A2 or A3 calibration", (*path, "calibration_profile", "level"))
+            if calibration_profile.certification_status is not CertificationStatus.CERTIFIABLE_UNDER_PROFILE:
+                fail("certificate_profile_not_certifiable", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "non-demo certificate-like artifacts require certifiable_under_profile status", (*path, "calibration_profile", "certification_status"))
+            if evidence.synthetic:
+                fail("certificate_evidence_synthetic_invalid", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "non-demo certificate-like artifacts cannot use synthetic evidence", (*path, "evidence", "synthetic"))
+            if ReasonCode.INFO_A0_NON_CERTIFIABLE in reason_codes or ReasonCode.INFO_SYNTHETIC_FIXTURE in reason_codes:
+                fail("certificate_reason_code_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "non-demo certificate-like artifacts cannot carry demo or synthetic info reason codes", (*path, "reason_codes"))
         if calibration_profile.level is CalibrationLevel.A0:
             if certificate_type is not CertificateType.DEMO_NON_CERTIFIABLE_CERTIFICATE:
                 fail("a0_certificate_type_invalid", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "A0 certificate must be demo_non_certifiable_certificate", (*path, "certificate_type"))
@@ -107,10 +128,10 @@ class BoundedAutonomyCertificate:
             risk_model_version=expect_risk_model_version(require_value(data, "risk_model_version", path, ReasonCode.DENY_RISK_MODEL_UNSUPPORTED), (*path, "risk_model_version")),
             calibration_profile=calibration_profile,
             decision_horizon=DecisionHorizon.from_mapping(require_value(data, "decision_horizon", path, ReasonCode.DENY_DECISION_HORIZON_MISMATCH), (*path, "decision_horizon")),
-            verdict=expect_enum(Verdict, require_value(data, "verdict", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "verdict"), ReasonCode.DENY_MODEL_INPUT_INVALID),
+            verdict=verdict,
             rho_interval=RhoInterval.from_mapping(require_value(data, "rho_interval", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "rho_interval")),
             loss_bounds=LossBounds.from_mapping(require_value(data, "loss_bounds", path, ReasonCode.DENY_LOSS_MODEL_INVALID), (*path, "loss_bounds")),
-            evidence=EvidenceReference.from_mapping(require_value(data, "evidence", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "evidence")),
+            evidence=evidence,
             reason_codes=reason_codes,
             issued_at=expect_datetime_string(require_value(data, "issued_at", path, ReasonCode.DENY_CONTEXT_STALE), (*path, "issued_at"), ReasonCode.DENY_CONTEXT_STALE),
             caveats=expect_string_list(require_value(data, "caveats", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "caveats"), ReasonCode.DENY_MODEL_INPUT_INVALID, min_items=1),

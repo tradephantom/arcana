@@ -62,6 +62,30 @@ def test_a0_calibration_must_be_non_certifiable() -> None:
     assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
 
 
+def test_a1_calibration_must_be_non_certifiable() -> None:
+    document = _example("calibration_profile_a0.synthetic.json")
+    document["level"] = "A1"
+    document["source"] = ["static_conservative_prior"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        parse_typed_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+
+
+def test_runtime_observation_requires_a3_calibration() -> None:
+    document = _example("calibration_profile_a0.synthetic.json")
+    document["level"] = "A2"
+    document["source"] = ["runtime_observation"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        parse_typed_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+
+
 def test_mutating_copy_does_not_modify_fixture() -> None:
     original = _example("risk_context_allow_with_controls.synthetic.json")
     mutated = copy.deepcopy(original)

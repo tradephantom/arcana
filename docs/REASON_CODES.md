@@ -64,10 +64,14 @@ Do not use when:
 
 - any required field is missing;
 - the result depends on A0/demo calibration for a certifiable claim;
+- the result depends on A1 calibration for a non-demo certificate-like claim;
 - FastGate is uncertain;
 - evidence is stale or mismatched.
 
-Guidance: emit a bounded autonomy certificate only if all certificate fields are present and the calibration level permits certification.
+Guidance: emit a non-demo bounded autonomy certificate-like artifact only if all
+certificate fields are present, calibration is A2 or A3, evidence is
+non-synthetic, and the reviewed profile permits `certifiable_under_profile`
+semantics. This does not authorize commercial certificate issuance.
 
 ### `ARCANA_ALLOW_WITH_CONTROLS`
 
@@ -298,6 +302,8 @@ Meaning: the action can be evaluated or monitored but not treated as bounded for
 Use when:
 
 - calibration is A0/demo only;
+- calibration is A1 and the requested output is a non-demo certificate-like
+  artifact;
 - evidence is too weak for enforcement-like claims;
 - rollout stage is observation;
 - model support is incomplete but non-executing analysis is allowed.

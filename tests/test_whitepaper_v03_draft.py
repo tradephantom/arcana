@@ -38,11 +38,14 @@ def test_whitepaper_v03_preserves_superbrain_review_hardening_points() -> None:
         "Calibration profiles must prevent double-counting between `exposure_e`,",
         "certificate-like bounded-autonomy",
         "artifacts must not use `theta_rho > 1`.",
+        "A1 remains `non_certifiable` and cannot support non-demo certificate-like",
+        "Eligible for `certifiable_under_profile` only after reviewed scope",
         "`certifiable_under_profile` is a bounded public/reference semantic",
         "artifact_contract_validity_rate",
         "Earlier drafts used the name `certificate_validity_rate`",
         "ARCANA can be integrated with capability-bound execution systems",
         "The draft remains ready for staged expert review, not final public publication.",
+        "internal calibration-level review of A1/A2/A3 public semantics",
     ]
 
     for phrase in required_phrases:

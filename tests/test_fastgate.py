@@ -351,7 +351,39 @@ def test_perron_fastgate_fields_validate_in_context_and_certificate() -> None:
         fastgate=evaluation.fastgate,
     )
     certificate = BoundedAutonomyCertificate(
-        certificate_id="arcana-cert-fastgate-a1-unit-test",
+        certificate_id="arcana-cert-fastgate-a2-unit-test",
+        certificate_type=CertificateType.BOUNDED_AUTONOMY_CERTIFICATE,
+        risk_model_version="arcana.risk.v0.2",
+        calibration_profile=CertificateCalibrationProfile(
+            profile_id="arcana.cal.fastgate_a2",
+            level=CalibrationLevel.A2,
+            source=("controlled_redteam",),
+            confidence=0.8,
+            certification_status=CertificationStatus.CERTIFIABLE_UNDER_PROFILE,
+        ),
+        decision_horizon=_horizon(),
+        verdict=evaluation.decision.verdict,
+        rho_interval=rho_interval,
+        loss_bounds=loss_bounds,
+        evidence=EvidenceReference(
+            source_type="controlled_test",
+            source_id="fastgate-unit-controlled-test",
+            synthetic=False,
+            evidence_hash="sha256:" + "a" * 64,
+        ),
+        reason_codes=evaluation.decision.reason_codes,
+        issued_at=DECISION_TIME,
+        caveats=("controlled-test unit validation only; no commercial certificate issuance",),
+        fastgate=evaluation.fastgate,
+    )
+
+    validate_document(risk_context_to_mapping(context), SchemaVersion.CONTEXT_V02)
+    validate_document(certificate_to_mapping(certificate), SchemaVersion.CERTIFICATE_V02)
+
+
+def test_a1_non_demo_certificate_is_rejected() -> None:
+    certificate = BoundedAutonomyCertificate(
+        certificate_id="arcana-cert-fastgate-a1-rejected-unit-test",
         certificate_type=CertificateType.BOUNDED_AUTONOMY_CERTIFICATE,
         risk_model_version="arcana.risk.v0.2",
         calibration_profile=CertificateCalibrationProfile(
@@ -359,18 +391,34 @@ def test_perron_fastgate_fields_validate_in_context_and_certificate() -> None:
             level=CalibrationLevel.A1,
             source=("static_conservative_prior",),
             confidence=0.7,
-            certification_status=CertificationStatus.CERTIFIABLE_UNDER_PROFILE,
+            certification_status=CertificationStatus.NON_CERTIFIABLE,
         ),
         decision_horizon=_horizon(),
-        verdict=evaluation.decision.verdict,
-        rho_interval=rho_interval,
-        loss_bounds=loss_bounds,
-        evidence=evidence,
-        reason_codes=evaluation.decision.reason_codes,
+        verdict=Verdict.ALLOW_BOUNDED_AUTONOMY,
+        rho_interval=RhoInterval(lower=0.2, mean=0.25, upper=0.3, threshold=0.8),
+        loss_bounds=LossBounds(
+            aar_99_upper=100.0,
+            aes_99_upper=120.0,
+            max_allowed_aar_99=200.0,
+            max_allowed_aes_99=250.0,
+        ),
+        evidence=EvidenceReference(
+            source_type="controlled_test",
+            source_id="fastgate-unit-controlled-test",
+            synthetic=False,
+            evidence_hash="sha256:" + "b" * 64,
+        ),
+        reason_codes=(ReasonCode.ALLOW_BOUNDED_AUTONOMY,),
         issued_at=DECISION_TIME,
-        caveats=("synthetic FastGate schema validation only",),
-        fastgate=evaluation.fastgate,
+        caveats=("A1 non-demo certificate rejection unit test",),
     )
 
-    validate_document(risk_context_to_mapping(context), SchemaVersion.CONTEXT_V02)
-    validate_document(certificate_to_mapping(certificate), SchemaVersion.CERTIFICATE_V02)
+    from arcana.errors import ArcanaValidationError
+
+    try:
+        certificate_to_mapping(certificate)
+    except ArcanaValidationError as exc:
+        assert exc.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+        assert exc.code == "certificate_calibration_level_insufficient"
+    else:  # pragma: no cover
+        raise AssertionError("A1 non-demo certificate should be rejected")

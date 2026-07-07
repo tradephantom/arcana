@@ -41,7 +41,8 @@ def test_demo_certificate_builder_rejects_non_a0_profile() -> None:
     non_a0_profile = dataclasses.replace(
         calibration_profile,
         level=CalibrationLevel.A1,
-        certification_status=CertificationStatus.CERTIFIABLE_UNDER_PROFILE,
+        source=("static_conservative_prior",),
+        certification_status=CertificationStatus.NON_CERTIFIABLE,
     )
 
     with pytest.raises(ArcanaValidationError) as exc_info:

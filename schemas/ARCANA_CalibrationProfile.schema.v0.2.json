@@ -168,6 +168,95 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "A1"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "certification_status": {
+            "const": "non_certifiable"
+          },
+          "source": {
+            "not": {
+              "contains": {
+                "enum": [
+                  "controlled_redteam",
+                  "adversarial_replay",
+                  "public_benchmark",
+                  "runtime_observation"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "A0"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "items": {
+              "const": "synthetic_demo"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "A2"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "not": {
+              "contains": {
+                "const": "runtime_observation"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "certification_status": {
+            "const": "certifiable_under_profile"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "level": {
+            "enum": ["A2", "A3"]
+          },
+          "source": {
+            "not": {
+              "contains": {
+                "const": "synthetic_demo"
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "additionalProperties": false

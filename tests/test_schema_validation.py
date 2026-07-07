@@ -89,6 +89,36 @@ def test_certificate_schema_rejects_rho_threshold_above_subcritical_limit() -> N
     assert exc_info.value.code == "schema_maximum_threshold"
 
 
+def test_calibration_schema_rejects_a1_certifiable_status() -> None:
+    document = copy.deepcopy(_example("calibration_profile_a0.synthetic.json"))
+    document["level"] = "A1"
+    document["source"] = ["static_conservative_prior"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        validate_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+    assert exc_info.value.code == "schema_const_certification_status"
+
+
+def test_certificate_schema_rejects_a1_non_demo_certificate() -> None:
+    document = copy.deepcopy(_example("certificate_a0_non_certifiable.synthetic.json"))
+    document["certificate_type"] = "bounded_autonomy_certificate"
+    document["calibration_profile"]["level"] = "A1"
+    document["calibration_profile"]["source"] = ["static_conservative_prior"]
+    document["calibration_profile"]["certification_status"] = "non_certifiable"
+    document["evidence"]["synthetic"] = False
+    document["evidence"]["source_type"] = "controlled_test"
+    document["reason_codes"] = ["ARCANA_ALLOW_BOUNDED_AUTONOMY"]
+    document["verdict"] = "allow_bounded_autonomy"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        validate_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+
+
 def test_unsupported_schema_version_maps_to_model_input_invalid() -> None:
     document = _example("risk_context_allow_with_controls.synthetic.json")
     document["schema_version"] = "arcana.context.v9.9"

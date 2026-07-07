@@ -30,6 +30,20 @@ ALLOWED_CALIBRATION_SOURCES = {
     "public_benchmark",
     "runtime_observation",
 }
+CALIBRATION_LEVEL_RANK = {
+    CalibrationLevel.A0: 0,
+    CalibrationLevel.A1: 1,
+    CalibrationLevel.A2: 2,
+    CalibrationLevel.A3: 3,
+}
+CALIBRATION_SOURCE_MIN_LEVEL = {
+    "synthetic_demo": CalibrationLevel.A0,
+    "static_conservative_prior": CalibrationLevel.A1,
+    "controlled_redteam": CalibrationLevel.A2,
+    "adversarial_replay": CalibrationLevel.A2,
+    "public_benchmark": CalibrationLevel.A2,
+    "runtime_observation": CalibrationLevel.A3,
+}
 
 
 @dataclass(frozen=True)
@@ -131,8 +145,6 @@ class CalibrationProfile:
             (*path, "certification_status"),
             ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
         )
-        if level is CalibrationLevel.A0 and status is not CertificationStatus.NON_CERTIFIABLE:
-            fail("a0_must_be_non_certifiable", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "A0 calibration must be non_certifiable", (*path, "certification_status"))
         last_updated = data.get("last_updated_at")
         sources = expect_string_list(
             require_value(data, "source", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
@@ -144,6 +156,8 @@ class CalibrationProfile:
         for index, source in enumerate(sources):
             if source not in ALLOWED_CALIBRATION_SOURCES:
                 fail("calibration_source_unsupported", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "unsupported calibration source", (*path, "source", index))
+        validate_calibration_sources_for_level(level, sources, (*path, "source"))
+        validate_certification_status_for_level(level, status, sources, (*path, "certification_status"))
         return cls(
             profile_id=expect_calibration_profile_id(require_value(data, "profile_id", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "profile_id")),
             risk_model_version=expect_risk_model_version(require_value(data, "risk_model_version", path, ReasonCode.DENY_RISK_MODEL_UNSUPPORTED), (*path, "risk_model_version")),
@@ -160,10 +174,62 @@ class CalibrationProfile:
         )
 
 
+def validate_calibration_sources_for_level(
+    level: CalibrationLevel,
+    sources: tuple[str, ...],
+    path: tuple[str | int, ...] = ("source",),
+) -> None:
+    for index, source in enumerate(sources):
+        required_level = CALIBRATION_SOURCE_MIN_LEVEL.get(source)
+        if required_level is None:
+            fail("calibration_source_unsupported", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "unsupported calibration source", (*path, index))
+        if CALIBRATION_LEVEL_RANK[level] < CALIBRATION_LEVEL_RANK[required_level]:
+            fail(
+                "calibration_source_level_mismatch",
+                ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+                "calibration level is weaker than the minimum level required by source",
+                (*path, index),
+            )
+
+
+def validate_certification_status_for_level(
+    level: CalibrationLevel,
+    status: CertificationStatus,
+    sources: tuple[str, ...],
+    path: tuple[str | int, ...] = ("certification_status",),
+) -> None:
+    if level in {CalibrationLevel.A0, CalibrationLevel.A1} and status is not CertificationStatus.NON_CERTIFIABLE:
+        fail(
+            "calibration_level_must_be_non_certifiable",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "A0 and A1 public calibration profiles must be non_certifiable",
+            path,
+        )
+    if status is CertificationStatus.CERTIFIABLE_UNDER_PROFILE:
+        if level not in {CalibrationLevel.A2, CalibrationLevel.A3}:
+            fail(
+                "certifiable_profile_level_insufficient",
+                ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+                "certifiable_under_profile requires A2 or A3 calibration",
+                path,
+            )
+        if "synthetic_demo" in sources:
+            fail(
+                "certifiable_profile_synthetic_source_invalid",
+                ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+                "certifiable_under_profile cannot be based on synthetic_demo source",
+                path,
+            )
+
+
 __all__ = [
     "ALLOWED_CALIBRATION_SOURCES",
+    "CALIBRATION_LEVEL_RANK",
+    "CALIBRATION_SOURCE_MIN_LEVEL",
     "CalibrationProfile",
     "CalibrationUncertainty",
     "EdgeWeightPolicy",
     "EvidenceWindow",
+    "validate_calibration_sources_for_level",
+    "validate_certification_status_for_level",
 ]

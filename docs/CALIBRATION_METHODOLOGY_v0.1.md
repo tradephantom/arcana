@@ -80,9 +80,9 @@ ARCANA uses four public calibration levels.
 | Level | Name | Public use | Certification status |
 | --- | --- | --- | --- |
 | A0 | Heuristic / Demo Only | Synthetic examples, tutorials, paper illustrations. | Always `non_certifiable`. |
-| A1 | Static Conservative Prior | Conservative offline estimates from declared static factors. | May be `certifiable_under_profile` only for low-impact, low-scope contexts after review. |
-| A2 | Empirical / Red-Team Calibration | Controlled adversarial evidence, scenario replay, benchmark evidence. | May be `certifiable_under_profile` when coverage, segmentation, and freshness requirements pass. |
-| A3 | Runtime Bayesian Calibration | Segmented runtime distributions with decay, priors, and controlled evidence separation. | May be `certifiable_under_profile` when runtime evidence is calibrated, segmented, fresh, and auditable. |
+| A1 | Static Conservative Prior | Conservative offline estimates from declared static factors. | Public v0.2 default is `non_certifiable`; no certificate-like artifact support. |
+| A2 | Empirical / Red-Team Calibration | Controlled adversarial evidence, scenario replay, benchmark evidence. | May be `certifiable_under_profile` only when reviewed coverage, segmentation, freshness, and non-synthetic evidence requirements pass. |
+| A3 | Runtime Bayesian Calibration | Segmented runtime distributions with decay, priors, and controlled evidence separation. | May be `certifiable_under_profile` only when runtime evidence is reviewed, calibrated, segmented, fresh, and auditable. |
 
 Level ordering is:
 
@@ -156,6 +156,10 @@ A1 requirements:
 - `confidence` remains below empirical levels unless reviewed.
 
 A1 is not empirical proof. It is a conservative static prior suitable for early reference calculations and low-impact public examples.
+
+In the public v0.2 contract, A1 can support bounded reference risk contexts
+when all other constraints pass, but A1 remains `non_certifiable` and cannot
+support non-demo certificate-like artifacts.
 
 ## 6. A2 - Empirical / Red-Team Calibration
 
@@ -446,6 +450,7 @@ certifiable_under_profile
 `non_certifiable` is required when:
 
 - calibration level is A0;
+- calibration level is A1 in the public v0.2 contract;
 - evidence is synthetic-only;
 - requested output is observe-only;
 - required evidence source is missing;
@@ -455,7 +460,9 @@ certifiable_under_profile
 
 `certifiable_under_profile` may be used only when:
 
+- calibration level is A2 or A3;
 - calibration level is sufficient for the requested action;
+- evidence is not synthetic-only;
 - risk model version is supported;
 - decision horizon is compatible;
 - evidence quality passes;
@@ -464,7 +471,9 @@ certifiable_under_profile
 - required controls are satisfiable;
 - caveats do not block admission use.
 
-This status remains model-bounded. It does not assert absolute safety.
+This status remains model-bounded. It does not assert absolute safety,
+commercial certificate issuance, production enforcement, customer approval, or
+operational authorization.
 
 ## 17. Minimum Required Level by Use
 
@@ -474,7 +483,7 @@ Default public minimums:
 | --- | --- | --- |
 | schema example | A0 | `ARCANA_INFO_A0_NON_CERTIFIABLE` |
 | tutorial demo | A0 | `observe_only` |
-| low-impact offline reference decision | A1 | `ARCANA_REQUIRE_OBSERVE_ONLY` |
+| low-impact offline reference risk context | A1 | `ARCANA_REQUIRE_OBSERVE_ONLY`; no certificate-like artifact |
 | bounded autonomy certificate example beyond demo | A2 | `ARCANA_DENY_CALIBRATION_INSUFFICIENT` |
 | high-impact operation admission | A2 | `ARCANA_DENY_CALIBRATION_INSUFFICIENT` |
 | runtime adaptive autonomy budget update | A3 | `ARCANA_DENY_CALIBRATION_INSUFFICIENT` |
@@ -536,11 +545,13 @@ The future reference implementation should implement calibration in this order:
 11. tests for A0 non-certifiable behavior;
 12. tests for calibration insufficiency.
 
-No implementation should issue a certifiable non-demo artifact before this methodology, the schemas, and the formal model are reviewed together.
+No implementation should issue a certifiable non-demo artifact before this
+methodology, the schemas, and the formal model are reviewed together. Public
+v0.2 non-demo certificate-like artifacts require A2 or A3 calibration and
+non-synthetic evidence.
 
 ## 21. Open Questions
 
-- Should A1 ever support `certifiable_under_profile`, or should certification require A2 in all public examples?
 - What public benchmark evidence should define the first A2 profile?
 - What default temporal decay parameter should be used for public reference fixtures?
 - Should calibration profiles include explicit per-factor intervals in v0.3 schemas?

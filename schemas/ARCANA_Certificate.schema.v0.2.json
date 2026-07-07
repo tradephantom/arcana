@@ -55,7 +55,14 @@
           "type": "array",
           "items": {
             "type": "string",
-            "minLength": 1
+            "enum": [
+              "synthetic_demo",
+              "static_conservative_prior",
+              "controlled_redteam",
+              "adversarial_replay",
+              "public_benchmark",
+              "runtime_observation"
+            ]
           },
           "minItems": 1,
           "uniqueItems": true
@@ -157,6 +164,89 @@
           "reason_codes": {
             "contains": {
               "const": "ARCANA_INFO_A0_NON_CERTIFIABLE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "certificate_type": {
+            "const": "demo_non_certifiable_certificate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "calibration_profile": {
+            "properties": {
+              "level": {
+                "const": "A0"
+              },
+              "certification_status": {
+                "const": "non_certifiable"
+              },
+              "source": {
+                "items": {
+                  "const": "synthetic_demo"
+                }
+              }
+            }
+          },
+          "verdict": {
+            "const": "observe_only"
+          },
+          "evidence": {
+            "properties": {
+              "synthetic": {
+                "const": true
+              }
+            }
+          },
+          "reason_codes": {
+            "contains": {
+              "const": "ARCANA_INFO_A0_NON_CERTIFIABLE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "certificate_type": {
+            "enum": [
+              "bounded_autonomy_certificate",
+              "subcritical_under_model_certificate"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "calibration_profile": {
+            "properties": {
+              "level": {
+                "enum": ["A2", "A3"]
+              },
+              "certification_status": {
+                "const": "certifiable_under_profile"
+              },
+              "source": {
+                "not": {
+                  "contains": {
+                    "const": "synthetic_demo"
+                  }
+                }
+              }
+            }
+          },
+          "evidence": {
+            "properties": {
+              "synthetic": {
+                "const": false
+              }
             }
           }
         }

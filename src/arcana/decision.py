@@ -19,7 +19,14 @@ from arcana._validation import (
     expect_sha256,
     fail,
 )
-from arcana.calibration import CalibrationProfile, CalibrationUncertainty, EdgeWeightPolicy, EvidenceWindow
+from arcana.calibration import (
+    CalibrationProfile,
+    CalibrationUncertainty,
+    EdgeWeightPolicy,
+    EvidenceWindow,
+    validate_calibration_sources_for_level,
+    validate_certification_status_for_level,
+)
 from arcana.errors import (
     ArcanaValidationError,
     CalibrationLevel,
@@ -332,12 +339,15 @@ def _validate_calibration_profile(profile: CalibrationProfile) -> CalibrationPro
     _validate_evidence_window_object(profile.evidence_window)
     _validate_uncertainty_object(profile.uncertainty)
     _validate_edge_weight_policy_object(profile.edge_weight_policy)
+    source = _validate_string_sequence(profile.source, ("calibration_profile", "source"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT, min_items=1, unique=True)
+    validate_calibration_sources_for_level(profile.level, source, ("calibration_profile", "source"))
+    validate_certification_status_for_level(profile.level, profile.certification_status, source, ("calibration_profile", "certification_status"))
     return CalibrationProfile(
         profile_id=expect_calibration_profile_id(profile.profile_id, ("calibration_profile", "profile_id")),
         risk_model_version=expect_risk_model_version(profile.risk_model_version, ("calibration_profile", "risk_model_version")),
         level=profile.level,
         decision_horizon=_validate_decision_horizon(profile.decision_horizon),
-        source=_validate_string_sequence(profile.source, ("calibration_profile", "source"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT, min_items=1, unique=True),
+        source=source,
         evidence_window=profile.evidence_window,
         confidence=expect_number_range(profile.confidence, 0, 1, ("calibration_profile", "confidence"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
         uncertainty=profile.uncertainty,

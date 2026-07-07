@@ -342,9 +342,9 @@ ARCANA uses four public calibration levels:
 | Level | Name | Public use | Certification status |
 | --- | --- | --- | --- |
 | A0 | Heuristic / Demo Only | Synthetic examples, tutorials, paper illustrations. | Always `non_certifiable`. |
-| A1 | Static Conservative Prior | Conservative offline estimates from declared static factors. | Review required before certifiable-under-profile language. |
-| A2 | Empirical / Red-Team Calibration | Controlled adversarial evidence, replay, and benchmark evidence. | Review required for scope and evidence coverage. |
-| A3 | Runtime Bayesian Calibration | Maintained segmented distributions with decay and priors. | Review required for runtime evidence and auditability. |
+| A1 | Static Conservative Prior | Conservative offline estimates from declared static factors. | Public v0.2 default is `non_certifiable`; no certificate-like artifact support. |
+| A2 | Empirical / Red-Team Calibration | Controlled adversarial evidence, replay, and benchmark evidence. | Eligible for `certifiable_under_profile` only after reviewed scope, coverage, freshness, and non-synthetic evidence checks. |
+| A3 | Runtime Bayesian Calibration | Maintained segmented distributions with decay and priors. | Eligible for `certifiable_under_profile` only after reviewed runtime evidence and auditability checks. |
 
 A0 is demo-only. A0 outputs must preserve:
 
@@ -355,8 +355,12 @@ ARCANA_INFO_A0_NON_CERTIFIABLE
 The public claim boundary after internal production-readiness review is:
 
 - A1 is a conservative prior level and is not a commercial certificate basis.
+- A1 can support bounded reference risk contexts when all other constraints pass,
+  but A1 remains `non_certifiable` and cannot support non-demo certificate-like
+  artifacts in the public v0.2 contract.
 - A2 may support reviewed empirical calibration claims only when scope,
-  evidence, freshness, and horizon match the reviewed profile.
+  evidence, freshness, horizon, and non-synthetic evidence match the reviewed
+  profile.
 - A3 remains a runtime-calibration design target unless a separate runtime
   distribution review is completed.
 - Public examples do not disclose private thresholds, formulas, runtime
@@ -450,12 +454,13 @@ Every certificate-like artifact must include:
 
 A0 artifacts are non-certifiable and cannot support production certificate issuance.
 
-In this public draft, A1 artifacts are also non-commercial-certificate
-artifacts. A2 and A3 references are conditional claim boundaries: they describe
-what a reviewed profile would need to bind, not an authorization to issue a
-production certificate from this repository. Certificate issuance, if ever
-implemented by a deployment-specific system, requires a separate issuance
-process, expiry, revocation path, support evidence, and review record.
+In this public draft, A1 certificate-like artifacts are not supported beyond
+non-certifiable reference contexts. A2 and A3 references are conditional claim
+boundaries: they describe what a reviewed profile would need to bind, not an
+authorization to issue a production certificate from this repository.
+Certificate issuance, if ever implemented by a deployment-specific system,
+requires a separate issuance process, expiry, revocation path, support
+evidence, and review record.
 
 If a certificate-like artifact is stale, graph-mismatched, horizon-mismatched, evidence-mismatched, or missing required fields, it must be rejected or recomputed.
 
@@ -637,8 +642,11 @@ Core limitations:
 - synthetic benchmark results do not prove production behavior;
 - A0 output is non-certifiable;
 - A1 output is not a commercial certificate basis in this public track;
+- A1 cannot support non-demo certificate-like artifacts in the public v0.2
+  contract;
 - A2/A3 language remains conditional on separate review, evidence coverage,
-  freshness, horizon compatibility, expiry, and revocation handling;
+  freshness, horizon compatibility, non-synthetic evidence, expiry, and
+  revocation handling;
 - FastGate depends on valid assumptions and fallback paths;
 - evidence hashes bind artifacts but do not prove evidence quality;
 - local policy may be stricter than ARCANA's bounded result;
@@ -705,8 +713,6 @@ The draft remains ready for staged expert review, not final public publication.
 
 Open review items:
 
-- external mathematical review of the formal model;
-- calibration-level review for A1-A3 semantics;
 - schema contract review;
 - FastGate numerical and graph-edge-case review;
 - benchmark scenario coverage review;
@@ -718,3 +724,5 @@ Completed publication prerequisites:
 - GitHub Private Vulnerability Reporting configuration;
 - public release-note publication;
 - fresh-clone validation of `make check`, `make test`, and `make demo`.
+- internal mathematical review of public subcritical threshold semantics;
+- internal calibration-level review of A1/A2/A3 public semantics.

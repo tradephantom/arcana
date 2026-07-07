@@ -27,7 +27,9 @@ def _profile(
     source: tuple[str, ...] = ("static_conservative_prior",),
     observed_before: str = "2026-06-09T00:00:00Z",
     max_age_seconds: int = 3600,
+    certification_status: CertificationStatus | None = None,
 ) -> CalibrationProfile:
+    default_status = CertificationStatus.NON_CERTIFIABLE if level in {CalibrationLevel.A0, CalibrationLevel.A1} else CertificationStatus.CERTIFIABLE_UNDER_PROFILE
     return CalibrationProfile(
         profile_id=f"arcana.cal.test_{level.value.lower()}",
         risk_model_version=risk_model_version,
@@ -47,9 +49,7 @@ def _profile(
             use_lower_bound_for_controls=True,
         ),
         caveats=("synthetic unit test calibration",),
-        certification_status=CertificationStatus.NON_CERTIFIABLE
-        if level is CalibrationLevel.A0
-        else CertificationStatus.CERTIFIABLE_UNDER_PROFILE,
+        certification_status=certification_status or default_status,
         last_updated_at="2026-06-09T00:00:00Z",
     )
 
@@ -171,6 +171,34 @@ def test_calibration_insufficient_deny_reason() -> None:
 
     _assert_result(result, Verdict.DENY, ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
     assert result.metrics["issue_code"] == "calibration_level_too_weak"
+
+
+def test_a1_profile_cannot_be_certifiable_under_public_contract() -> None:
+    result = evaluate_decision(
+        _request(
+            calibration_profile=_profile(
+                level=CalibrationLevel.A1,
+                certification_status=CertificationStatus.CERTIFIABLE_UNDER_PROFILE,
+            )
+        )
+    )
+
+    _assert_result(result, Verdict.DENY, ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
+    assert result.metrics["issue_code"] == "calibration_level_must_be_non_certifiable"
+
+
+def test_source_class_must_match_calibration_level() -> None:
+    result = evaluate_decision(
+        _request(
+            calibration_profile=_profile(
+                level=CalibrationLevel.A1,
+                source=("runtime_observation",),
+            )
+        )
+    )
+
+    _assert_result(result, Verdict.DENY, ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
+    assert result.metrics["issue_code"] == "calibration_source_level_mismatch"
 
 
 def test_risk_model_unsupported_deny_reason() -> None:
