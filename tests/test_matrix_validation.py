@@ -99,3 +99,17 @@ def test_tolerance_policy_rejects_invalid_values() -> None:
 
     assert exc_info.value.reason_code is ReasonCode.DENY_MODEL_INPUT_INVALID
     assert exc_info.value.code == "number_invalid"
+
+
+def test_public_rho_threshold_must_not_exceed_subcritical_limit() -> None:
+    bundle = MatrixBundle.from_values(
+        lower=[[0.0, 0.05], [0.05, 0.0]],
+        mean=[[0.0, 0.1], [0.1, 0.0]],
+        upper=[[0.0, 0.2], [0.2, 0.0]],
+    )
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        bundle.spectral_radii(threshold=1.01)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_MODEL_INPUT_INVALID
+    assert exc_info.value.code == "number_out_of_range"

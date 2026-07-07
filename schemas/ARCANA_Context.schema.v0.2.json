@@ -121,7 +121,7 @@
         "lower": { "type": "number", "minimum": 0 },
         "mean": { "type": "number", "minimum": 0 },
         "upper": { "type": "number", "minimum": 0 },
-        "threshold": { "type": "number", "minimum": 0 }
+        "threshold": { "type": "number", "minimum": 0, "maximum": 1 }
       },
       "additionalProperties": false
     },

@@ -15,6 +15,7 @@ from arcana._validation import (
     expect_mapping,
     expect_non_empty_string,
     expect_number_min,
+    expect_number_range,
     expect_risk_model_version,
     expect_scenario_id,
     expect_sha256,
@@ -157,7 +158,7 @@ class RhoInterval:
             lower=expect_number_min(require_value(data, "lower", path, ReasonCode.DENY_MODEL_INPUT_INVALID), 0, (*path, "lower"), ReasonCode.DENY_MODEL_INPUT_INVALID),
             mean=expect_number_min(require_value(data, "mean", path, ReasonCode.DENY_MODEL_INPUT_INVALID), 0, (*path, "mean"), ReasonCode.DENY_MODEL_INPUT_INVALID),
             upper=expect_number_min(require_value(data, "upper", path, ReasonCode.DENY_MODEL_INPUT_INVALID), 0, (*path, "upper"), ReasonCode.DENY_MODEL_INPUT_INVALID),
-            threshold=expect_number_min(require_value(data, "threshold", path, ReasonCode.DENY_MODEL_INPUT_INVALID), 0, (*path, "threshold"), ReasonCode.DENY_MODEL_INPUT_INVALID),
+            threshold=expect_number_range(require_value(data, "threshold", path, ReasonCode.DENY_MODEL_INPUT_INVALID), 0, 1, (*path, "threshold"), ReasonCode.DENY_MODEL_INPUT_INVALID),
         )
         if not interval.lower <= interval.mean <= interval.upper:
             fail("rho_interval_order_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "expected lower <= mean <= upper", path)

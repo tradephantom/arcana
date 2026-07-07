@@ -36,6 +36,8 @@ def test_whitepaper_v03_preserves_superbrain_review_hardening_points() -> None:
     required_phrases = [
         "ARCANA is only as complete as the graph and evidence it is given.",
         "Calibration profiles must prevent double-counting between `exposure_e`,",
+        "certificate-like bounded-autonomy",
+        "artifacts must not use `theta_rho > 1`.",
         "`certifiable_under_profile` is a bounded public/reference semantic",
         "artifact_contract_validity_rate",
         "Earlier drafts used the name `certificate_validity_rate`",

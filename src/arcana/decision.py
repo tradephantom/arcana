@@ -130,7 +130,7 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
             "tolerance_policy_invalid",
             "tolerance_policy must be TolerancePolicy",
         )
-    rho_threshold = expect_number_min(request.rho_threshold, 0, ("rho_threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+    rho_threshold = expect_number_range(request.rho_threshold, 0, 1, ("rho_threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
     delta_rho_upper = expect_number_min(request.delta_rho_upper, 0, ("delta_rho_upper",), ReasonCode.DENY_MODEL_INPUT_INVALID)
 
     if not isinstance(request.decision_horizon, DecisionHorizon):

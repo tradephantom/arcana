@@ -109,6 +109,13 @@ def test_exact_recompute_denies_rho_breach() -> None:
     assert evaluation.decision.metrics["issue_code"] == "fastgate_exact_rho_upper_bound_exceeded"
 
 
+def test_threshold_above_subcritical_limit_returns_model_input_invalid() -> None:
+    evaluation = evaluate_fastgate(_request(threshold=1.01))
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_MODEL_INPUT_INVALID)
+    assert evaluation.decision.metrics["issue_code"] == "number_out_of_range"
+
+
 def test_warm_path_allows_with_valid_positive_vector() -> None:
     evaluation = evaluate_fastgate(
         _request(

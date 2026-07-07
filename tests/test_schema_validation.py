@@ -67,6 +67,28 @@ def test_missing_certificate_loss_bounds_maps_to_loss_model_invalid() -> None:
     assert exc_info.value.code == "schema_required_loss_bounds"
 
 
+def test_context_schema_rejects_rho_threshold_above_subcritical_limit() -> None:
+    document = copy.deepcopy(_example("risk_context_allow_with_controls.synthetic.json"))
+    document["rho_interval"]["threshold"] = 1.01
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        validate_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_MODEL_INPUT_INVALID
+    assert exc_info.value.code == "schema_maximum_threshold"
+
+
+def test_certificate_schema_rejects_rho_threshold_above_subcritical_limit() -> None:
+    document = copy.deepcopy(_example("certificate_a0_non_certifiable.synthetic.json"))
+    document["rho_interval"]["threshold"] = 1.01
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        validate_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_MODEL_INPUT_INVALID
+    assert exc_info.value.code == "schema_maximum_threshold"
+
+
 def test_unsupported_schema_version_maps_to_model_input_invalid() -> None:
     document = _example("risk_context_allow_with_controls.synthetic.json")
     document["schema_version"] = "arcana.context.v9.9"

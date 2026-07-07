@@ -199,12 +199,15 @@ rho_decision = rho_upper
 The public subcritical-under-model condition is:
 
 ```text
+0 <= theta_rho <= 1
 rho_upper < theta_rho
 ```
 
-where `theta_rho` is the declared policy or model threshold for the decision context.
+where `theta_rho` is the declared public threshold for the decision context.
 
-`theta_rho` must not be reused across incompatible horizons, graph scopes, model versions, or calibration profiles.
+`theta_rho` must not be reused across incompatible horizons, graph scopes, model
+versions, or calibration profiles. Public allow-like, subcritical-under-model,
+and certificate-like bounded-autonomy artifacts must not use `theta_rho > 1`.
 
 ## 8. Subcritical Interpretation
 
@@ -447,7 +450,7 @@ Before computing `rho(K)`, ARCANA must validate:
 - all edge weights use compatible `H`;
 - node ordering is bound to graph hash;
 - intervals satisfy `lower <= mean <= upper`;
-- thresholds are nonnegative;
+- public `rho` thresholds are in the subcritical interval `[0, 1]`;
 - loss is not embedded in propagation weights.
 
 Violations return:

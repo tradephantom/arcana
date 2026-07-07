@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from arcana._validation import expect_non_empty_string, expect_number_min, expect_sha256, fail
+from arcana._validation import expect_non_empty_string, expect_number_min, expect_number_range, expect_sha256, fail
 from arcana.errors import ReasonCode
 from arcana.model import RhoInterval
 
@@ -25,12 +25,12 @@ class TolerancePolicy:
         expect_number_min(self.rel_tolerance, 0, ("rel_tolerance",), ReasonCode.DENY_MODEL_INPUT_INVALID)
 
     def margin(self, threshold: float) -> float:
-        threshold_value = expect_number_min(threshold, 0, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+        threshold_value = expect_number_range(threshold, 0, 1, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
         return max(self.abs_tolerance, self.rel_tolerance * threshold_value)
 
     def below_threshold_with_margin(self, value: float, threshold: float) -> bool:
         value_checked = expect_number_min(value, 0, ("value",), ReasonCode.DENY_MODEL_INPUT_INVALID)
-        threshold_checked = expect_number_min(threshold, 0, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+        threshold_checked = expect_number_range(threshold, 0, 1, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
         return value_checked + self.margin(threshold_checked) < threshold_checked
 
 
@@ -104,7 +104,7 @@ class MatrixBundle:
             lower=spectral_radius(self.lower),
             mean=spectral_radius(self.mean),
             upper=spectral_radius(self.upper),
-            threshold=expect_number_min(threshold, 0, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID),
+            threshold=expect_number_range(threshold, 0, 1, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID),
         )
 
 

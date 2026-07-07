@@ -28,6 +28,7 @@ FastGate must satisfy these requirements:
 The exact ARCANA admission condition remains:
 
 ```text
+0 <= theta_rho <= 1
 rho(K_after_upper) < theta_rho
 ```
 

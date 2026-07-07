@@ -16,6 +16,7 @@ from arcana._validation import (
     expect_int_min,
     expect_non_empty_string,
     expect_number_min,
+    expect_number_range,
     expect_risk_model_version,
     expect_sha256,
     fail,
@@ -149,7 +150,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         ReasonCode.DENY_CONTEXT_STALE,
     )
     graph_hash = expect_sha256(request.graph_hash, ("graph_hash",), ReasonCode.DENY_GRAPH_HASH_MISMATCH)
-    threshold = expect_number_min(request.threshold, 0, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+    threshold = expect_number_range(request.threshold, 0, 1, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
     tolerance_policy = _validate_tolerance_policy(request.tolerance_policy)
     before_upper = _validate_before_matrix(request.before_upper, graph_hash)
     delta_matrix = _validate_sparse_delta(

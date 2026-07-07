@@ -223,16 +223,24 @@ Admission-like decisions use `rho_upper`, not `rho_mean`.
 The public subcritical-under-model condition is:
 
 ```text
+0 <= theta_rho <= 1
 rho(K_upper) < theta_rho
 ```
 
-or a stricter policy threshold:
+where `theta_rho` is the declared public threshold for the decision context. A
+stricter policy threshold may be used only inside the same subcritical range:
 
 ```text
 rho(K_upper) < theta_rho <= 1
 ```
 
-This condition means the declared model is subcritical under the stated assumptions. It is not a statement about all possible real-world behavior.
+This condition means the declared model is subcritical under the stated
+assumptions. A threshold above `1` may be a diagnostic or policy quantity in
+some other model, but it must not support an ARCANA public allow-like,
+subcritical-under-model, or certificate-like bounded-autonomy artifact. Public
+allow-like, subcritical-under-model, and certificate-like bounded-autonomy
+artifacts must not use `theta_rho > 1`. It is not a statement about all
+possible real-world behavior.
 
 When the upper-bound propagation risk exceeds the threshold or budget, ARCANA returns:
 
@@ -456,6 +464,7 @@ If a certificate-like artifact is stale, graph-mismatched, horizon-mismatched, e
 FastGate is a conservative optimization path for sparse graph changes. It must preserve the exact upper-bound decision rule:
 
 ```text
+0 <= theta_rho <= 1
 rho(K_after_upper) < theta_rho
 ```
 

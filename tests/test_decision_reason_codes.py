@@ -222,6 +222,13 @@ def test_rho_upper_bound_deny_reason() -> None:
     assert result.metrics["issue_code"] == "rho_upper_bound_exceeded"
 
 
+def test_rho_threshold_above_subcritical_limit_is_invalid() -> None:
+    result = evaluate_decision(_request(rho_threshold=1.01))
+
+    _assert_result(result, Verdict.DENY, ReasonCode.DENY_MODEL_INPUT_INVALID)
+    assert result.metrics["issue_code"] == "number_out_of_range"
+
+
 def test_aar_upper_bound_deny_reason() -> None:
     result = evaluate_decision(
         _request(
