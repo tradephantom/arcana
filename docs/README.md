@@ -20,13 +20,14 @@ Current order:
 14. `ARCANA_Whitepaper_v0.2_Outline.md`
 15. `ARCANA_Whitepaper_v0.2_Draft.md`
 16. `ARCANA_Whitepaper_v0.3_Draft.md`
-17. `LIMITATIONS_v0.1.md`
-18. `PUBLIC_RELEASE_NOTES_v0.1.md`
-19. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
+17. `ARCANA_Whitepaper_v1.0_Manuscript.md`
+18. `LIMITATIONS_v0.1.md`
+19. `PUBLIC_RELEASE_NOTES_v0.1.md`
+20. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
 
 Next public documents:
 
-1. Final reviewed whitepaper or paper publication after expert review.
+1. Final claim-language review of `ARCANA_Whitepaper_v1.0_Manuscript.md`.
 2. Follow-up release notes after maintainer-approved changes.
 
 Schema drafts live in `../schemas/`.

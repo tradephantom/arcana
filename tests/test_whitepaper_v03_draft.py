@@ -44,8 +44,9 @@ def test_whitepaper_v03_preserves_superbrain_review_hardening_points() -> None:
         "artifact_contract_validity_rate",
         "Earlier drafts used the name `certificate_validity_rate`",
         "ARCANA can be integrated with capability-bound execution systems",
-        "The draft remains ready for staged expert review, not final public publication.",
-        "internal calibration-level review of A1/A2/A3 public semantics",
+        "superseded by `docs/ARCANA_Whitepaper_v1.0_Manuscript.md`",
+        "ready for final claim-language review, not final public publication",
+        "calibration-level review of A1/A2/A3 public semantics",
     ]
 
     for phrase in required_phrases:

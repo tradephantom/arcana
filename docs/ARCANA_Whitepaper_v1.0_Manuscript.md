@@ -1,8 +1,8 @@
 # ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems
 
-> Status: public whitepaper/paper v0.3 draft; final paper gate in progress
-> Scope: staged expert-review manuscript for the public ARCANA research/reference track
-> Classification: public-safe draft; not a final publication
+> Status: final manuscript candidate; FWP-REVIEW-008 claim-language review pending
+> Scope: final manuscript artifact for the public ARCANA research/reference track
+> Classification: public-safe manuscript candidate; not final publication until FWP-REVIEW-008 passes
 > Implementation status: reference implementation and synthetic benchmark evidence only
 
 ## Abstract
@@ -11,7 +11,7 @@ Agentic systems can act through tools, memory, delegation, capability envelopes,
 
 ARCANA models unsafe propagation pressure separately from loss or impact. It represents an agentic system as a capability graph, assigns horizon-bound propagation weights, computes upper-bound spectral propagation risk, evaluates loss-side quantities separately, and emits schema-shaped risk contexts or certificate-like artifacts with explicit caveats. The public reference implementation uses deterministic synthetic fixtures, public schemas, public reason codes, and local reproducibility gates.
 
-This draft does not claim production readiness, production enforcement, universal safety, or production certificate issuance. A0 outputs remain non-certifiable. Benchmark scenarios are synthetic and are intended to show why task success, unsafe action rate, risk-bound status, and artifact-contract validity must be reported separately. ARCANA is only as complete as the graph and evidence it is given.
+This manuscript does not claim production readiness, production enforcement, universal safety, or production certificate issuance. A0 outputs remain non-certifiable. Benchmark scenarios are synthetic and are intended to show why task success, unsafe action rate, risk-bound status, and artifact-contract validity must be reported separately. ARCANA is only as complete as the graph and evidence it is given.
 
 ## 1. Paper Rule
 
@@ -21,13 +21,13 @@ ARCANA may be described as:
 model-bounded autonomy accounting for agentic systems
 ```
 
-The strongest allowed public claim in this draft is:
+The strongest allowed public claim in this manuscript is:
 
 ```text
 ARCANA estimates bounded autonomy under explicit risk model versions, calibration profiles, decision horizons, uncertainty bounds, and evidence assumptions.
 ```
 
-The draft must not present any agent, workflow, deployment, model, policy, or organization as safe by proof. Every result is scoped by declared assumptions, public schemas, reason codes, evidence, and limitations.
+The manuscript must not present any agent, workflow, deployment, model, policy, or organization as safe by proof. Every result is scoped by declared assumptions, public schemas, reason codes, evidence, and limitations.
 
 ## Contributions
 
@@ -352,7 +352,7 @@ A0 is demo-only. A0 outputs must preserve:
 ARCANA_INFO_A0_NON_CERTIFIABLE
 ```
 
-The public claim boundary after internal production-readiness review is:
+The public claim boundary after production-readiness review is:
 
 - A1 is a conservative prior level and is not a commercial certificate basis.
 - A1 can support bounded reference risk contexts when all other constraints pass,
@@ -365,7 +365,7 @@ The public claim boundary after internal production-readiness review is:
   distribution review is completed.
 - Public examples do not disclose private thresholds, formulas, runtime
   distributions, telemetry, or deployment mechanics.
-- No public calibration level in this draft authorizes production enforcement or
+- No public calibration level in this manuscript authorizes production enforcement or
   certificate issuance by itself.
 
 The phrase `certifiable_under_profile` is a bounded public/reference semantic
@@ -454,7 +454,7 @@ Every certificate-like artifact must include:
 
 A0 artifacts are non-certifiable and cannot support production certificate issuance.
 
-In this public draft, A1 certificate-like artifacts are not supported beyond
+In this public manuscript, A1 certificate-like artifacts are not supported beyond
 non-certifiable reference contexts. A2 and A3 references are conditional claim
 boundaries: they describe what a reviewed profile would need to bind, not an
 authorization to issue a production certificate from this repository.
@@ -560,7 +560,7 @@ artifact_contract_validity_rate
 
 `artifact_contract_validity_rate` measures whether artifacts include required public fields and reason codes. It does not mean production certification or operational approval.
 
-Earlier drafts used the name `certificate_validity_rate`; v0.3 uses
+Earlier drafts used the name `certificate_validity_rate`; this manuscript uses
 `artifact_contract_validity_rate` to avoid implying that the metric validates a
 production certificate.
 
@@ -676,9 +676,9 @@ financial tail-risk methods.
 
 ## 20. Related Public Artifacts
 
-This draft is grounded in the current public research/reference artifacts:
+This manuscript is grounded in the current public research/reference artifacts:
 
-| Artifact | Role in this draft |
+| Artifact | Role in this manuscript |
 | --- | --- |
 | `docs/FORMAL_MODEL_v0.2.md` | Mathematical contract for graph, `K`, `L`, horizon, uncertainty, and decision rule. |
 | `docs/CALIBRATION_METHODOLOGY_v0.1.md` | Calibration levels, evidence quality, sparse evidence, and staleness. |
@@ -694,7 +694,7 @@ This draft is grounded in the current public research/reference artifacts:
 
 ## 21. Review Checklist
 
-Before this draft becomes a final paper publication, reviewers should verify:
+Before this manuscript is treated as a final paper publication, reviewers should verify:
 
 - every claim names or implies model, calibration, horizon, uncertainty, and evidence scope;
 - `rho_upper`, not `rho_mean`, is the admission-like metric;
@@ -709,11 +709,17 @@ Before this draft becomes a final paper publication, reviewers should verify:
 - limitations appear before any broad claim;
 - final license profile and GitHub Private Vulnerability Reporting remain in place for the public remote.
 
-## 22. Draft Status
+## 22. Manuscript Status
 
-This is a v0.3 public manuscript draft retained for review history. It has been
-superseded by `docs/ARCANA_Whitepaper_v1.0_Manuscript.md` as the final
-manuscript candidate. The v1.0 manuscript is ready for final claim-language review, not final public publication.
+This is the v1.0 public manuscript candidate transformed from the reviewed v0.3
+draft. The public repository is live, the release note is public, and the final
+paper publication gate is still in progress. This manuscript is ready for final
+claim-language review, not final public publication.
+
+The final paper publication gate is still in progress until FWP-REVIEW-008
+passes.
+
+This manuscript is ready for final claim-language review, not final public publication.
 
 Open publication blocker:
 
@@ -725,11 +731,11 @@ Completed publication prerequisites:
 - public remote preflight validation;
 - GitHub Private Vulnerability Reporting configuration;
 - public release-note publication;
-- fresh-clone validation of `make check`, `make test`, and `make demo`.
-- internal mathematical review of public subcritical threshold semantics;
-- internal calibration-level review of A1/A2/A3 public semantics.
+- fresh-clone validation of `make check`, `make test`, and `make demo`;
+- mathematical review of public subcritical threshold semantics;
+- calibration-level review of A1/A2/A3 public semantics;
 - public schema contract review;
 - FastGate numerical and graph-edge-case review;
-- ARCANA-Bench scenario coverage review.
+- ARCANA-Bench scenario coverage review;
 - independent reproduction of local tests and deterministic demo;
 - final manuscript transformation from draft to publication artifact.
