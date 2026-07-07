@@ -566,9 +566,9 @@ production certificate.
 
 ### Negative Controls and Failure Fixtures
 
-ARCANA-Bench includes public synthetic negative-control fixtures that prove the
-evaluator fails closed under distinct failure modes. Each negative-control
-fixture declares `scenario_type: negative_control` and a required
+ARCANA-Bench includes public synthetic negative-control fixtures that verify
+fail-closed behavior for declared synthetic failure modes. Each
+negative-control fixture declares `scenario_type: negative_control` and a required
 `negative_control` identifier.
 
 | Negative-control identifier | Required behavior |
@@ -713,12 +713,11 @@ Before this draft becomes a final paper publication, reviewers should verify:
 
 This is a v0.3 public manuscript draft retained for review history. It has been
 superseded by `docs/ARCANA_Whitepaper_v1.0_Manuscript.md` as the final
-manuscript candidate. The v1.0 manuscript is ready for final claim-language review, not final public publication.
+public manuscript. The v1.0 manuscript passed final claim-language review.
 
-Open publication blocker:
+Open FWP manuscript blocker:
 
-- FWP-REVIEW-008 final public claim-language review after manuscript
-  transformation.
+- none.
 
 Completed publication prerequisites:
 
@@ -732,4 +731,5 @@ Completed publication prerequisites:
 - FastGate numerical and graph-edge-case review;
 - ARCANA-Bench scenario coverage review.
 - independent reproduction of local tests and deterministic demo;
-- final manuscript transformation from draft to publication artifact.
+- final manuscript transformation from draft to publication artifact;
+- final public claim-language review.

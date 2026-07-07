@@ -27,7 +27,7 @@ Current order:
 
 Next public documents:
 
-1. Final claim-language review of `ARCANA_Whitepaper_v1.0_Manuscript.md`.
+1. Venue-specific paper package, if a separate LaTeX or archive submission is prepared.
 2. Follow-up release notes after maintainer-approved changes.
 
 Schema drafts live in `../schemas/`.

@@ -19,12 +19,12 @@ ARCANA estimates whether a proposed operation, delegation, tool call, memory act
 - declared uncertainty bounds;
 - evidence-backed reason codes.
 
-ARCANA does not prove that an agent or system is safe. It provides model-bounded autonomy accounting and may issue bounded autonomy certificates when the required evidence and calibration conditions are present.
+ARCANA does not prove that an agent or system is safe. It provides model-bounded autonomy accounting and may emit certificate-like bounded artifacts only when required fields, evidence, calibration conditions, caveats, and non-production semantics are present.
 
 Preferred public claim:
 
 ```text
-ARCANA estimates and certifies bounded autonomy under explicit risk model versions, calibration profiles, decision horizons, and uncertainty bounds.
+ARCANA estimates bounded autonomy under explicit risk model versions, calibration profiles, decision horizons, uncertainty bounds, and evidence assumptions.
 ```
 
 ## 2. Product Boundary
@@ -83,7 +83,7 @@ Permission is necessary but insufficient. Autonomy must be measured, budgeted, c
 - Require explicit model versioning, calibration profiles, decision horizons, and uncertainty bounds.
 - Support conservative defaults where unknown inputs increase risk or reduce assumed control effectiveness.
 - Provide a low-latency FastGate method for incremental admission decisions.
-- Produce bounded autonomy certificates only when evidence and calibration requirements are met.
+- Emit certificate-like bounded artifacts only when evidence, calibration, caveat, and non-production requirements are met.
 - Provide public-safe schemas for risk context and certificate artifacts.
 - Provide synthetic benchmark scenarios for autonomy risk evaluation.
 - Provide an offline reproducible reference demo before any production integration.
@@ -395,9 +395,9 @@ Acceptance criteria:
 - inconclusive fast path returns `ARCANA_DENY_FASTGATE_UNCERTAIN`;
 - exact recompute is available as a documented fallback path in the reference implementation.
 
-### FR7 - Certificate Generation
+### FR7 - Certificate-Like Artifact Generation
 
-ARCANA may generate bounded autonomy certificates only when required fields are present.
+ARCANA may generate certificate-like bounded artifacts only when required fields are present.
 
 Acceptance criteria:
 
@@ -426,7 +426,7 @@ Acceptance criteria:
 - Treat agent-declared risk values as untrusted input.
 - Treat unknown edge factors as risky.
 - Use conservative upper bounds for risk and conservative lower bounds for control effectiveness.
-- Do not issue bounded autonomy certificates from missing, stale, or unverifiable evidence.
+- Do not emit certificate-like bounded artifacts from missing, stale, or unverifiable evidence.
 - Do not allow distillation eligibility without valid evidence, stability, scope, invalidation, and risk envelope.
 - Do not expose private enterprise, customer, or lab details in public schemas, demos, fixtures, or examples.
 
@@ -526,8 +526,12 @@ Reference implementation work under `src/` should start only after the public PR
 ## 17. Open Questions
 
 - Which ARCANA-Bench scenarios should be included in v0.1 versus deferred?
-- Should public certificate vocabulary use `certifies bounded autonomy` or prefer `attests bounded autonomy` for lower claim risk?
 - What minimal reference implementation language and dependency set should be selected?
+
+Resolved before final manuscript release:
+
+- Public certificate vocabulary uses `certificate-like bounded artifacts`; the
+  preferred public claim does not use `certifies bounded autonomy`.
 
 ## 18. Next Artifacts
 

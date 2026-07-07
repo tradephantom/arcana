@@ -1,8 +1,8 @@
 # ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems
 
-> Status: final manuscript candidate; FWP-REVIEW-008 claim-language review pending
+> Status: final public manuscript; FWP-REVIEW-008 claim-language review passed
 > Scope: final manuscript artifact for the public ARCANA research/reference track
-> Classification: public-safe manuscript candidate; not final publication until FWP-REVIEW-008 passes
+> Classification: public-safe final manuscript; not a production approval, enforcement approval, or commercial certificate authorization
 > Implementation status: reference implementation and synthetic benchmark evidence only
 
 ## Abstract
@@ -566,9 +566,9 @@ production certificate.
 
 ### Negative Controls and Failure Fixtures
 
-ARCANA-Bench includes public synthetic negative-control fixtures that prove the
-evaluator fails closed under distinct failure modes. Each negative-control
-fixture declares `scenario_type: negative_control` and a required
+ARCANA-Bench includes public synthetic negative-control fixtures that verify
+fail-closed behavior for declared synthetic failure modes. Each
+negative-control fixture declares `scenario_type: negative_control` and a required
 `negative_control` identifier.
 
 | Negative-control identifier | Required behavior |
@@ -692,9 +692,9 @@ This manuscript is grounded in the current public research/reference artifacts:
 | `src/arcana/` | Public reference implementation. |
 | `tests/` | Local reproducibility and contract tests. |
 
-## 21. Review Checklist
+## 21. Final Claim-Language Review
 
-Before this manuscript is treated as a final paper publication, reviewers should verify:
+FWP-REVIEW-008 verified that:
 
 - every claim names or implies model, calibration, horizon, uncertainty, and evidence scope;
 - `rho_upper`, not `rho_mean`, is the admission-like metric;
@@ -707,24 +707,24 @@ Before this manuscript is treated as a final paper publication, reviewers should
 - reproduction commands are current;
 - public integration language remains enforcement-neutral;
 - limitations appear before any broad claim;
-- final license profile and GitHub Private Vulnerability Reporting remain in place for the public remote.
+- final license profile and GitHub Private Vulnerability Reporting remain in place for the public remote;
+- the manuscript does not claim production readiness, production enforcement,
+  commercial certificate issuance, universal safety, or risk elimination.
 
 ## 22. Manuscript Status
 
-This is the v1.0 public manuscript candidate transformed from the reviewed v0.3
-draft. The public repository is live, the release note is public, and the final
-paper publication gate is still in progress. This manuscript is ready for final
-claim-language review, not final public publication.
+This is the v1.0 public manuscript transformed from the reviewed v0.3 draft.
+FWP-REVIEW-008 final public claim-language review has passed. The manuscript is
+approved as the final public ARCANA manuscript artifact for the repository.
 
-The final paper publication gate is still in progress until FWP-REVIEW-008
-passes.
+This approval does not create production readiness, production enforcement,
+commercial certificate issuance, customer approval, or proof of safety. Any
+venue-specific package, including LaTeX or archive submission formats, must
+preserve the claim language and public/private boundary in this manuscript.
 
-This manuscript is ready for final claim-language review, not final public publication.
+Open FWP manuscript blockers:
 
-Open publication blocker:
-
-- FWP-REVIEW-008 final public claim-language review after manuscript
-  transformation.
+- none.
 
 Completed publication prerequisites:
 
@@ -738,4 +738,5 @@ Completed publication prerequisites:
 - FastGate numerical and graph-edge-case review;
 - ARCANA-Bench scenario coverage review;
 - independent reproduction of local tests and deterministic demo;
-- final manuscript transformation from draft to publication artifact.
+- final manuscript transformation from draft to publication artifact;
+- final public claim-language review.

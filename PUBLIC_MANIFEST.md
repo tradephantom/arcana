@@ -47,8 +47,8 @@ Only files listed here are part of this public repository tree.
 | `docs/PUBLIC_INTEGRATION_CONTRACT_v0.1.md` | public-safe draft | Public enforcement-neutral integration contract and reason-code bridge. |
 | `docs/ARCANA_Whitepaper_v0.2_Outline.md` | public-safe draft | Public whitepaper/paper v0.2 outline and claim discipline. |
 | `docs/ARCANA_Whitepaper_v0.2_Draft.md` | public-safe draft | Public whitepaper/paper v0.2 full draft for staged expert review. |
-| `docs/ARCANA_Whitepaper_v0.3_Draft.md` | public-safe historical draft | Public whitepaper/paper v0.3 draft superseded by the v1.0 manuscript candidate. |
-| `docs/ARCANA_Whitepaper_v1.0_Manuscript.md` | public-safe manuscript candidate | Public whitepaper/paper v1.0 manuscript candidate pending final claim-language review. |
+| `docs/ARCANA_Whitepaper_v0.3_Draft.md` | public-safe historical draft | Public whitepaper/paper v0.3 draft superseded by the v1.0 final public manuscript. |
+| `docs/ARCANA_Whitepaper_v1.0_Manuscript.md` | public-safe final manuscript | Public whitepaper/paper v1.0 final public manuscript; FWP-REVIEW-008 claim-language review passed. |
 | `docs/LIMITATIONS_v0.1.md` | public-safe draft | Public limitations and non-goals document. |
 | `docs/PUBLIC_RELEASE_NOTES_v0.1.md` | public-staging | Initial public release note and public claim boundary. |
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
@@ -85,7 +85,8 @@ Only files listed here are part of this public repository tree.
 | `tests/test_whitepaper_draft.py` | public-staging | Whitepaper/paper full draft claim discipline and source coverage tests. |
 | `tests/test_whitepaper_outline.py` | public-staging | Whitepaper/paper outline claim discipline and source coverage tests. |
 | `tests/test_whitepaper_v03_draft.py` | public-staging | Whitepaper/paper v0.3 draft hardening and related-work tests. |
-| `tests/test_whitepaper_v10_manuscript.py` | public-staging | Whitepaper/paper v1.0 manuscript candidate claim discipline and publication-gate tests. |
+| `tests/test_whitepaper_v10_manuscript.py` | public-staging | Whitepaper/paper v1.0 final manuscript claim discipline and publication-gate tests. |
+| `tests/test_final_claim_language.py` | public-staging | Final public claim-language guardrails for manuscript and public-facing docs. |
 | `tools/audit_public.py` | public-staging | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public-staging | Public schema and synthetic example validator. |
 

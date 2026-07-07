@@ -45,7 +45,7 @@ def test_whitepaper_v03_preserves_superbrain_review_hardening_points() -> None:
         "Earlier drafts used the name `certificate_validity_rate`",
         "ARCANA can be integrated with capability-bound execution systems",
         "superseded by `docs/ARCANA_Whitepaper_v1.0_Manuscript.md`",
-        "ready for final claim-language review, not final public publication",
+        "The v1.0 manuscript passed final claim-language review.",
         "calibration-level review of A1/A2/A3 public semantics",
     ]
 
@@ -94,6 +94,7 @@ def test_whitepaper_v03_blocks_unsafe_claim_drift() -> None:
         "objective safety" + " score",
         "risk was" + " eliminated",
         "arcana " + "pro" + "ves " + "safe",
+        "negative-control fixtures that prove",
     ]
 
     for phrase in forbidden_phrases:

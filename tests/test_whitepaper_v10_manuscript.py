@@ -35,8 +35,8 @@ def test_whitepaper_v10_manuscript_preserves_reviewed_claim_boundaries() -> None
     text = _doc_text()
 
     required_phrases = [
-        "final manuscript candidate; FWP-REVIEW-008 claim-language review pending",
-        "not final publication until FWP-REVIEW-008 passes",
+        "final public manuscript; FWP-REVIEW-008 claim-language review passed",
+        "not a production approval, enforcement approval, or commercial certificate authorization",
         "This manuscript does not claim production readiness, production enforcement, universal safety, or production certificate issuance.",
         "ARCANA estimates bounded autonomy under explicit risk model versions, calibration profiles, decision horizons, uncertainty bounds, and evidence assumptions.",
         "ARCANA is only as complete as the graph and evidence it is given.",
@@ -60,11 +60,12 @@ def test_whitepaper_v10_manuscript_tracks_publication_gate_state() -> None:
     text = _doc_text()
 
     required_phrases = [
-        "Open publication blocker:",
-        "FWP-REVIEW-008 final public claim-language review after manuscript",
-        "final paper publication gate is still in progress",
-        "ready for final claim-language review, not final public publication",
+        "Open FWP manuscript blockers:",
+        "none.",
+        "FWP-REVIEW-008 final public claim-language review has passed",
+        "approved as the final public ARCANA manuscript artifact for the repository",
         "final manuscript transformation from draft to publication artifact",
+        "final public claim-language review",
         "independent reproduction of local tests and deterministic demo",
     ]
 
@@ -74,8 +75,12 @@ def test_whitepaper_v10_manuscript_tracks_publication_gate_state() -> None:
     forbidden_stale_phrases = [
         "## 22. Draft Status",
         "Open review items:",
+        "Open publication blocker:",
         "independent reproduction of local tests and demo;",
-        "final manuscript transformation from draft to publication artifact;",
+        "claim-language review pending",
+        "not final publication until FWP-REVIEW-008 passes",
+        "ready for final claim-language review, not final public publication",
+        "final paper publication gate is still in progress",
     ]
     for phrase in forbidden_stale_phrases:
         assert phrase not in text
@@ -128,6 +133,7 @@ def test_whitepaper_v10_blocks_unsafe_claim_drift() -> None:
         "arcana " + "pro" + "ves " + "safe",
         "production" + " ready",
         "final public" + " publication is approved",
+        "negative-control fixtures that prove",
     ]
 
     for phrase in forbidden_phrases:

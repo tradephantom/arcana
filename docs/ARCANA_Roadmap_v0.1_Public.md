@@ -5,7 +5,7 @@
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
 > Classification: public-safe draft
-> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, Whitepaper / Paper v1.0 manuscript candidate, release-readiness documents, public remote preflight checklist, and public release note exist; final paper publication remains separately gated pending final claim-language review
+> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, Whitepaper / Paper v1.0 final public manuscript, release-readiness documents, public remote preflight checklist, and public release note exist; venue-specific paper packaging remains separate from technical claim approval
 
 ## 1. Roadmap Rule
 
@@ -70,8 +70,8 @@ Blocking status:
 - whitepaper or paper v0.2 outline is present;
 - whitepaper or paper v0.2 full draft is present;
 - whitepaper or paper v0.3 draft is present;
-- whitepaper or paper v1.0 manuscript candidate is present;
-- final public claim-language review remains open before final publication;
+- whitepaper or paper v1.0 final public manuscript is present;
+- final public claim-language review is closed for the v1.0 manuscript;
 - release-readiness document drafts are present;
 - final license profile is present;
 - public remote preflight checklist is present;
@@ -443,7 +443,7 @@ Exit criteria:
 - all certificate language is model-bounded;
 - public artifact is ready for staged expert review.
 
-Status: whitepaper/paper v1.0 manuscript candidate implemented, final paper gate still open pending final public claim-language review.
+Status: whitepaper/paper v1.0 final public manuscript implemented; final public claim-language review is closed for the repository manuscript.
 
 ## 16. Sequencing Gates
 
