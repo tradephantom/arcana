@@ -14,6 +14,7 @@ from arcana._validation import (
     expect_mapping,
     expect_number_range,
     expect_risk_model_version,
+    expect_sha256,
     expect_string_list,
     fail,
     require_value,
@@ -68,6 +69,7 @@ class BoundedAutonomyCertificate:
     risk_model_version: str
     calibration_profile: CertificateCalibrationProfile
     decision_horizon: DecisionHorizon
+    graph_hash: str
     verdict: Verdict
     rho_interval: RhoInterval
     loss_bounds: LossBounds
@@ -128,6 +130,7 @@ class BoundedAutonomyCertificate:
             risk_model_version=expect_risk_model_version(require_value(data, "risk_model_version", path, ReasonCode.DENY_RISK_MODEL_UNSUPPORTED), (*path, "risk_model_version")),
             calibration_profile=calibration_profile,
             decision_horizon=DecisionHorizon.from_mapping(require_value(data, "decision_horizon", path, ReasonCode.DENY_DECISION_HORIZON_MISMATCH), (*path, "decision_horizon")),
+            graph_hash=expect_sha256(require_value(data, "graph_hash", path, ReasonCode.DENY_GRAPH_HASH_MISMATCH), (*path, "graph_hash"), ReasonCode.DENY_GRAPH_HASH_MISMATCH),
             verdict=verdict,
             rho_interval=RhoInterval.from_mapping(require_value(data, "rho_interval", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "rho_interval")),
             loss_bounds=LossBounds.from_mapping(require_value(data, "loss_bounds", path, ReasonCode.DENY_LOSS_MODEL_INVALID), (*path, "loss_bounds")),
@@ -177,6 +180,7 @@ def certificate_to_mapping(certificate: BoundedAutonomyCertificate) -> dict[str,
         "risk_model_version": certificate.risk_model_version,
         "calibration_profile": _certificate_calibration_profile_to_mapping(certificate.calibration_profile),
         "decision_horizon": _decision_horizon_to_mapping(certificate.decision_horizon),
+        "graph_hash": certificate.graph_hash,
         "verdict": certificate.verdict.value,
         "rho_interval": _rho_interval_to_mapping(certificate.rho_interval),
         "loss_bounds": _loss_bounds_to_mapping(certificate.loss_bounds),
@@ -275,6 +279,7 @@ def build_demo_non_certifiable_certificate(
             certification_status=calibration_profile.certification_status,
         ),
         decision_horizon=context.decision_horizon,
+        graph_hash=context.graph_hash,
         verdict=context.decision,
         rho_interval=context.rho_interval,
         loss_bounds=context.loss_bounds,

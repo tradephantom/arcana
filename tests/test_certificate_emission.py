@@ -65,5 +65,6 @@ def test_demo_context_and_certificate_share_model_horizon_and_evidence() -> None
 
     assert context.risk_model_version == certificate.risk_model_version
     assert context.decision_horizon == certificate.decision_horizon
+    assert context.graph_hash == certificate.graph_hash
     assert context.evidence == certificate.evidence
     assert context.rho_interval == certificate.rho_interval

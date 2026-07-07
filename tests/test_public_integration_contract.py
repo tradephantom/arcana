@@ -4,6 +4,9 @@ import json
 import re
 from pathlib import Path
 
+from arcana.errors import SchemaVersion
+from arcana.schemas import validate_document
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DOC_PATH = ROOT / "docs" / "PUBLIC_INTEGRATION_CONTRACT_v0.1.md"
@@ -54,7 +57,9 @@ def test_public_integration_contract_examples_are_schema_shaped() -> None:
     assert "ARCANA_REQUIRE_OBSERVE_ONLY" in risk_context["reason_codes"]
     assert "ARCANA_INFO_A0_NON_CERTIFIABLE" in risk_context["reason_codes"]
     assert risk_context["evidence"]["synthetic"] is True
-    assert risk_context["fastgate"]["uncertain"] is False
+    assert risk_context["fastgate"]["mode"] == "observe_only"
+
+    validate_document(risk_context, SchemaVersion.CONTEXT_V02)
 
 
 def test_public_integration_contract_preserves_reason_code_bridge() -> None:

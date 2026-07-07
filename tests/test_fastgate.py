@@ -362,6 +362,7 @@ def test_perron_fastgate_fields_validate_in_context_and_certificate() -> None:
             certification_status=CertificationStatus.CERTIFIABLE_UNDER_PROFILE,
         ),
         decision_horizon=_horizon(),
+        graph_hash=GRAPH_HASH,
         verdict=evaluation.decision.verdict,
         rho_interval=rho_interval,
         loss_bounds=loss_bounds,
@@ -394,6 +395,7 @@ def test_a1_non_demo_certificate_is_rejected() -> None:
             certification_status=CertificationStatus.NON_CERTIFIABLE,
         ),
         decision_horizon=_horizon(),
+        graph_hash=GRAPH_HASH,
         verdict=Verdict.ALLOW_BOUNDED_AUTONOMY,
         rho_interval=RhoInterval(lower=0.2, mean=0.25, upper=0.3, threshold=0.8),
         loss_bounds=LossBounds(

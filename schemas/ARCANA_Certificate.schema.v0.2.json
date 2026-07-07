@@ -10,6 +10,7 @@
     "risk_model_version",
     "calibration_profile",
     "decision_horizon",
+    "graph_hash",
     "verdict",
     "rho_interval",
     "loss_bounds",
@@ -99,6 +100,9 @@
     },
     "decision_horizon": {
       "$ref": "#/$defs/decision_horizon"
+    },
+    "graph_hash": {
+      "$ref": "#/$defs/sha256_hash"
     },
     "verdict": {
       "$ref": "#/$defs/verdict"

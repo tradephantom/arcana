@@ -48,6 +48,12 @@ FASTGATE_POSITIVE_VECTOR_METHODS = {
     "component_local_gate",
     "fallback_exact",
 }
+EVIDENCE_SOURCE_TYPES = {
+    "synthetic_fixture",
+    "public_benchmark",
+    "controlled_test",
+    "hash_bound_context",
+}
 
 
 @dataclass(frozen=True)
@@ -160,6 +166,9 @@ def validate_rho_interval(path: Path, interval: Any) -> list[Finding]:
         value = interval.get(key)
         if not isinstance(value, (int, float)) or value < 0:
             findings.append(Finding(rel(path), "rho_value_invalid", f"{key}={value!r}"))
+    threshold = interval.get("threshold")
+    if isinstance(threshold, (int, float)) and threshold > 1:
+        findings.append(Finding(rel(path), "rho_threshold_public_bound_invalid", f"threshold={threshold!r}"))
     lower = interval.get("lower")
     mean = interval.get("mean")
     upper = interval.get("upper")
@@ -212,6 +221,8 @@ def validate_evidence(path: Path, evidence: Any) -> list[Finding]:
     if not isinstance(evidence, dict):
         return [Finding(rel(path), "evidence_invalid", "must be object")]
     findings.extend(require_keys(path, evidence, {"source_type", "source_id", "synthetic"}))
+    if evidence.get("source_type") not in EVIDENCE_SOURCE_TYPES:
+        findings.append(Finding(rel(path), "evidence_source_type_invalid", str(evidence.get("source_type"))))
     if evidence.get("synthetic") is not True:
         findings.append(Finding(rel(path), "example_not_synthetic", "public examples must be synthetic"))
     evidence_hash = evidence.get("evidence_hash")
@@ -270,12 +281,14 @@ def validate_context(path: Path, obj: dict[str, Any], registered: set[str]) -> l
 
 def validate_certificate(path: Path, obj: dict[str, Any], registered: set[str]) -> list[Finding]:
     findings: list[Finding] = []
-    required = {"certificate_id", "certificate_type", "risk_model_version", "calibration_profile", "decision_horizon", "verdict", "rho_interval", "loss_bounds", "evidence", "reason_codes", "issued_at", "caveats"}
+    required = {"certificate_id", "certificate_type", "risk_model_version", "calibration_profile", "decision_horizon", "graph_hash", "verdict", "rho_interval", "loss_bounds", "evidence", "reason_codes", "issued_at", "caveats"}
     findings.extend(require_keys(path, obj, required))
     if not CERT_ID_RE.match(str(obj.get("certificate_id"))):
         findings.append(Finding(rel(path), "certificate_id_invalid", str(obj.get("certificate_id"))))
     if not RISK_MODEL_RE.match(str(obj.get("risk_model_version"))):
         findings.append(Finding(rel(path), "risk_model_version_invalid", str(obj.get("risk_model_version"))))
+    if not SHA256_RE.match(str(obj.get("graph_hash"))):
+        findings.append(Finding(rel(path), "graph_hash_invalid", str(obj.get("graph_hash"))))
     if obj.get("verdict") not in VERDICTS:
         findings.append(Finding(rel(path), "verdict_invalid", str(obj.get("verdict"))))
     findings.extend(validate_horizon(path, obj.get("decision_horizon")))

@@ -67,6 +67,17 @@ def test_missing_certificate_loss_bounds_maps_to_loss_model_invalid() -> None:
     assert exc_info.value.code == "schema_required_loss_bounds"
 
 
+def test_missing_certificate_graph_hash_maps_to_graph_hash_reason() -> None:
+    document = _example("certificate_a0_non_certifiable.synthetic.json")
+    del document["graph_hash"]
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        validate_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_GRAPH_HASH_MISMATCH
+    assert exc_info.value.code == "schema_required_graph_hash"
+
+
 def test_context_schema_rejects_rho_threshold_above_subcritical_limit() -> None:
     document = copy.deepcopy(_example("risk_context_allow_with_controls.synthetic.json"))
     document["rho_interval"]["threshold"] = 1.01

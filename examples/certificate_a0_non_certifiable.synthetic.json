@@ -15,6 +15,7 @@
     "duration_seconds": 300,
     "context": "synthetic demo session"
   },
+  "graph_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
   "verdict": "observe_only",
   "rho_interval": {
     "lower": 0.2,

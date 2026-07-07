@@ -115,13 +115,13 @@ A generic risk-context export contains:
     "threshold": 0.8
   },
   "loss_bounds": {
-    "AaR_99_upper": 0.0,
-    "AES_99_upper": 0.0,
-    "loss_in_scope": false
+    "aar_99_upper": 0.0,
+    "aes_99_upper": 0.0,
+    "max_allowed_aar_99": 0.0,
+    "max_allowed_aes_99": 0.0
   },
   "fastgate": {
-    "mode": "not_used",
-    "uncertain": false
+    "mode": "observe_only"
   },
   "decision": "observe_only",
   "reason_codes": [
@@ -159,8 +159,8 @@ Certificate importers must validate:
 - `certificate_id`;
 - `certificate_type`;
 - `risk_model_version`;
-- `calibration_profile_id`;
-- `calibration_level`;
+- `calibration_profile.profile_id`;
+- `calibration_profile.level`;
 - `decision_horizon`;
 - `graph_hash`;
 - `issued_at`;
