@@ -8,4 +8,6 @@ from __future__ import annotations
 
 __version__ = "0.1.0"
 
-__all__ = ["__version__"]
+from arcana.artifacts import validate_certificate_semantics, validate_risk_context_semantics
+
+__all__ = ["__version__", "validate_certificate_semantics", "validate_risk_context_semantics"]

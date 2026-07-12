@@ -145,7 +145,18 @@ A generic risk-context export contains:
 }
 ```
 
-Consumers must validate exported artifacts against the public schema before using them. Unknown fields must not be interpreted as local policy instructions unless a separate integration-private contract authorizes them outside the ARCANA artifact.
+Consumers must apply three distinct gates before using an exported artifact:
+
+1. JSON Schema validation with the declared public schema version;
+2. typed parsing with the matching ARCANA contract;
+3. semantic admission validation at an explicit current time and against the
+   expected model, calibration profile, graph hash, and decision horizon.
+
+The reference API exposes `validate_risk_context_semantics` and
+`validate_certificate_semantics` for the third gate. Schema-valid does not mean
+current, internally coherent, or admissible. Unknown fields must not be
+interpreted as local policy instructions unless a separate integration-private
+contract authorizes them outside the ARCANA artifact.
 
 ## 5. Certificate Import and Export Shape
 

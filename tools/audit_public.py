@@ -39,6 +39,17 @@ BINARY_SUFFIXES = {
     ".m4a",
 }
 
+SECRET_SUFFIXES = {
+    ".key",
+    ".pem",
+    ".p12",
+    ".pfx",
+    ".jks",
+    ".keystore",
+    ".sqlite",
+    ".sqlite3",
+}
+
 PUBLIC_REASON_CODE_RE = re.compile(r"\bARCANA_(?:ALLOW|DENY|REQUIRE|INFO)_[A-Z0-9_]+\b")
 
 
@@ -99,6 +110,10 @@ def line_findings(path: Path, text: str) -> list[Finding]:
         ("private_mechanics", re.compile(r"\b(runtime broker implementation|concrete grant|COP admission parser)\b", re.I), "private implementation mechanics"),
         ("unsafe_positive_claim", re.compile(r"\b(certified safe|zero risk|perfect sandbox|objective safety score|eliminates agentic risk)\b", re.I), "unsafe public claim"),
         ("public_proves_safe_claim", re.compile(r"\bARCANA\s+proves\b.*\bsafe\b", re.I), "absolute safety claim"),
+        ("private_key_material", re.compile(r"-----BEGIN (?:[A-Z0-9 ]+ )?PRIVATE KEY-----"), "private key material"),
+        ("cloud_access_key", re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"), "cloud access key identifier"),
+        ("credential_assignment", re.compile(r"\b(?:api[_-]?key|secret[_-]?key|access[_-]?token|client[_-]?secret)\s*[:=]\s*['\"]?[A-Za-z0-9_./+=-]{16,}", re.I), "credential-like assignment"),
+        ("github_token", re.compile(r"\b(?:ghp|github_pat)_[A-Za-z0-9_]{20,}\b"), "GitHub token"),
     ]
 
     for line_no, line in enumerate(text.splitlines(), start=1):
@@ -171,6 +186,9 @@ def audit() -> list[Finding]:
 
     for path in files:
         rel = path.relative_to(ROOT)
+        if path.suffix.lower() in SECRET_SUFFIXES:
+            findings.append(Finding(rel, 0, "secret_artifact", "secret-bearing file types are not allowed in the public tree"))
+            continue
         if path.suffix.lower() in BINARY_SUFFIXES:
             findings.append(Finding(rel, 0, "binary_artifact", "binary files are not allowed in the initial public tree"))
             continue

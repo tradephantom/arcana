@@ -86,6 +86,41 @@ def test_runtime_observation_requires_a3_calibration() -> None:
     assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
 
 
+def test_a2_requires_empirical_or_redteam_evidence() -> None:
+    document = _example("calibration_profile_a0.synthetic.json")
+    document["level"] = "A2"
+    document["source"] = ["static_conservative_prior"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        CalibrationProfile.from_mapping(document)
+
+    assert exc_info.value.code == "calibration_level_evidence_missing"
+
+
+def test_a3_requires_runtime_observation() -> None:
+    document = _example("calibration_profile_a0.synthetic.json")
+    document["level"] = "A3"
+    document["source"] = ["controlled_redteam"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        CalibrationProfile.from_mapping(document)
+
+    assert exc_info.value.code == "calibration_level_evidence_missing"
+
+
+def test_a2_accepts_qualifying_non_synthetic_source_class() -> None:
+    document = _example("calibration_profile_a0.synthetic.json")
+    document["level"] = "A2"
+    document["source"] = ["static_conservative_prior", "controlled_redteam"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    parsed = parse_typed_document(document)
+
+    assert isinstance(parsed, CalibrationProfile)
+
+
 def test_mutating_copy_does_not_modify_fixture() -> None:
     original = _example("risk_context_allow_with_controls.synthetic.json")
     mutated = copy.deepcopy(original)

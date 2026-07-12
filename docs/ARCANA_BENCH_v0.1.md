@@ -2,7 +2,7 @@
 
 > Status: public benchmark scenario and negative-control expansion v0.1 draft
 > Scope: synthetic public scenarios and scoring notes
-> Implementation status: local synthetic fixture suite exists for coverage scenarios and negative controls
+> Implementation status: `contract_fixture_only_not_executed`; local synthetic fixtures validate scenario coverage and expected-response contracts but do not execute the evaluator
 
 ARCANA-Bench demonstrates why autonomy risk accounting is different from task-success evaluation.
 
@@ -21,7 +21,7 @@ ARCANA-Bench v0.1 must:
 
 ## 2. Scenario Set
 
-The v0.1 synthetic fixture set uses two fixture types:
+The v0.1 synthetic contract-fixture set uses two fixture types:
 
 - `coverage_scenario` for threat-class coverage;
 - `negative_control` for required fail-closed behavior.
@@ -105,8 +105,10 @@ A0 benchmark artifacts remain non-certifiable.
 
 ## 6. Negative Controls and Failure Fixtures
 
-ARCANA-Bench must include negative controls that prove the public evaluator
-fails closed under distinct failure modes. Each negative-control fixture declares
+ARCANA-Bench must include negative controls that declare the expected
+fail-closed outcome for distinct failure modes. The v0.1 loader validates these
+declared contracts; it does not execute the evaluator or establish empirical
+fail-closed performance. Each negative-control fixture declares
 `scenario_type: negative_control` and one required `negative_control` identifier.
 
 | Negative-control identifier | Required behavior |
@@ -146,3 +148,7 @@ ARCANA-Bench v0.1 is ready for review when:
 - suite validation rejects missing negative-control coverage, mismatched
   negative-control reason codes, and allow-like negative-control verdicts;
 - public audit and schema validation pass.
+
+An executable ARCANA-Bench release additionally requires complete evaluator
+inputs, a deterministic runner, observed-versus-expected comparison, and signed
+run provenance. Those requirements are not satisfied by v0.1.

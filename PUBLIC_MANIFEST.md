@@ -59,6 +59,7 @@ Only files listed here are part of this public repository tree.
 | `schemas/ARCANA_Context.schema.v0.2.json` | public-safe draft | Public risk context schema. |
 | `src/arcana/__init__.py` | public-staging | ARCANA package entrypoint. |
 | `src/arcana/_validation.py` | public-staging | Internal validation helpers for typed public contracts. |
+| `src/arcana/artifacts.py` | public-staging | Semantic admission validation for typed public artifacts. |
 | `src/arcana/bench.py` | public-staging | ARCANA-Bench suite loader and coverage validator. |
 | `src/arcana/calibration.py` | public-staging | Calibration module boundary. |
 | `src/arcana/certificate.py` | public-staging | Certificate module boundary. |
@@ -71,12 +72,14 @@ Only files listed here are part of this public repository tree.
 | `src/arcana/model.py` | public-staging | Graph and horizon model boundary. |
 | `src/arcana/schemas.py` | public-staging | Public schema module boundary. |
 | `tests/test_benchmark_suite.py` | public-staging | ARCANA-Bench scenario coverage and scoring discipline tests. |
+| `tests/test_artifact_semantics.py` | public-staging | Semantic artifact contradiction, freshness, and binding tests. |
 | `tests/test_certificate_emission.py` | public-staging | Slice 4 certificate and context emission tests. |
 | `tests/test_cli_demo.py` | public-staging | Slice 4 deterministic demo CLI tests. |
 | `tests/test_decision_reason_codes.py` | public-staging | Slice 3 decision evaluator and reason-code tests. |
 | `tests/test_fastgate.py` | public-staging | Slice 5 FastGate prototype tests. |
 | `tests/test_matrix_validation.py` | public-staging | Slice 2 matrix and spectral calculator tests. |
 | `tests/test_project_scaffold.py` | public-staging | Slice 0 scaffold verification tests. |
+| `tests/test_public_audit_security.py` | public-staging | Public audit secret-material regression tests. |
 | `tests/test_public_integration_contract.py` | public-staging | Public integration contract boundary and example tests. |
 | `tests/test_public_remote_preflight.py` | public-staging | Public remote preflight checklist tests. |
 | `tests/test_release_readiness_docs.py` | public-staging | Release-readiness document boundary and gate tests. |

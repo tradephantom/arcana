@@ -14,3 +14,11 @@ node_modules/
 .env
 .env.*
 !.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.sqlite
+*.sqlite3

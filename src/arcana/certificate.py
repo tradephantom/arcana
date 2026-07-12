@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import Enum
+from datetime import datetime
 from typing import Any
 
 from arcana._validation import (
@@ -231,6 +232,32 @@ def build_demo_non_certifiable_certificate(
             "A0 calibration must be non_certifiable",
             ("calibration_profile", "certification_status"),
         )
+    validate_calibration_sources_for_level(
+        calibration_profile.level,
+        calibration_profile.source,
+        ("calibration_profile", "source"),
+    )
+    if calibration_profile.profile_id != context.calibration_profile_id:
+        fail(
+            "demo_profile_id_mismatch",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "calibration profile id must match the risk context",
+            ("calibration_profile", "profile_id"),
+        )
+    if calibration_profile.risk_model_version != context.risk_model_version:
+        fail(
+            "demo_profile_risk_model_mismatch",
+            ReasonCode.DENY_RISK_MODEL_UNSUPPORTED,
+            "calibration risk model must match the risk context",
+            ("calibration_profile", "risk_model_version"),
+        )
+    if calibration_profile.decision_horizon != context.decision_horizon:
+        fail(
+            "demo_profile_horizon_mismatch",
+            ReasonCode.DENY_DECISION_HORIZON_MISMATCH,
+            "calibration decision horizon must match the risk context",
+            ("calibration_profile", "decision_horizon"),
+        )
     if context.calibration_level is not CalibrationLevel.A0:
         fail(
             "demo_context_requires_a0",
@@ -259,6 +286,18 @@ def build_demo_non_certifiable_certificate(
             "demo certificate evidence must be synthetic",
             ("risk_context", "evidence", "synthetic"),
         )
+    if context.evidence.source_type != "synthetic_fixture":
+        fail(
+            "demo_certificate_evidence_source_invalid",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "demo certificate evidence must use synthetic_fixture source_type",
+            ("risk_context", "evidence", "source_type"),
+        )
+    issued_at_value = expect_datetime_string(issued_at, ("issued_at",), ReasonCode.DENY_CONTEXT_STALE)
+    issued_at_datetime = datetime.fromisoformat(issued_at_value.replace("Z", "+00:00"))
+    from arcana.artifacts import validate_certificate_semantics, validate_risk_context_semantics
+
+    validate_risk_context_semantics(context, now=issued_at_datetime)
     reason_codes = _merge_reason_codes(
         context.reason_codes,
         (
@@ -285,13 +324,14 @@ def build_demo_non_certifiable_certificate(
         loss_bounds=context.loss_bounds,
         evidence=context.evidence,
         reason_codes=reason_codes,
-        issued_at=expect_datetime_string(issued_at, ("issued_at",), ReasonCode.DENY_CONTEXT_STALE),
+        issued_at=issued_at_value,
         caveats=expect_string_list(list(caveats), ("caveats",), ReasonCode.DENY_MODEL_INPUT_INVALID, min_items=1),
         fastgate=context.fastgate,
         required_controls=context.required_controls,
         expires_at=context.autonomy_budget.expires_at,
     )
     certificate_to_mapping(certificate)
+    validate_certificate_semantics(certificate, now=issued_at_datetime)
     return certificate
 
 

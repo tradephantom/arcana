@@ -340,7 +340,7 @@ def test_fastgate_vector_invalid_deny_reason() -> None:
 def test_distillation_risk_deny_reason() -> None:
     result = evaluate_decision(
         _request(
-            calibration_profile=_profile(level=CalibrationLevel.A2),
+            calibration_profile=_profile(level=CalibrationLevel.A2, source=("controlled_redteam",)),
             distillation=DistillationAssessment(
                 evidence_sufficient=True,
                 stable_operation=False,

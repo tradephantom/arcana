@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from arcana.bench import (
+    BENCHMARK_EXECUTION_STATUS,
     PER_SCENARIO_REQUIRED_METRICS,
     REQUIRED_V01_METRICS,
     REQUIRED_V01_NEGATIVE_CONTROLS,
@@ -42,6 +43,7 @@ def test_all_benchmark_fixtures_validate_schema_and_typed_contract() -> None:
 def test_public_benchmark_suite_covers_required_threat_classes_and_metrics() -> None:
     suite = load_public_benchmark_suite()
 
+    assert suite.coverage.execution_status == BENCHMARK_EXECUTION_STATUS
     assert suite.coverage.scenario_count >= len(REQUIRED_V01_THREAT_CLASSES)
     assert suite.coverage.coverage_scenario_count >= len(REQUIRED_V01_THREAT_CLASSES)
     assert suite.coverage.negative_control_count >= len(REQUIRED_V01_NEGATIVE_CONTROLS)
@@ -218,6 +220,8 @@ def test_arcana_bench_document_tracks_negative_control_contract() -> None:
         "`scenario_type: negative_control`",
         "suite validation rejects missing negative-control coverage",
         "allow-like negative-control verdicts",
+        "contract_fixture_only_not_executed",
+        "does not execute the evaluator",
     ]
     for negative_control in REQUIRED_V01_NEGATIVE_CONTROLS:
         required_phrases.append(f"`{negative_control}`")

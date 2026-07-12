@@ -89,8 +89,38 @@
           },
           "then": {
             "properties": {
-              "certification_status": {
-                "const": "non_certifiable"
+              "certification_status": {"const": "non_certifiable"},
+              "source": {"items": {"const": "synthetic_demo"}}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"level": {"const": "A1"}}},
+          "then": {
+            "properties": {
+              "certification_status": {"const": "non_certifiable"},
+              "source": {"items": {"const": "static_conservative_prior"}}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"level": {"const": "A2"}}},
+          "then": {
+            "properties": {
+              "source": {
+                "items": {"enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark"]},
+                "contains": {"enum": ["controlled_redteam", "adversarial_replay", "public_benchmark"]}
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"level": {"const": "A3"}}},
+          "then": {
+            "properties": {
+              "source": {
+                "items": {"enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark", "runtime_observation"]},
+                "contains": {"const": "runtime_observation"}
               }
             }
           }

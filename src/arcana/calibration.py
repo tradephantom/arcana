@@ -44,6 +44,12 @@ CALIBRATION_SOURCE_MIN_LEVEL = {
     "public_benchmark": CalibrationLevel.A2,
     "runtime_observation": CalibrationLevel.A3,
 }
+CALIBRATION_LEVEL_QUALIFYING_SOURCES = {
+    CalibrationLevel.A0: frozenset({"synthetic_demo"}),
+    CalibrationLevel.A1: frozenset({"static_conservative_prior"}),
+    CalibrationLevel.A2: frozenset({"controlled_redteam", "adversarial_replay", "public_benchmark"}),
+    CalibrationLevel.A3: frozenset({"runtime_observation"}),
+}
 
 
 @dataclass(frozen=True)
@@ -179,6 +185,13 @@ def validate_calibration_sources_for_level(
     sources: tuple[str, ...],
     path: tuple[str | int, ...] = ("source",),
 ) -> None:
+    if level not in CALIBRATION_LEVEL_RANK:
+        fail(
+            "calibration_level_invalid",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "calibration level must be a supported CalibrationLevel",
+            ("level",),
+        )
     for index, source in enumerate(sources):
         required_level = CALIBRATION_SOURCE_MIN_LEVEL.get(source)
         if required_level is None:
@@ -190,6 +203,30 @@ def validate_calibration_sources_for_level(
                 "calibration level is weaker than the minimum level required by source",
                 (*path, index),
             )
+
+    source_set = frozenset(sources)
+    qualifying_sources = CALIBRATION_LEVEL_QUALIFYING_SOURCES[level]
+    if not source_set.intersection(qualifying_sources):
+        fail(
+            "calibration_level_evidence_missing",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            f"{level.value} requires evidence from at least one qualifying source class",
+            path,
+        )
+    if level is CalibrationLevel.A0 and source_set != frozenset({"synthetic_demo"}):
+        fail(
+            "a0_source_class_invalid",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "A0 is restricted to synthetic_demo evidence",
+            path,
+        )
+    if level is CalibrationLevel.A1 and source_set != frozenset({"static_conservative_prior"}):
+        fail(
+            "a1_source_class_invalid",
+            ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+            "A1 is restricted to static_conservative_prior evidence",
+            path,
+        )
 
 
 def validate_certification_status_for_level(
@@ -220,11 +257,20 @@ def validate_certification_status_for_level(
                 "certifiable_under_profile cannot be based on synthetic_demo source",
                 path,
             )
+        qualifying_sources = CALIBRATION_LEVEL_QUALIFYING_SOURCES[level]
+        if not frozenset(sources).intersection(qualifying_sources):
+            fail(
+                "certifiable_profile_evidence_insufficient",
+                ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+                "certifiable_under_profile requires qualifying reviewed evidence for its declared level",
+                path,
+            )
 
 
 __all__ = [
     "ALLOWED_CALIBRATION_SOURCES",
     "CALIBRATION_LEVEL_RANK",
+    "CALIBRATION_LEVEL_QUALIFYING_SOURCES",
     "CALIBRATION_SOURCE_MIN_LEVEL",
     "CalibrationProfile",
     "CalibrationUncertainty",

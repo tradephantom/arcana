@@ -113,6 +113,30 @@ def test_calibration_schema_rejects_a1_certifiable_status() -> None:
     assert exc_info.value.code == "schema_const_certification_status"
 
 
+def test_calibration_schema_rejects_unqualified_a2_source() -> None:
+    document = copy.deepcopy(_example("calibration_profile_a0.synthetic.json"))
+    document["level"] = "A2"
+    document["source"] = ["static_conservative_prior"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        validate_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+
+
+def test_calibration_schema_rejects_a3_without_runtime_observation() -> None:
+    document = copy.deepcopy(_example("calibration_profile_a0.synthetic.json"))
+    document["level"] = "A3"
+    document["source"] = ["controlled_redteam"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        validate_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+
+
 def test_certificate_schema_rejects_a1_non_demo_certificate() -> None:
     document = copy.deepcopy(_example("certificate_a0_non_certifiable.synthetic.json"))
     document["certificate_type"] = "bounded_autonomy_certificate"

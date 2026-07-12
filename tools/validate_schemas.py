@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate ARCANA public schema drafts and synthetic examples without external deps."""
+"""Validate ARCANA public schemas and synthetic examples."""
 
 from __future__ import annotations
 
@@ -9,6 +9,9 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema.exceptions import SchemaError
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -374,6 +377,7 @@ def validate_example(path: Path, registered: set[str]) -> list[Finding]:
 def main() -> int:
     findings: list[Finding] = []
     registered = load_registered_reason_codes()
+    schemas_by_version: dict[str, dict[str, Any]] = {}
 
     for schema_path in sorted(SCHEMA_DIR.glob("*.json")):
         schema = load_json(schema_path)
@@ -381,12 +385,29 @@ def main() -> int:
             findings.append(Finding(rel(schema_path), "schema_not_object", "top-level schema must be object"))
             continue
         findings.extend(check_schema_file(schema_path, schema))
+        try:
+            Draft202012Validator.check_schema(schema)
+        except SchemaError as exc:
+            findings.append(Finding(rel(schema_path), "jsonschema_meta_validation_failed", exc.message))
+        version = schema.get("properties", {}).get("schema_version", {}).get("const")
+        if isinstance(version, str):
+            schemas_by_version[version] = schema
 
     for expected_schema in SCHEMAS.values():
         if not (SCHEMA_DIR / expected_schema).exists():
             findings.append(Finding(rel(SCHEMA_DIR / expected_schema), "schema_missing", expected_schema))
 
     for example_path in sorted(EXAMPLE_DIR.glob("*.json")):
+        example = load_json(example_path)
+        version = example.get("schema_version") if isinstance(example, dict) else None
+        schema = schemas_by_version.get(version) if isinstance(version, str) else None
+        if schema is None:
+            findings.append(Finding(rel(example_path), "example_schema_unavailable", str(version)))
+        else:
+            validator = Draft202012Validator(schema, format_checker=FormatChecker())
+            for error in sorted(validator.iter_errors(example), key=lambda item: (tuple(item.absolute_path), tuple(item.absolute_schema_path))):
+                location = ".".join(str(part) for part in error.absolute_path) or "$"
+                findings.append(Finding(rel(example_path), f"jsonschema_{error.validator}", f"{location}: {error.message}"))
         findings.extend(validate_example(example_path, registered))
 
     if findings:

@@ -566,8 +566,11 @@ production certificate.
 
 ### Negative Controls and Failure Fixtures
 
-ARCANA-Bench includes public synthetic negative-control fixtures that verify
-fail-closed behavior for declared synthetic failure modes. Each
+ARCANA-Bench v0.1 includes public synthetic negative-control fixtures that
+declare expected fail-closed outcomes for synthetic failure modes. The current
+loader verifies fixture schema, coverage, and expected-response consistency; it
+does not execute the evaluator and therefore does not establish empirical
+fail-closed performance. Each
 negative-control fixture declares `scenario_type: negative_control` and a required
 `negative_control` identifier.
 

@@ -222,6 +222,20 @@ Public calibration profiles may declare these source classes:
 
 Evidence source labels must not expose private customer, enterprise, adapter, or lab mechanics.
 
+The source table defines minimum admissible source classes, not an automatic
+level upgrade. Public contract validation additionally requires:
+
+- A0 to use `synthetic_demo` only;
+- A1 to use `static_conservative_prior` only;
+- A2 to include at least one of `controlled_redteam`, `adversarial_replay`, or
+  `public_benchmark`, and not to use `runtime_observation`;
+- A3 to include `runtime_observation`;
+- `certifiable_under_profile` to satisfy the qualifying source rule for its
+  declared A2/A3 level and to exclude synthetic demo evidence.
+
+A level label without qualifying evidence is invalid rather than weakly
+accepted.
+
 ## 9. Evidence Quality
 
 ARCANA evaluates evidence quality along these dimensions:
@@ -466,6 +480,7 @@ certifiable_under_profile
 - risk model version is supported;
 - decision horizon is compatible;
 - evidence quality passes;
+- qualifying evidence has been reviewed for the declared A2/A3 level;
 - graph and evidence bindings pass;
 - upper-bound propagation and loss constraints pass;
 - required controls are satisfiable;

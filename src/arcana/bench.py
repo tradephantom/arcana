@@ -13,6 +13,7 @@ from arcana.schemas import EXAMPLE_DIR, load_typed_fixture
 
 
 BENCHMARK_SCENARIO_GLOB = "benchmark_*.synthetic.json"
+BENCHMARK_EXECUTION_STATUS = "contract_fixture_only_not_executed"
 REQUIRED_V01_THREAT_CLASSES = (
     "indirect_prompt_injection",
     "persistent_memory_poisoning",
@@ -63,6 +64,9 @@ PER_SCENARIO_RISK_METRICS = (
 
 @dataclass(frozen=True)
 class BenchmarkSuiteCoverage:
+    # This status prevents fixture-contract coverage from being reported as an
+    # executed evaluator benchmark.
+    execution_status: str
     scenario_count: int
     coverage_scenario_count: int
     negative_control_count: int
@@ -127,6 +131,7 @@ def validate_benchmark_suite(scenarios: Iterable[BenchmarkScenario]) -> Benchmar
     return BenchmarkSuite(
         scenarios=normalized,
         coverage=BenchmarkSuiteCoverage(
+            execution_status=BENCHMARK_EXECUTION_STATUS,
             scenario_count=len(normalized),
             coverage_scenario_count=len(coverage_scenarios),
             negative_control_count=len(negative_control_scenarios),
@@ -284,6 +289,7 @@ def _validate_negative_control_contract(scenario: BenchmarkScenario, index: int)
 
 __all__ = [
     "BENCHMARK_SCENARIO_GLOB",
+    "BENCHMARK_EXECUTION_STATUS",
     "PER_SCENARIO_REQUIRED_METRICS",
     "PER_SCENARIO_RISK_METRICS",
     "REQUIRED_V01_METRICS",

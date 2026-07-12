@@ -395,7 +395,8 @@ Exit criteria:
 - success rate is reported separately from unsafe action rate;
 - risk-bound status is visible for each scenario;
 - artifact-contract validity can be evaluated independently of task success;
-- every required negative control is present and rejects allow-like outcomes.
+- every required negative-control fixture is present and declares a non-allow-like expected outcome;
+- v0.1 remains `contract_fixture_only_not_executed` until a deterministic runner compares observed outcomes with those expectations.
 
 Status: synthetic scenario and negative-control expansion implemented, review pending.
 

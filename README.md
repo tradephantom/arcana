@@ -12,6 +12,10 @@ This public repository is live as an open research/reference release for local e
 
 Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic scenario and negative-control expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, Whitepaper / Paper v1.0 final public manuscript, release-readiness documents, and the initial public release note are present. No production implementation is present in this public release tree.
 
+Public artifact handling separates structural validation from semantic
+admission validation. ARCANA-Bench v0.1 is a contract-fixture coverage suite,
+not an executed evaluator benchmark. These boundaries are enforced by tests.
+
 Public remote:
 
 ```text
