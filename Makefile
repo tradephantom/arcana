@@ -1,4 +1,4 @@
-.PHONY: check public-audit schema-check test demo bench
+.PHONY: check public-audit schema-check test demo bench paper paper-check
 
 PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 
@@ -20,3 +20,9 @@ bench:
 	mkdir -p build
 	$(PYTHON) -m arcana.bench_runner --output build/arcana-bench-report.json
 	$(PYTHON) -m arcana.bench_runner --verify build/arcana-bench-report.json
+
+paper:
+	$(PYTHON) tools/build_paper.py --pdf
+
+paper-check:
+	$(PYTHON) tools/build_paper.py --check

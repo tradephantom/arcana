@@ -54,6 +54,12 @@ Only files listed here are part of this public repository tree.
 | `docs/PUBLIC_RELEASE_NOTES_v0.1.md` | public release | Initial public release note and public claim boundary. |
 | `docs/RELEASE_POLICY.md` | public release | Local-first release and remote policy. |
 | `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md` | public release | Public remote publication preflight checklist. |
+| `paper/README.md` | public release | Venue-neutral LaTeX package build and claim-boundary instructions. |
+| `paper/SOURCE.json` | public release | Reviewed manuscript hash, source revision, epoch, and claim-boundary binding. |
+| `paper/metadata.yaml` | public release | Public paper metadata and layout configuration. |
+| `paper/header.tex` | public release | Venue-neutral ARCANA LaTeX style. |
+| `paper/before-body.tex` | public release | Public research-status and non-production notice. |
+| `paper/ARCANA_Whitepaper_v1.0.tex` | public-safe research manuscript | Reproducible LaTeX transformation of the reviewed v1.0 manuscript. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe release artifact | Public benchmark scenario schema. |
 | `schemas/ARCANA_BenchmarkExecutionSuite.schema.v0.1.json` | public-safe executable contract | Public typed evaluator-input suite schema. |
 | `schemas/ARCANA_BenchmarkRunReport.schema.v0.1.json` | public-safe executable contract | Public deterministic benchmark report schema. |
@@ -96,8 +102,10 @@ Only files listed here are part of this public repository tree.
 | `tests/test_whitepaper_v03_draft.py` | public release | Whitepaper/paper v0.3 draft hardening and related-work tests. |
 | `tests/test_whitepaper_v10_manuscript.py` | public release | Whitepaper/paper v1.0 final manuscript claim discipline and publication-gate tests. |
 | `tests/test_final_claim_language.py` | public release | Final public claim-language guardrails for manuscript and public-facing docs. |
+| `tests/test_latex_paper.py` | public release | LaTeX source provenance, parity, and claim-boundary tests. |
 | `tools/audit_public.py` | public release | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public release | Public schema and synthetic example validator. |
+| `tools/build_paper.py` | public release | Hash-bound Markdown-to-LaTeX/PDF build and reproduction tool. |
 
 ## Release Checklist Status
 

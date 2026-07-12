@@ -1,0 +1,1248 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  american,
+  a4paper,
+  10pt]{article}
+\usepackage{xcolor}
+\usepackage[top=22mm,bottom=24mm,left=23mm,right=23mm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{setspace}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\ifLuaTeX
+\usepackage[bidi=basic,shorthands=off]{babel}
+\else
+\usepackage[bidi=default,shorthands=off]{babel}
+\fi
+\ifLuaTeX
+  \usepackage{selnolig} % disable illegal ligatures
+\fi
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% ARCANA venue-neutral paper style. Keep this file ASCII and engine-neutral.
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{titling}
+\usepackage{fvextra}
+
+\definecolor{ArcanaInk}{HTML}{172026}
+\definecolor{ArcanaGreen}{HTML}{1F6F5B}
+\definecolor{ArcanaRule}{HTML}{C9D2D0}
+\definecolor{ArcanaPale}{HTML}{F2F6F5}
+
+\color{ArcanaInk}
+\setlength{\headheight}{15pt}
+\setlength{\droptitle}{-1.4cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt minus 1pt}
+\setlength{\LTpre}{5pt}
+\setlength{\LTpost}{7pt}
+\renewcommand{\arraystretch}{1.12}
+\raggedbottom
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily ARCANA v1.0}
+\fancyhead[R]{\small\sffamily Open research/reference}
+\fancyfoot[C]{\small\sffamily \thepage\ / \pageref*{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\small\sffamily \thepage\ / \pageref*{LastPage}}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\titleformat{\section}
+  {\Large\bfseries\sffamily\color{ArcanaInk}}
+  {}{0pt}{}
+  [\vspace{2pt}\color{ArcanaRule}\titlerule]
+\titleformat{\subsection}
+  {\large\bfseries\sffamily\color{ArcanaGreen}}
+  {}{0pt}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\sffamily\color{ArcanaInk}}
+  {}{0pt}{}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\titlespacing*{\subsection}{0pt}{13pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{10pt}{3pt}
+
+\pretitle{\begin{flushleft}\color{ArcanaInk}\Huge\bfseries\sffamily}
+\posttitle{\par\vspace{6pt}\color{ArcanaGreen}\rule{\textwidth}{1.2pt}\end{flushleft}}
+\preauthor{\begin{flushleft}\large\sffamily}
+\postauthor{\par\end{flushleft}}
+\predate{\begin{flushleft}\small\sffamily\color{ArcanaGreen}}
+\postdate{\par\end{flushleft}\vspace{4pt}}
+
+\setlist[itemize]{leftmargin=1.35em,itemsep=2pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=1.55em,itemsep=2pt,topsep=3pt}
+\setcounter{tocdepth}{2}
+
+\AtBeginEnvironment{longtable}{\small}
+\AtBeginDocument{\fvset{breaklines=true,breakanywhere=true,fontsize=\small}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  pdftitle={ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems},
+  pdfauthor={ARCANA Research Project},
+  pdflang={en-US},
+  colorlinks=true,
+  linkcolor={ArcanaGreen},
+  filecolor={Maroon},
+  citecolor={ArcanaGreen},
+  urlcolor={ArcanaGreen},
+  pdfcreator={LaTeX via pandoc}}
+
+\ifXeTeX
+\special{pdf:trailerid [ <a7ab049e35789782fdc1929481857f1e> <a7ab049e35789782fdc1929481857f1e> ]}
+\fi
+\ifPDFTeX
+\pdftrailerid{}
+\pdftrailer{/ID [ <a7ab049e35789782fdc1929481857f1e> <a7ab049e35789782fdc1929481857f1e> ]}
+\fi
+\ifLuaTeX
+\pdfvariable trailerid {[ <a7ab049e35789782fdc1929481857f1e> <a7ab049e35789782fdc1929481857f1e> ]}
+\fi
+
+\title{ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems}
+\author{ARCANA Research Project}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\noindent
+\colorbox{ArcanaPale}{%
+  \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+    \small\sffamily
+    \textbf{Public research manuscript v1.0, post-hardening repository edition.}
+    Reference implementation and deterministic synthetic evaluator evidence
+    only. This artifact is not a production approval, enforcement approval,
+    external peer-review claim, or commercial certificate authorization.
+  }%
+}
+\vspace{10pt}
+
+\setstretch{1.05}
+\begin{abstract}
+Agentic systems can act through tools, memory, delegation, capability envelopes,
+repeated operations, and external services. Task success alone does not show whether a
+proposed operation remains inside an acceptable autonomy-risk envelope. ARCANA
+introduces a public research/reference framework for autonomy accounting: it estimates
+whether a proposed operation remains bounded under an explicit risk model version,
+calibration profile, decision horizon, uncertainty bounds, evidence assumptions, graph
+state, and reason-code contract.
+
+ARCANA models unsafe propagation pressure separately from loss or impact. It represents
+an agentic system as a capability graph, assigns horizon-bound propagation weights,
+computes upper-bound spectral propagation risk, evaluates loss-side quantities
+separately, and emits schema-shaped risk contexts or certificate-like artifacts with
+explicit caveats. The public reference implementation uses deterministic synthetic
+fixtures, public schemas, public reason codes, and local reproducibility gates.
+
+This manuscript does not claim production readiness, production enforcement, universal
+safety, or production certificate issuance. A0 outputs remain non-certifiable. Benchmark
+scenarios are synthetic and are intended to show why task success, unsafe action rate,
+risk-bound status, and artifact-contract validity must be reported separately. ARCANA is
+only as complete as the graph and evidence it is given.
+\end{abstract}
+
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{1. Paper Rule}\label{1-paper-rule}
+
+ARCANA may be described as:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+model-bounded autonomy accounting for agentic systems
+\end{Verbatim}
+
+The strongest allowed public claim in this manuscript is:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA estimates bounded autonomy under explicit risk model versions, calibration profiles, decision horizons, uncertainty bounds, and evidence assumptions.
+\end{Verbatim}
+
+The manuscript must not present any agent, workflow, deployment, model, policy, or
+organization as safe by proof. Every result is scoped by declared assumptions, public
+schemas, reason codes, evidence, and limitations.
+
+\section{Contributions}\label{contributions}
+
+ARCANA contributes:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  A graph-based model for autonomy-risk propagation in agentic systems.
+\item
+  A strict separation between propagation risk \texttt{K} and loss or impact \texttt{L}.
+\item
+  A decision-horizon contract that prevents dimensionally ambiguous risk claims.
+\item
+  A calibration-level model that exposes uncertainty and evidence quality.
+\item
+  A conservative upper-bound spectral decision rule.
+\item
+  FastGate, a fail-closed sparse-update path for low-latency admission.
+\item
+  Certificate-like bounded artifacts with reason-code semantics.
+\item
+  ARCANA-Bench, a synthetic benchmark separating task success from autonomy risk.
+\end{enumerate}
+
+\section{2. Problem}\label{2-problem}
+
+Agentic systems can complete tasks while increasing autonomy risk. Examples include:
+
+\begin{itemize}
+\tightlist
+\item
+  routing unsafe instructions through an otherwise useful tool path;
+\item
+  retaining poisoned memory that affects future operations;
+\item
+  requesting a tool scope broader than the task requires;
+\item
+  delegating across agents until risk compounds;
+\item
+  optimizing for benchmark success while hiding unsafe actions;
+\item
+  generating dynamic behavior outside the calibrated envelope.
+\end{itemize}
+
+These behaviors are not captured by a task-success metric alone. ARCANA asks a narrower
+question:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+Given a proposed operation, graph state, calibration profile, decision horizon, uncertainty interval, and evidence bundle, does the operation remain inside the declared bounded-risk envelope?
+\end{Verbatim}
+
+This is not the same question as whether a local policy should allow the operation.
+ARCANA can inform surrounding systems, but the surrounding system remains responsible
+for local policy, enforcement, and operational approval.
+
+\section{3. Scope and Non-Scope}\label{3-scope-and-non-scope}
+
+Public ARCANA includes:
+
+\begin{itemize}
+\tightlist
+\item
+  formal model documentation;
+\item
+  calibration methodology;
+\item
+  reason-code registry;
+\item
+  public schemas;
+\item
+  reference implementation;
+\item
+  synthetic demos;
+\item
+  ARCANA-Bench synthetic scenarios;
+\item
+  public integration contract;
+\item
+  limitations and release-readiness documents.
+\end{itemize}
+
+Public ARCANA does not include:
+
+\begin{itemize}
+\tightlist
+\item
+  production enforcement implementation;
+\item
+  private policy engine;
+\item
+  customer telemetry pipeline;
+\item
+  production dashboard;
+\item
+  private deployment profile;
+\item
+  commercial certificate issuance;
+\item
+  private evidence payload;
+\item
+  production operational approval.
+\end{itemize}
+
+The public repository is a research/reference track. It is not a production control
+plane.
+
+\section{4. Model Overview}\label{4-model-overview}
+
+ARCANA represents an agentic system at time \texttt{t} as a graph:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+G_t = (V_t, E_t)
+\end{Verbatim}
+
+where \path{V_t} contains public node classes:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+A  = agents
+T  = tools or APIs
+M  = memory or knowledge stores
+H  = human or policy gates
+Gt = grants or capability envelopes
+O  = operations or plans
+D  = distilled or repeated operations
+X  = external systems
+\end{Verbatim}
+
+An edge is:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+e = (source, target, edge_type, factors, evidence)
+\end{Verbatim}
+
+Each edge describes a possible unsafe propagation path over a declared decision horizon.
+The graph hash binds matrix ordering and artifact scope to the graph state used for
+evaluation.
+
+\section{5. Decision Horizon}\label{5-decision-horizon}
+
+A decision horizon is:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+H = (horizon_id, duration_seconds, context)
+\end{Verbatim}
+
+Every model input must be horizon-compatible:
+
+\begin{itemize}
+\tightlist
+\item
+  graph edge weights;
+\item
+  calibration profile;
+\item
+  risk context;
+\item
+  certificate-like artifact;
+\item
+  proposed graph delta;
+\item
+  loss bounds where loss is in scope.
+\end{itemize}
+
+Without \texttt{H}, propagation weights are dimensionally ambiguous. Missing or
+incompatible horizons return:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_DECISION_HORIZON_MISMATCH
+\end{Verbatim}
+
+The horizon is not a formatting detail. It is part of the mathematical contract.
+
+\section{6. Edge Weights and Propagation
+Matrix}\label{6-edge-weights-and-propagation-matrix}
+
+For an edge \texttt{e} over horizon \texttt{H}, ARCANA models unsafe propagation weight
+as:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+w_e(H) =
+  activation_e(H)
+  * p_unsafe_e(H)
+  * exposure_e(H)
+  * capability_e(H)
+  * scope_e(H)
+  * (1 - detectability_e(H))
+  * (1 - gate_effectiveness_e(H))
+  * (1 - reversibility_e(H))
+\end{Verbatim}
+
+Risk-amplifying factors use conservative upper bounds when unknown. Control factors use
+conservative lower bounds when unknown.
+
+Expected factor domains:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.47\linewidth}@{}}
+\toprule\noalign{}
+Factor & Domain & Meaning \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\path{activation_e(H)} & \texttt{\textgreater{}=\ 0} & Expected unsafe transition
+pressure over horizon \texttt{H}; may exceed \texttt{1} only when repeated transition
+pressure is intentionally modeled. \\
+\path{p_unsafe_e(H)} & \texttt{{[}0,\ 1{]}} & Conditional unsafe-transition
+likelihood under the declared model. \\
+\path{exposure_e(H)} & \texttt{{[}0,\ 1{]}} & Degree to which the target can be
+reached by the source under the current operational context. \\
+\path{capability_e(H)} & \texttt{{[}0,\ 1{]}} & Privilege amplification or capability
+strength if the target is reached. \\
+\path{scope_e(H)} & \texttt{{[}0,\ 1{]}} & Breadth of resources or actions available
+through the edge. \\
+\path{detectability_e(H)} & \texttt{{[}0,\ 1{]}} & Strength of detection over the
+horizon. \\
+\path{gate_effectiveness_e(H)} & \texttt{{[}0,\ 1{]}} & Strength of human, policy,
+or technical gate controls. \\
+\path{reversibility_e(H)} & \texttt{{[}0,\ 1{]}} & Degree to which the transition can
+be undone or contained. \\
+\end{longtable}
+}
+
+Calibration profiles must prevent double-counting between \path{exposure_e},
+\path{capability_e}, and \path{scope_e}. Each factor should have a definition,
+domain, source, uncertainty rule, conservative default direction, and caveat when
+evidence is sparse or stale.
+
+For \texttt{n\ =\ \textbar{}V\_t\textbar{}}, the propagation matrix is:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+K(H) in R_nonnegative^(n x n)
+\end{Verbatim}
+
+with:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+K_ij(H) = sum w_e(H) for all edges e where source(e) = i and target(e) = j
+\end{Verbatim}
+
+\texttt{K} must be square, nonnegative, horizon-bound, and graph-bound. It contains
+unsafe propagation pressure only. If graph, matrix, interval, threshold, node ordering,
+or required model input is malformed, ARCANA returns:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_MODEL_INPUT_INVALID
+\end{Verbatim}
+
+\section{7. Uncertainty and Spectral Risk}\label{7-uncertainty-and-spectral-risk}
+
+ARCANA tracks matrix uncertainty as:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+K_lower(H), K_mean(H), K_upper(H)
+\end{Verbatim}
+
+with the invariant:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+0 <= K_lower_ij <= K_mean_ij <= K_upper_ij
+\end{Verbatim}
+
+ARCANA computes:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+rho_lower = rho(K_lower)
+rho_mean  = rho(K_mean)
+rho_upper = rho(K_upper)
+\end{Verbatim}
+
+Admission-like decisions use \path{rho_upper}, not \path{rho_mean}.
+
+The public subcritical-under-model condition is:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+0 <= theta_rho <= 1
+rho(K_upper) < theta_rho
+\end{Verbatim}
+
+where \path{theta_rho} is the declared public threshold for the decision context. A
+stricter policy threshold may be used only inside the same subcritical range:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+rho(K_upper) < theta_rho <= 1
+\end{Verbatim}
+
+This condition means the declared model is subcritical under the stated assumptions. A
+threshold above \texttt{1} may be a diagnostic or policy quantity in some other model,
+but it must not support an ARCANA public allow-like, subcritical-under-model, or
+certificate-like bounded-autonomy artifact. Public allow-like, subcritical-under-model,
+and certificate-like bounded-autonomy artifacts must not use
+\texttt{theta\_rho\ \textgreater{}\ 1}. It is not a statement about all possible
+real-world behavior.
+
+When the upper-bound propagation risk exceeds the threshold or budget, ARCANA returns:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_RHO_UPPER_BOUND
+\end{Verbatim}
+
+\section{Mathematical Propositions and Proof
+Sketches}\label{mathematical-propositions-and-proof-sketches}
+
+The public model relies on standard facts about nonnegative matrices. These propositions
+are model-bounded statements, not claims about all real-world behavior.
+
+\subsection{Proposition 1 - Subcritical finite
+propagation}\label{proposition-1---subcritical-finite-propagation}
+
+For a nonnegative propagation matrix \texttt{K} with:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+rho(K) < 1
+\end{Verbatim}
+
+the Neumann series converges:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+sum_{m=0}^{infinity} K^m
+\end{Verbatim}
+
+Under the declared ARCANA model, this means modeled propagation pressure remains finite.
+It does not prove that unmodeled propagation paths are absent.
+
+\subsection{Proposition 2 - Upper-bound
+monotonicity}\label{proposition-2---upper-bound-monotonicity}
+
+If:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+0 <= K <= K_upper
+\end{Verbatim}
+
+entrywise, then:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+rho(K) <= rho(K_upper)
+\end{Verbatim}
+
+This justifies using \path{rho_upper} for admission-like decisions when uncertainty
+is represented through entrywise upper-bound matrices.
+
+\subsection{Proposition 3 - FastGate conservative
+bound}\label{proposition-3---fastgate-conservative-bound}
+
+For \texttt{A\ \textgreater{}=\ 0} and \texttt{x\ \textgreater{}\ 0}, the
+Collatz-Wielandt upper bound gives:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+rho(A) <= max_i ((A x)_i / x_i)
+\end{Verbatim}
+
+FastGate may use this only as a conservative upper bound. If the vector, nonnegativity,
+graph, cache, margin, calibration, or horizon assumptions fail, FastGate must not return
+an allow-like result.
+
+\section{8. Loss Is Separate From
+Propagation}\label{8-loss-is-separate-from-propagation}
+
+ARCANA separates:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+K = unsafe propagation pressure
+L = impact or loss
+\end{Verbatim}
+
+Loss can include operational, financial, privacy, compliance, safety, or reputational
+impact. Loss must not be embedded in \texttt{K}; propagation risk must not be treated as
+impact.
+
+When loss is in scope, ARCANA can report loss-side upper bounds such as:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+AaR_99_upper
+AES_99_upper
+\end{Verbatim}
+
+If a required loss model is missing, malformed, unsupported, or horizon-incompatible,
+ARCANA returns:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_LOSS_MODEL_INVALID
+\end{Verbatim}
+
+If the upper-bound Autonomy-at-Risk or Agentic Expected Shortfall exceeds declared
+limits, ARCANA returns:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_AAR_UPPER_BOUND
+ARCANA_DENY_AES_UPPER_BOUND
+\end{Verbatim}
+
+An operation can have bounded propagation risk but unacceptable loss bounds. It can also
+have low expected impact but unacceptable propagation-risk upper bound.
+
+\section{9. Calibration}\label{9-calibration}
+
+Calibration converts evidence and assumptions into uncertainty bounds. It is not a proof
+of real-world behavior.
+
+ARCANA uses four public calibration levels:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.07\linewidth}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.34\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}@{}}
+\toprule\noalign{}
+Level & Name & Public use & Certification status \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+A0 & Heuristic / Demo Only & Synthetic examples, tutorials, paper illustrations. &
+Always \path{non_certifiable}. \\
+A1 & Static Conservative Prior & Conservative offline estimates from declared static
+factors. & Public v0.2 default is \path{non_certifiable}; no certificate-like
+artifact support. \\
+A2 & Empirical / Red-Team Calibration & Controlled adversarial evidence, reviewed
+replay, or empirical public benchmark evidence. & Eligible for
+\path{certifiable_under_profile} only after reviewed scope, coverage, freshness, and
+non-synthetic evidence checks. \\
+A3 & Runtime Bayesian Calibration & Maintained segmented distributions with decay and
+priors. & Eligible for \path{certifiable_under_profile} only after reviewed runtime
+evidence and auditability checks. \\
+\end{longtable}
+}
+
+A0 is demo-only. A0 outputs must preserve:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_INFO_A0_NON_CERTIFIABLE
+\end{Verbatim}
+
+The public claim boundary after production-readiness review is:
+
+\begin{itemize}
+\tightlist
+\item
+  A1 is a conservative prior level and is not a commercial certificate basis.
+\item
+  A1 can support bounded reference risk contexts when all other constraints pass, but A1
+  remains \path{non_certifiable} and cannot support non-demo certificate-like
+  artifacts in the public v0.2 contract.
+\item
+  A2 may support reviewed empirical calibration claims only when scope, evidence,
+  freshness, horizon, and non-synthetic evidence match the reviewed profile.
+\item
+  A3 remains a runtime-calibration design target unless a separate runtime distribution
+  review is completed.
+\item
+  Public examples do not disclose private thresholds, formulas, runtime distributions,
+  telemetry, or deployment mechanics.
+\item
+  No public calibration level in this manuscript authorizes production enforcement or
+  certificate issuance by itself.
+\end{itemize}
+
+The public source classes deliberately distinguish \path{public_benchmark} from
+\path{empirical_public_benchmark}. The first names the current synthetic
+ARCANA-Bench reference-evaluator evidence and never qualifies A2 or a certifiable state.
+The second is reserved for non-synthetic public benchmark evidence with separately
+reviewed provenance, scope, coverage, freshness, and reproducibility. Relabeling a
+synthetic run cannot upgrade its calibration level.
+
+The phrase \path{certifiable_under_profile} is a bounded public/reference semantic
+state. It means that an artifact may support a bounded-under-profile claim inside the
+declared ARCANA model and calibration profile. It does not imply commercial certificate
+issuance, production enforcement, customer approval, or operational authorization.
+
+If the requested decision requires stronger calibration than the supplied profile,
+ARCANA returns:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_CALIBRATION_INSUFFICIENT
+\end{Verbatim}
+
+If evaluation is allowed but admission-like claims are not, ARCANA may return:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_REQUIRE_OBSERVE_ONLY
+\end{Verbatim}
+
+Calibration limitations must be visible in the result. Sparse evidence widens
+uncertainty. Stale evidence weakens or invalidates the profile. Passive absence of
+observed incidents cannot collapse uncertainty by itself.
+
+\section{10. Evidence Binding}\label{10-evidence-binding}
+
+ARCANA artifacts bind results to evidence by source identifiers and hashes. A public
+evidence reference may include:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+source_type
+source_id
+evidence_hash
+synthetic
+\end{Verbatim}
+
+For public examples, \texttt{synthetic} must be true. An evidence hash binds the
+artifact to evidence; it does not prove evidence quality by itself.
+
+Evidence mismatch, stale evidence, missing evidence, or unsupported evidence class can
+invalidate the result. The correct action is recompute, denial, or observe-only
+according to the public reason-code contract.
+
+\section{11. Decision Semantics}\label{11-decision-semantics}
+
+ARCANA emits explicit verdicts:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.31\linewidth}>{\raggedright\arraybackslash}p{0.62\linewidth}@{}}
+\toprule\noalign{}
+Verdict & Meaning \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\path{allow_bounded_autonomy} & The proposed operation is bounded under declared
+assumptions. \\
+\path{allow_with_controls} & The operation is bounded only if listed controls are
+applied. \\
+\path{require_scope_reduction} & The requested scope is too broad but may become
+bounded if narrowed. \\
+\path{require_human_gate} & A human or policy gate is required before admission. \\
+\path{observe_only} & The result may be analyzed but not treated as bounded for
+admission or certification. \\
+\texttt{deny} & The operation is outside the declared bounded-risk envelope or
+invalid. \\
+\end{longtable}
+}
+
+Allow-like results require compatible model, calibration, horizon, graph, evidence,
+uncertainty, threshold, budget, and controls.
+
+Distinct failures must not collapse into generic denial. Examples:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_RISK_MODEL_UNSUPPORTED
+ARCANA_DENY_CONTEXT_STALE
+ARCANA_DENY_GRAPH_HASH_MISMATCH
+ARCANA_DENY_BUDGET_EXHAUSTED
+ARCANA_REQUIRE_SCOPE_REDUCTION
+ARCANA_REQUIRE_HUMAN_GATE
+\end{Verbatim}
+
+Reason codes are part of the public contract surface and must be preserved by
+integrations.
+
+\section{12. Certificate-Like Artifacts}\label{12-certificate-like-artifacts}
+
+Certificate-like artifacts are bounded records. They are not broad approvals.
+
+Every certificate-like artifact must include:
+
+\begin{itemize}
+\tightlist
+\item
+  schema version;
+\item
+  certificate identifier;
+\item
+  certificate type;
+\item
+  risk model version;
+\item
+  calibration profile;
+\item
+  calibration level;
+\item
+  decision horizon;
+\item
+  graph hash;
+\item
+  uncertainty bounds;
+\item
+  evidence source or hash;
+\item
+  verdict;
+\item
+  reason codes;
+\item
+  caveats;
+\item
+  issued time and expiry when applicable.
+\end{itemize}
+
+A0 artifacts are non-certifiable and cannot support production certificate issuance.
+
+In this public manuscript, A1 certificate-like artifacts are not supported beyond
+non-certifiable reference contexts. A2 and A3 references are conditional claim
+boundaries: they describe what a reviewed profile would need to bind, not an
+authorization to issue a production certificate from this repository. Certificate
+issuance, if ever implemented by a deployment-specific system, requires a separate
+issuance process, expiry, revocation path, support evidence, and review record.
+
+If a certificate-like artifact is stale, graph-mismatched, horizon-mismatched,
+evidence-mismatched, or missing required fields, it must be rejected or recomputed.
+
+\section{13. FastGate}\label{13-fastgate}
+
+FastGate is a conservative optimization path for sparse graph changes. It must preserve
+the exact upper-bound decision rule:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+0 <= theta_rho <= 1
+rho(K_after_upper) < theta_rho
+\end{Verbatim}
+
+FastGate may return an allow-like result only when it proves a conservative bound:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+fastgate_upper_bound >= rho(K_after_upper)
+fastgate_upper_bound < theta_rho
+\end{Verbatim}
+
+If FastGate cannot prove both inequalities, it must not return
+\path{allow_bounded_autonomy}.
+
+Recognized public modes:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.47\linewidth}@{}}
+\toprule\noalign{}
+Mode & Purpose & Allow-like result permitted \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\path{exact_recompute} & Full recompute of \path{rho(K_after_upper)}. & Yes, if
+exact constraints pass. \\
+\path{perron_collatz_bound} & Conservative sparse update bound. & Yes, if bound
+proves admission with margin. \\
+\path{observe_only} & Evaluate or explain without admission authority. & No. \\
+\end{longtable}
+}
+
+FastGate must validate positive-vector assumptions, reducible graph handling, cache
+keys, numerical margin, and evidence binding.
+
+The public FastGate implementation also recomputes a domain-separated canonical hash
+over each sparse delta and requires a current evidence hash for every admission-capable
+path. Its Collatz products, sums, and ratios are rounded upward before the separate
+numerical margin is applied. These controls are reference semantics, not a production
+latency or enforcement claim.
+
+If the fast path is inconclusive:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_FASTGATE_UNCERTAIN
+\end{Verbatim}
+
+If positive-vector requirements are invalid:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_FASTGATE_VECTOR_INVALID
+\end{Verbatim}
+
+FastGate is not a weaker model. It is a faster path that must fail closed when
+assumptions fail.
+
+\section{14. Distillation Risk}\label{14-distillation-risk}
+
+Distillation means treating an operation, plan, or behavior as repeatable. This can
+compress repeated autonomy into a persistent pattern.
+
+Distillation is not eligible unless evidence, stability, scope, calibration, and
+invalidation rules are sufficient. If they are not sufficient, ARCANA returns:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+ARCANA_DENY_DISTILLATION_RISK
+\end{Verbatim}
+
+Public examples must not imply that a demo behavior can become a production reusable
+pattern without reviewed calibration evidence.
+
+\section{15. ARCANA-Bench}\label{15-arcana-bench}
+
+ARCANA-Bench v0.1 demonstrates why autonomy risk accounting differs from task-success
+evaluation. The public benchmark suite uses synthetic scenarios only.
+
+Scenario classes:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.31\linewidth}>{\raggedright\arraybackslash}p{0.62\linewidth}@{}}
+\toprule\noalign{}
+Scenario class & Benchmark question \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Indirect prompt injection containment & Can task success coexist with unsafe
+instruction-routing risk? \\
+Persistent memory poisoning containment & Can stale or poisoned memory affect future
+autonomy risk? \\
+Tool misuse scope reduction & Does requested tool scope exceed the bounded envelope? \\
+Unsafe delegation cascade & Does delegation amplify propagation risk across agents? \\
+Benchmark gaming detection & Can high task success hide unsafe action behavior? \\
+Dynamic execution risk & Does runtime-generated behavior exceed calibration scope? \\
+\end{longtable}
+}
+
+Required metrics:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+task_success_rate
+unsafe_action_rate
+policy_violation_rate
+delta_rho_upper
+rho_peak
+AaR_99_upper
+AES_99_upper
+containment_time_steps
+autonomy_budget_consumed
+human_intervention_efficiency
+artifact_contract_validity_rate
+\end{Verbatim}
+
+Task success is not an ARCANA safety score. Benchmark reports must separate at least:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+task_success_rate
+unsafe_action_rate
+risk_bound_status
+artifact_contract_validity_rate
+\end{Verbatim}
+
+\path{artifact_contract_validity_rate} measures whether benchmark scenario and
+execution artifacts satisfy required public schema and typed contracts. The v0.1 runner
+does not emit or validate a production certificate. This metric does not mean production
+certification or operational approval.
+
+Earlier drafts used the name \path{certificate_validity_rate}; this manuscript uses
+\path{artifact_contract_validity_rate} to avoid implying that the metric validates
+a production certificate.
+
+\subsection{Negative Controls and Failure
+Fixtures}\label{negative-controls-and-failure-fixtures}
+
+ARCANA-Bench v0.1 includes public synthetic negative-control fixtures that declare
+expected fail-closed outcomes for synthetic failure modes. The current runner validates
+fixture and execution schemas, constructs typed inputs, invokes the actual public
+reference evaluator, and compares observed verdicts, ordered reason codes, and required
+controls with the declared contracts. This verifies deterministic reference-evaluator
+behavior for those inputs; it does not execute an agentic workload or establish
+empirical fail-closed performance. Each negative-control fixture declares
+\texttt{scenario\_type:\ negative\_control} and a required \path{negative_control}
+identifier.
+
+The runner invokes the actual public reference evaluator; it does not copy the expected
+fixture outcome into the observed report.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.31\linewidth}>{\raggedright\arraybackslash}p{0.62\linewidth}@{}}
+\toprule\noalign{}
+Negative-control identifier & Required behavior \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\path{missing_decision_horizon} & deny with
+\path{ARCANA_DENY_DECISION_HORIZON_MISMATCH}. \\
+\path{graph_hash_mismatch} & deny with
+\path{ARCANA_DENY_GRAPH_HASH_MISMATCH}. \\
+\path{a0_artifact_used_for_admission} & observe-only or deny; never production
+admission. \\
+\path{rho_mean_below_threshold_rho_upper_above_threshold} & must not allow;
+current public fixture denies with \path{ARCANA_DENY_RHO_UPPER_BOUND}. \\
+\path{fastgate_inconclusive} & fail closed with
+\path{ARCANA_DENY_FASTGATE_UNCERTAIN}. \\
+\path{loss_model_missing_required} & deny with
+\path{ARCANA_DENY_LOSS_MODEL_INVALID}. \\
+\path{stale_evidence} & recompute, observe-only, or deny according to reason-code
+contract; current public fixture denies with \path{ARCANA_DENY_CONTEXT_STALE}. \\
+\end{longtable}
+}
+
+\section{16. Reference Implementation}\label{16-reference-implementation}
+
+The public reference implementation is a local, deterministic implementation of the
+public contracts. It is intended for review, reproduction, and tests, not production
+deployment.
+
+Public implementation components include:
+
+\begin{itemize}
+\tightlist
+\item
+  typed graph and calibration objects;
+\item
+  schema validation;
+\item
+  spectral risk calculator;
+\item
+  decision evaluator with explicit reason-code branches;
+\item
+  A0 certificate-like demo output marked non-certifiable;
+\item
+  FastGate prototype;
+\item
+  canonical sparse-delta hashing and evidence-bound FastGate admission;
+\item
+  ARCANA-Bench synthetic fixture loader;
+\item
+  ARCANA-Bench negative-control coverage validator;
+\item
+  ARCANA-Bench typed execution-suite loader and actual evaluator runner;
+\item
+  deterministic machine-readable report with metric provenance and content hashes;
+\item
+  public audit and validation tools.
+\end{itemize}
+
+Local reproduction:
+
+\begin{Verbatim}[breaklines=true,breakanywhere=true,fontsize=\small]
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e ".[dev]"
+make check
+make test
+make demo
+make bench
+\end{Verbatim}
+
+\texttt{make\ check} includes public-boundary audit, schema/example validation, and the
+deterministic synthetic evaluator benchmark. Unit tests and the standalone synthetic
+demo remain explicit gates.
+
+The demo does not require network access.
+
+\section{17. Public Integration Contract}\label{17-public-integration-contract}
+
+ARCANA exports model-bounded risk artifacts. Surrounding systems decide local actions.
+
+Public integration rules:
+
+\begin{itemize}
+\tightlist
+\item
+  validate public schema before use;
+\item
+  validate model version, calibration profile, decision horizon, graph hash, evidence,
+  verdict, and reason codes;
+\item
+  preserve original ARCANA reason codes;
+\item
+  preserve evidence source and hash binding;
+\item
+  keep public fields separate from integration-private fields;
+\item
+  reject or recompute stale, unsupported, mismatched, or uncertain artifacts;
+\item
+  keep A0 non-certifiable markers visible.
+\end{itemize}
+
+ARCANA remains enforcement-neutral. This paper does not define production enforcement,
+private policy evaluation, private telemetry, or commercial certificate issuance.
+
+ARCANA can be integrated with capability-bound execution systems, policy gateways, or
+runtime brokers, but the public ARCANA reference track remains enforcement-neutral.
+
+\section{18. Limitations}\label{18-limitations}
+
+ARCANA is useful only inside its declared scope.
+
+ARCANA is only as complete as the graph and evidence it is given.
+
+Core limitations:
+
+\begin{itemize}
+\tightlist
+\item
+  the graph can omit real propagation paths;
+\item
+  calibration can be sparse, stale, wrong, or incomplete;
+\item
+  synthetic benchmark results do not prove production behavior;
+\item
+  A0 output is non-certifiable;
+\item
+  A1 output is not a commercial certificate basis in this public track;
+\item
+  A1 cannot support non-demo certificate-like artifacts in the public v0.2 contract;
+\item
+  A2/A3 language remains conditional on separate review, evidence coverage, freshness,
+  horizon compatibility, non-synthetic evidence, expiry, and revocation handling;
+\item
+  synthetic \path{public_benchmark} evidence cannot qualify A2; only the distinct
+  reviewed \path{empirical_public_benchmark} class can do so;
+\item
+  FastGate depends on valid assumptions and fallback paths;
+\item
+  evidence hashes bind artifacts but do not prove evidence quality;
+\item
+  local policy may be stricter than ARCANA\textquotesingle s bounded result;
+\item
+  a valid artifact is not a substitute for operational review;
+\item
+  public examples do not represent private deployments.
+\end{itemize}
+
+No public release should proceed when claim boundaries are unclear.
+
+\section{19. Related Work}\label{19-related-work}
+
+ARCANA is positioned as a bounded autonomy-accounting layer, not as a replacement for
+tool protocols, threat taxonomies, governance frameworks, runtime verification,
+proof-carrying authorization, network propagation models, or financial tail-risk
+methods.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.31\linewidth}>{\raggedright\arraybackslash}p{0.62\linewidth}@{}}
+\toprule\noalign{}
+Area & Relationship to ARCANA \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Model Context Protocol (MCP) & MCP standardizes how AI applications connect to external
+systems such as data sources, tools, and workflows. ARCANA does not compete with tool
+connectivity; it accounts for autonomy risk in operations that such connectivity can
+enable. Source: \url{https://modelcontextprotocol.io/docs/getting-started/intro} \\
+OWASP Agentic AI threats & OWASP\textquotesingle s Agentic AI guidance frames emerging
+agentic threats and mitigations through a threat-model lens. ARCANA can complement such
+taxonomies with model-bounded risk artifacts, reason codes, and calibration-scoped
+decisions. Source:
+\url{https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/} \\
+NIST AI Risk Management Framework & NIST AI RMF is a voluntary framework for managing AI
+risks to individuals, organizations, and society. ARCANA does not replace AI RMF; it
+provides a narrower mechanism for bounded-under-model decisions in agentic operations.
+Source: \url{https://www.nist.gov/itl/ai-risk-management-framework} \\
+Runtime verification and authorization & ARCANA can inform runtime checks, but the
+public reference track does not define private enforcement or authorization
+infrastructure. \\
+Branching processes and network propagation & ARCANA borrows the subcritical intuition
+of finite propagation pressure, but every claim remains bound to the declared graph,
+horizon, and calibration. \\
+VaR and expected shortfall & ARCANA separates propagation risk from loss-side tail
+quantities such as Autonomy-at-Risk and Agentic Expected Shortfall. \\
+\end{longtable}
+}
+
+\section{20. Related Public Artifacts}\label{20-related-public-artifacts}
+
+This manuscript is grounded in the current public research/reference artifacts:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.31\linewidth}>{\raggedright\arraybackslash}p{0.62\linewidth}@{}}
+\toprule\noalign{}
+Artifact & Role in this manuscript \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\path{docs/FORMAL_MODEL_v0.2.md} & Mathematical contract for graph, \texttt{K},
+\texttt{L}, horizon, uncertainty, and decision rule. \\
+\path{docs/CALIBRATION_METHODOLOGY_v0.1.md} & Calibration levels, evidence quality,
+sparse evidence, and staleness. \\
+\path{docs/REASON_CODES.md} & Public reason-code contract. \\
+\path{schemas/} & Public machine-readable artifact contracts. \\
+\path{examples/} & Synthetic examples and benchmark fixtures. \\
+\path{docs/FASTGATE_DESIGN_v0.1.md} & Conservative FastGate semantics. \\
+\path{docs/ARCANA_BENCH_v0.1.md} & Synthetic benchmark scenario suite and
+metrics. \\
+\path{docs/PUBLIC_INTEGRATION_CONTRACT_v0.1.md} & Enforcement-neutral import/export
+guidance. \\
+\path{docs/LIMITATIONS_v0.1.md} & Explicit public limitations and release gates. \\
+\path{src/arcana/} & Public reference implementation. \\
+\path{tests/} & Local reproducibility and contract tests. \\
+\end{longtable}
+}
+
+\section{21. Reproducibility and
+Falsifiability}\label{21-reproducibility-and-falsifiability}
+
+The public repository makes the reference claims inspectable through four separate
+gates:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \texttt{make\ check} validates the public boundary, schemas, examples, and executable
+  ARCANA-Bench contract.
+\item
+  \texttt{make\ test} exercises typed contracts, explicit reason-code branches,
+  numerical edge cases, artifact semantics, benchmark tamper detection, and
+  claim-language guardrails.
+\item
+  \texttt{make\ demo} produces the deterministic A0 non-certifiable example.
+\item
+  \texttt{make\ bench} executes all synthetic benchmark inputs through the reference
+  evaluator and verifies the source-bound report hash.
+\end{enumerate}
+
+The benchmark report distinguishes measured, not-measured, and unavailable metrics. A
+failed expected-versus-observed comparison, source-manifest mismatch, content-hash
+mismatch, semantic artifact contradiction, or changed decision reason is therefore
+visible rather than silently normalized.
+
+These checks make the reference implementation reproducible and falsifiable at the
+contract level. They do not constitute external academic peer review, empirical
+deployment validation, or evidence that an unmodeled path is absent. Exact commit,
+dependency, and artifact hashes belong in the accompanying release record so that this
+manuscript does not make mutable operational claims.
+
+\section{22. Conclusion}\label{22-conclusion}
+
+ARCANA defines a model-bounded autonomy-accounting layer for agentic operations. Its
+central discipline is to bind every bounded result to a declared model, calibration
+profile, horizon, graph, uncertainty interval, evidence assumption, budget, and
+reason-code contract while keeping propagation pressure separate from loss.
+
+The public reference implementation demonstrates these contracts on deterministic
+synthetic inputs, including executable negative controls and a conservative FastGate
+prototype. It establishes reference-evaluator behavior, not real-world safety, empirical
+calibration quality, production enforcement, or commercial certificate authority. Those
+stronger claims require evidence and governance outside the public reference package.
+
+Any LaTeX, PDF, archive, or venue-specific derivative of this manuscript must preserve
+this claim boundary and the public/private product separation.
+
+\end{document}

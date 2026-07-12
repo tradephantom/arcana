@@ -19,13 +19,14 @@ def _combined_public_claim_text() -> str:
 
 
 def test_post_hardening_claim_language_is_consistent() -> None:
-    text = _combined_public_claim_text()
+    text = " ".join(_combined_public_claim_text().split())
 
     required_phrases = [
         "public research manuscript v1.0, post-hardening repository edition",
         "final public claim-language review is closed for the v1.0 manuscript",
         "final public claim-language review is closed for the repository manuscript",
-        "venue-specific paper packaging remains separate from technical claim approval",
+        "venue-specific submission packaging remains separate from technical claim approval",
+        "venue-neutral LaTeX package with a pinned local toolchain",
         "empirical_public_benchmark",
         "synthetic ARCANA-Bench",
     ]

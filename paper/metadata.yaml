@@ -1,0 +1,20 @@
+title: "ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems"
+author:
+  - "ARCANA Research Project"
+date: "July 2026"
+lang: "en-US"
+documentclass: article
+classoption:
+  - 10pt
+papersize: a4
+geometry:
+  - top=22mm
+  - bottom=24mm
+  - left=23mm
+  - right=23mm
+  - headheight=15pt
+linestretch: 1.05
+colorlinks: true
+linkcolor: ArcanaGreen
+urlcolor: ArcanaGreen
+citecolor: ArcanaGreen

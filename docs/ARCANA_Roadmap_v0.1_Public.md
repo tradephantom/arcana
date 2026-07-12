@@ -50,6 +50,7 @@ The repository baseline now contains:
 - deterministic synthetic examples, negative controls, and ARCANA-Bench v0.1;
 - a public enforcement-neutral integration contract;
 - a post-hardening public research manuscript v1.0;
+- a hash-bound, venue-neutral LaTeX package with a pinned local toolchain;
 - final license, contribution, security, limitations, release, and remote
   preflight documents;
 - a live public remote with GitHub Private Vulnerability Reporting configured.
@@ -57,7 +58,8 @@ The repository baseline now contains:
 The current public release boundary is:
 
 - final public claim-language review is closed for the v1.0 manuscript;
-- venue-specific paper packaging remains separate from technical claim approval;
+- venue-specific submission packaging remains separate from technical claim
+  approval;
 - the repository can support reproducible public research and reference-code
   review after its local release gate passes;
 - the synthetic `public_benchmark` source class does not qualify an A2 profile;
@@ -65,8 +67,9 @@ The current public release boundary is:
   or adversarial replay evidence can satisfy the public A2 source-class rule;
 - no public artifact demonstrates deployment-specific A2/A3 calibration;
 - no public artifact authorizes production enforcement or certificate issuance;
-- venue-specific LaTeX, PDF, archive, and external peer-review packaging remain
-  separate publication steps.
+- the venue-neutral LaTeX source is reproducible from the reviewed manuscript;
+- generated PDF distribution, archive submission, and external peer review
+  remain separate publication steps.
 
 ## 4. Milestone 0 - Boundary Freeze
 
@@ -445,7 +448,10 @@ Exit criteria:
 - all certificate language is model-bounded;
 - public artifact is ready for staged expert review.
 
-Status: whitepaper/paper v1.0 public research manuscript implemented; final public claim-language review is closed for the repository manuscript. This is not external academic peer review or venue acceptance.
+Status: whitepaper/paper v1.0 public research manuscript and reproducible
+venue-neutral LaTeX package implemented; final public claim-language review is
+closed for the repository manuscript. This is not external academic peer
+review or venue acceptance.
 
 ## 16. Sequencing Gates
 
@@ -517,13 +523,11 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Complete the post-hardening local release gate and clean-source independent
-   reproduction from an immutable commit.
-2. Produce a venue-neutral LaTeX/PDF package with reproducibility metadata and
-   the same claim boundary as the repository manuscript.
+1. Reproduce the venue-neutral LaTeX/PDF package from an immutable local commit.
+2. Publish only that reviewed public commit, then repeat the full gate from a
+   fresh clone of the public remote before tagging the research release.
 3. Obtain external technical review and record unresolved limitations.
-4. Publish only the reviewed public commit, then repeat the full gate from a
-   fresh clone of the public remote.
+4. Prepare venue/archive metadata without changing the approved claim boundary.
 5. Keep deployment calibration, enforcement activation, and certificate
    issuance outside this public roadmap and subject to separate production
    governance.

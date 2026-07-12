@@ -56,6 +56,8 @@ Security reports should use GitHub Private Vulnerability Reporting, as described
 - `docs/LIMITATIONS_v0.1.md`
 - `docs/PUBLIC_RELEASE_NOTES_v0.1.md`
 - `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
+- `paper/README.md`
+- `paper/ARCANA_Whitepaper_v1.0.tex`
 - `PUBLIC_MANIFEST.md`
 
 ## License
@@ -91,11 +93,15 @@ make check
 make test
 make demo
 make bench
+make paper-check
 ```
 
 `make check` runs the public-boundary audit, schema/example validation, and the
 deterministic synthetic evaluator benchmark. Unit tests and the standalone demo
 remain explicit `make test` and `make demo` gates.
+
+`make paper` compiles the venue-neutral LaTeX package locally with Pandoc and
+Tectonic. Generated PDF and auxiliary files remain under ignored `build/`.
 
 ## Core Claim Discipline
 
