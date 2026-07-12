@@ -13,7 +13,7 @@ from arcana.schemas import EXAMPLE_DIR, load_typed_fixture
 
 
 BENCHMARK_SCENARIO_GLOB = "benchmark_*.synthetic.json"
-BENCHMARK_EXECUTION_STATUS = "contract_fixture_only_not_executed"
+BENCHMARK_EXECUTION_STATUS = "scenario_contract_validated_execution_not_run"
 REQUIRED_V01_THREAT_CLASSES = (
     "indirect_prompt_injection",
     "persistent_memory_poisoning",
@@ -64,8 +64,8 @@ PER_SCENARIO_RISK_METRICS = (
 
 @dataclass(frozen=True)
 class BenchmarkSuiteCoverage:
-    # This status prevents fixture-contract coverage from being reported as an
-    # executed evaluator benchmark.
+    # Loading and validating scenario contracts is distinct from running the
+    # separately bound execution suite through the evaluator.
     execution_status: str
     scenario_count: int
     coverage_scenario_count: int

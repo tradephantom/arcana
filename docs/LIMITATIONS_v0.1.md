@@ -151,8 +151,10 @@ Limitations:
 - unsafe action rate must be reported separately from task success;
 - artifact-contract validity rate measures public artifact contract validity, not operational approval;
 - benchmark coverage is limited to declared scenario classes;
-- v0.1 validates fixture contracts and expected outcomes but does not execute the evaluator;
-- fixture coverage is not empirical fail-closed evidence;
+- v0.1 executes complete synthetic inputs through the public reference evaluator and compares observed outcomes with fixture contracts;
+- evaluator execution does not run an agent, tool, policy workload, human process, or deployment;
+- task, unsafe-action, policy, containment, and human-efficiency metrics remain explicitly `not_measured` where no corresponding workload exists;
+- synthetic reference-evaluator behavior is not empirical fail-closed evidence;
 - benchmark results must not be treated as customer, enterprise, or private lab evidence.
 
 ## 9. Integration Limits

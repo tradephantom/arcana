@@ -34,6 +34,7 @@ Only files listed here are part of this public repository tree.
 | `examples/benchmark_negative_missing_decision_horizon.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
 | `examples/benchmark_negative_rho_upper_above_threshold.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
 | `examples/benchmark_negative_stale_evidence.synthetic.json` | public-safe draft | Synthetic benchmark negative-control fixture. |
+| `examples/arcana_bench_execution_suite.synthetic.json` | public-safe executable fixture | Complete synthetic evaluator inputs for all ARCANA-Bench scenarios. |
 | `docs/README.md` | public-staging | Public documentation index. |
 | `docs/ARCANA_PRD_v0.2_Public.md` | public-safe draft | Public PRD draft. |
 | `docs/ARCANA_Roadmap_v0.1_Public.md` | public-safe draft | Public roadmap draft. |
@@ -54,6 +55,8 @@ Only files listed here are part of this public repository tree.
 | `docs/RELEASE_POLICY.md` | public-staging | Local-first release and remote policy. |
 | `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md` | public-staging | Public remote publication preflight checklist. |
 | `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json` | public-safe draft | Public benchmark scenario schema. |
+| `schemas/ARCANA_BenchmarkExecutionSuite.schema.v0.1.json` | public-safe executable contract | Public typed evaluator-input suite schema. |
+| `schemas/ARCANA_BenchmarkRunReport.schema.v0.1.json` | public-safe executable contract | Public deterministic benchmark report schema. |
 | `schemas/ARCANA_CalibrationProfile.schema.v0.2.json` | public-safe draft | Public calibration profile schema. |
 | `schemas/ARCANA_Certificate.schema.v0.2.json` | public-safe draft | Public certificate schema. |
 | `schemas/ARCANA_Context.schema.v0.2.json` | public-safe draft | Public risk context schema. |
@@ -61,6 +64,8 @@ Only files listed here are part of this public repository tree.
 | `src/arcana/_validation.py` | public-staging | Internal validation helpers for typed public contracts. |
 | `src/arcana/artifacts.py` | public-staging | Semantic admission validation for typed public artifacts. |
 | `src/arcana/bench.py` | public-staging | ARCANA-Bench suite loader and coverage validator. |
+| `src/arcana/benchmark_input.py` | public-staging | Typed benchmark evaluator inputs and deterministic matrix construction. |
+| `src/arcana/bench_runner.py` | public-staging | Actual evaluator runner, report generator, and report verifier. |
 | `src/arcana/calibration.py` | public-staging | Calibration module boundary. |
 | `src/arcana/certificate.py` | public-staging | Certificate module boundary. |
 | `src/arcana/decision.py` | public-staging | Decision module boundary. |
@@ -72,6 +77,7 @@ Only files listed here are part of this public repository tree.
 | `src/arcana/model.py` | public-staging | Graph and horizon model boundary. |
 | `src/arcana/schemas.py` | public-staging | Public schema module boundary. |
 | `tests/test_benchmark_suite.py` | public-staging | ARCANA-Bench scenario coverage and scoring discipline tests. |
+| `tests/test_benchmark_runner.py` | public-staging | Executable benchmark, provenance, regression, and tamper tests. |
 | `tests/test_artifact_semantics.py` | public-staging | Semantic artifact contradiction, freshness, and binding tests. |
 | `tests/test_certificate_emission.py` | public-staging | Slice 4 certificate and context emission tests. |
 | `tests/test_cli_demo.py` | public-staging | Slice 4 deterministic demo CLI tests. |

@@ -12,6 +12,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import ValidationError
 
 from arcana._validation import issue
+from arcana.benchmark_input import BenchmarkExecutionSuite
 from arcana.calibration import CalibrationProfile
 from arcana.certificate import BoundedAutonomyCertificate
 from arcana.errors import ArcanaValidationError, ReasonCode, SchemaVersion, ValidationIssue
@@ -27,9 +28,10 @@ SCHEMA_FILES: Mapping[SchemaVersion, str] = {
     SchemaVersion.CONTEXT_V02: "ARCANA_Context.schema.v0.2.json",
     SchemaVersion.CERTIFICATE_V02: "ARCANA_Certificate.schema.v0.2.json",
     SchemaVersion.BENCHMARK_SCENARIO_V02: "ARCANA_BenchmarkScenario.schema.v0.2.json",
+    SchemaVersion.BENCHMARK_EXECUTION_SUITE_V01: "ARCANA_BenchmarkExecutionSuite.schema.v0.1.json",
 }
 
-TypedDocument = CalibrationProfile | RiskContext | BoundedAutonomyCertificate | BenchmarkScenario
+TypedDocument = CalibrationProfile | RiskContext | BoundedAutonomyCertificate | BenchmarkScenario | BenchmarkExecutionSuite
 
 
 @dataclass(frozen=True)
@@ -134,6 +136,8 @@ def _parse_validated_document(validated: ValidatedDocument) -> TypedDocument:
         return BoundedAutonomyCertificate.from_mapping(validated.data)
     if validated.schema_version is SchemaVersion.BENCHMARK_SCENARIO_V02:
         return BenchmarkScenario.from_mapping(validated.data)
+    if validated.schema_version is SchemaVersion.BENCHMARK_EXECUTION_SUITE_V01:
+        return BenchmarkExecutionSuite.from_mapping(validated.data)
     raise ArcanaValidationError(
         issue(
             "schema_version_unsupported",
@@ -182,7 +186,7 @@ def _reason_code_for_error(error: ValidationError, missing: str | None) -> Reaso
         return ReasonCode.DENY_RISK_MODEL_UNSUPPORTED
     if target == "decision_horizon" or "decision_horizon" in scope or target in {"id", "duration_seconds", "context"} and "decision_horizon" in scope:
         return ReasonCode.DENY_DECISION_HORIZON_MISMATCH
-    if target == "graph_hash" or "graph_hash" in scope:
+    if target in {"graph_hash", "request_graph_hash", "matrix_graph_hash"} or scope.intersection({"graph_hash", "request_graph_hash", "matrix_graph_hash"}):
         return ReasonCode.DENY_GRAPH_HASH_MISMATCH
     if target in {
         "calibration_profile",

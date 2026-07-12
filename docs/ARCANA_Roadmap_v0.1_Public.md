@@ -370,6 +370,8 @@ Deliverables:
 - benchmark-gaming scenario;
 - dynamic-execution-risk scenario;
 - negative-control fixture set for required fail-closed behavior;
+- complete synthetic evaluator execution suite;
+- deterministic evaluator runner and machine-readable run report;
 - metrics and scoring notes.
 
 Required metrics:
@@ -396,9 +398,15 @@ Exit criteria:
 - risk-bound status is visible for each scenario;
 - artifact-contract validity can be evaluated independently of task success;
 - every required negative-control fixture is present and declares a non-allow-like expected outcome;
-- v0.1 remains `contract_fixture_only_not_executed` until a deterministic runner compares observed outcomes with those expectations.
+- every scenario has exactly one schema-valid, typed evaluator input;
+- the actual public evaluator produces every observed outcome;
+- verdict, ordered reason codes, and required controls compare exactly;
+- reports expose metric provenance plus measured, not-measured, and unavailable states;
+- source and report hashes verify deterministically;
+- synthetic evaluator execution is not described as empirical system performance.
 
-Status: synthetic scenario and negative-control expansion implemented, review pending.
+Status: executable synthetic scenario and negative-control suite implemented;
+post-change publication review and independent reproduction are required.
 
 ## 14. Milestone 10 - Public Integration Contract v0.1
 

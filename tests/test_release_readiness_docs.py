@@ -51,6 +51,7 @@ def test_contributing_policy_preserves_public_boundary_and_gates() -> None:
         "make check",
         "make test",
         "make demo",
+        "make bench",
         "use explicit reason-code branches",
         "Distinct failure modes need distinct reason codes and tests",
         "public/private boundary",
@@ -76,6 +77,7 @@ def test_security_policy_covers_arcana_specific_failure_classes() -> None:
         "make check",
         "make test",
         "make demo",
+        "make bench",
     ]
 
     for phrase in required_phrases:

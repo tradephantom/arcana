@@ -1,0 +1,312 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcana.tradephantom.com/schemas/ARCANA_BenchmarkRunReport.schema.v0.1.json",
+  "title": "ARCANA Benchmark Run Report v0.1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "report_id",
+    "runner_version",
+    "evaluator_api",
+    "suite_id",
+    "synthetic",
+    "claim_boundary",
+    "numeric_reporting_policy",
+    "input_manifest",
+    "suite_input_hash",
+    "execution_status",
+    "scenario_count",
+    "passed_count",
+    "failed_count",
+    "scenarios",
+    "report_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "arcana.benchmark_run_report.v0.1"
+    },
+    "report_id": {
+      "type": "string",
+      "const": "arcana-bench-v0.1-synthetic-run"
+    },
+    "runner_version": {
+      "type": "string",
+      "const": "arcana.bench.runner.v0.1"
+    },
+    "evaluator_api": {
+      "type": "string",
+      "const": "arcana.decision.evaluate_decision.v0.1"
+    },
+    "suite_id": {
+      "type": "string",
+      "pattern": "^arcana-bench-[A-Za-z0-9_.:-]+$"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "const": true
+    },
+    "claim_boundary": {
+      "type": "string",
+      "const": "synthetic_reference_evaluator_only_not_empirical_system_benchmark"
+    },
+    "numeric_reporting_policy": {
+      "type": "string",
+      "const": "round_half_even_12_decimal_places_after_decision"
+    },
+    "input_manifest": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/inputManifestEntry"
+      },
+      "minItems": 2
+    },
+    "suite_input_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "execution_status": {
+      "type": "string",
+      "enum": ["passed", "failed"]
+    },
+    "scenario_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "passed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/scenarioResult"
+      },
+      "minItems": 1
+    },
+    "report_hash": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "allow_bounded_autonomy",
+        "allow_with_controls",
+        "require_scope_reduction",
+        "require_human_gate",
+        "observe_only",
+        "deny"
+      ]
+    },
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "ARCANA_ALLOW_BOUNDED_AUTONOMY",
+        "ARCANA_ALLOW_WITH_CONTROLS",
+        "ARCANA_DENY_CALIBRATION_INSUFFICIENT",
+        "ARCANA_DENY_RISK_MODEL_UNSUPPORTED",
+        "ARCANA_DENY_MODEL_INPUT_INVALID",
+        "ARCANA_DENY_CONTEXT_STALE",
+        "ARCANA_DENY_GRAPH_HASH_MISMATCH",
+        "ARCANA_DENY_DECISION_HORIZON_MISMATCH",
+        "ARCANA_DENY_RHO_UPPER_BOUND",
+        "ARCANA_DENY_AAR_UPPER_BOUND",
+        "ARCANA_DENY_LOSS_MODEL_INVALID",
+        "ARCANA_DENY_AES_UPPER_BOUND",
+        "ARCANA_DENY_BUDGET_EXHAUSTED",
+        "ARCANA_DENY_FASTGATE_UNCERTAIN",
+        "ARCANA_DENY_FASTGATE_VECTOR_INVALID",
+        "ARCANA_DENY_DISTILLATION_RISK",
+        "ARCANA_REQUIRE_HUMAN_GATE",
+        "ARCANA_REQUIRE_SCOPE_REDUCTION",
+        "ARCANA_REQUIRE_OBSERVE_ONLY",
+        "ARCANA_INFO_A0_NON_CERTIFIABLE",
+        "ARCANA_INFO_SYNTHETIC_FIXTURE"
+      ]
+    },
+    "inputManifestEntry": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^((examples|schemas|src/arcana)/[A-Za-z0-9_.:/-]+|pyproject\\.toml)$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "decisionSnapshot": {
+      "type": "object",
+      "required": ["verdict", "reason_codes", "required_controls", "issue_code"],
+      "properties": {
+        "verdict": {
+          "$ref": "#/$defs/verdict"
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reasonCode"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "required_controls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "issue_code": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "comparisons": {
+      "type": "object",
+      "required": ["verdict", "reason_codes", "required_controls"],
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": ["pass", "fail"]
+        },
+        "reason_codes": {
+          "type": "string",
+          "enum": ["pass", "fail"]
+        },
+        "required_controls": {
+          "type": "string",
+          "enum": ["pass", "fail"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "metricResult": {
+      "type": "object",
+      "required": ["name", "status", "value", "provenance"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "task_success_rate",
+            "unsafe_action_rate",
+            "policy_violation_rate",
+            "delta_rho_upper",
+            "rho_peak",
+            "AaR_99_upper",
+            "AES_99_upper",
+            "containment_time_steps",
+            "autonomy_budget_consumed",
+            "human_intervention_efficiency",
+            "artifact_contract_validity_rate"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["measured", "not_measured", "unavailable"]
+        },
+        "value": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "null"}
+          ]
+        },
+        "provenance": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "measured"
+              }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "scenarioResult": {
+      "type": "object",
+      "required": [
+        "scenario_id",
+        "input_hash",
+        "expected",
+        "observed",
+        "comparisons",
+        "metrics",
+        "passed"
+      ],
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^arcana-bench-[A-Za-z0-9_.:-]+$"
+        },
+        "input_hash": {
+          "$ref": "#/$defs/sha256"
+        },
+        "expected": {
+          "$ref": "#/$defs/decisionSnapshot"
+        },
+        "observed": {
+          "$ref": "#/$defs/decisionSnapshot"
+        },
+        "comparisons": {
+          "$ref": "#/$defs/comparisons"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/metricResult"
+          },
+          "minItems": 1
+        },
+        "passed": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

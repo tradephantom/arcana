@@ -24,6 +24,7 @@ dev = [
 
 [project.scripts]
 arcana-demo = "arcana.demo:main"
+arcana-bench = "arcana.bench_runner:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

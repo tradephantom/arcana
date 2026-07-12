@@ -7,7 +7,7 @@
   "scenario_type": "negative_control",
   "negative_control": "loss_model_missing_required",
   "threat_class": "resource_exhaustion",
-  "calibration_level": "A0",
+  "calibration_level": "A1",
   "initial_rho_upper": 0.48,
   "graph_fixture": {
     "graph_hash": "sha256:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
@@ -17,8 +17,7 @@
   "expected_arcana_response": {
     "verdict": "deny",
     "reason_codes": [
-      "ARCANA_DENY_LOSS_MODEL_INVALID",
-      "ARCANA_INFO_SYNTHETIC_FIXTURE"
+      "ARCANA_DENY_LOSS_MODEL_INVALID"
     ]
   },
   "reported_metrics": [

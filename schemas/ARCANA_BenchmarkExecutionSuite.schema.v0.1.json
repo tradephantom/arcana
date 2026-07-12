@@ -1,0 +1,585 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcana.tradephantom.com/schemas/ARCANA_BenchmarkExecutionSuite.schema.v0.1.json",
+  "title": "ARCANA Benchmark Execution Suite v0.1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "suite_id",
+    "synthetic",
+    "evaluator_api",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "arcana.benchmark_execution_suite.v0.1"
+    },
+    "suite_id": {
+      "type": "string",
+      "pattern": "^arcana-bench-[A-Za-z0-9_.:-]+$"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "const": true
+    },
+    "evaluator_api": {
+      "type": "string",
+      "const": "arcana.decision.evaluate_decision.v0.1"
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/executionCase"
+      },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "decisionHorizon": {
+      "type": "object",
+      "required": ["id", "duration_seconds", "context"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "duration_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "context": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidenceWindow": {
+      "type": "object",
+      "required": ["observed_after", "observed_before", "max_age_seconds"],
+      "properties": {
+        "observed_after": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "observed_before": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "max_age_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "calibrationProfile": {
+      "type": "object",
+      "required": [
+        "profile_id",
+        "risk_model_version",
+        "level",
+        "decision_horizon",
+        "source",
+        "evidence_window",
+        "confidence",
+        "uncertainty",
+        "edge_weight_policy",
+        "caveats",
+        "certification_status"
+      ],
+      "properties": {
+        "profile_id": {
+          "type": "string",
+          "pattern": "^arcana\\.cal\\.[A-Za-z0-9_.:-]+$"
+        },
+        "risk_model_version": {
+          "type": "string",
+          "pattern": "^arcana\\.risk\\.v[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+        },
+        "level": {
+          "type": "string",
+          "enum": ["A0", "A1"]
+        },
+        "decision_horizon": {
+          "$ref": "#/$defs/decisionHorizon"
+        },
+        "source": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["synthetic_demo", "static_conservative_prior"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "evidence_window": {
+          "$ref": "#/$defs/evidenceWindow"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "uncertainty": {
+          "type": "object",
+          "required": ["rho_lower", "rho_mean", "rho_upper"],
+          "properties": {
+            "rho_lower": {
+              "type": "number",
+              "minimum": 0
+            },
+            "rho_mean": {
+              "type": "number",
+              "minimum": 0
+            },
+            "rho_upper": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "edge_weight_policy": {
+          "type": "object",
+          "required": [
+            "unknown_means_risky",
+            "use_upper_bound_for_risk",
+            "use_lower_bound_for_controls"
+          ],
+          "properties": {
+            "unknown_means_risky": {
+              "type": "boolean",
+              "const": true
+            },
+            "use_upper_bound_for_risk": {
+              "type": "boolean",
+              "const": true
+            },
+            "use_lower_bound_for_controls": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "certification_status": {
+          "type": "string",
+          "const": "non_certifiable"
+        },
+        "last_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "A0"
+              }
+            },
+            "required": ["level"]
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "const": ["synthetic_demo"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "A1"
+              }
+            },
+            "required": ["level"]
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "const": ["static_conservative_prior"]
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "matrixInterval": {
+      "type": "object",
+      "required": [
+        "construction",
+        "dimension",
+        "edge_count",
+        "node_order",
+        "matrix_graph_hash",
+        "rho_lower_target",
+        "rho_mean_target",
+        "rho_upper_target"
+      ],
+      "properties": {
+        "construction": {
+          "type": "string",
+          "const": "normalized_sparse_pattern_v0.1"
+        },
+        "dimension": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 256
+        },
+        "edge_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        },
+        "node_order": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true
+        },
+        "matrix_graph_hash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+        },
+        "rho_lower_target": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rho_mean_target": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rho_upper_target": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "autonomyBudget": {
+      "type": "object",
+      "required": ["expires_at"],
+      "properties": {
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "max_delta_rho_upper": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_external_requests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_memory_writes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "anyOf": [
+        {"required": ["max_delta_rho_upper"]},
+        {"required": ["max_external_requests"]},
+        {"required": ["max_memory_writes"]},
+        {"required": ["max_output_bytes"]}
+      ],
+      "additionalProperties": false
+    },
+    "lossBounds": {
+      "type": "object",
+      "required": [
+        "aar_99_upper",
+        "aes_99_upper",
+        "max_allowed_aar_99",
+        "max_allowed_aes_99"
+      ],
+      "properties": {
+        "aar_99_upper": {
+          "type": "number",
+          "minimum": 0
+        },
+        "aes_99_upper": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_allowed_aar_99": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_allowed_aes_99": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "fastgate": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["perron_collatz_bound", "exact_recompute", "observe_only"]
+        },
+        "positive_vector_method": {
+          "type": "string",
+          "enum": [
+            "irreducible_perron_vector",
+            "scc_decomposition",
+            "epsilon_floor",
+            "component_local_gate",
+            "fallback_exact"
+          ]
+        },
+        "upper_bound": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "perron_collatz_bound"
+              }
+            },
+            "required": ["mode"]
+          },
+          "then": {
+            "required": ["positive_vector_method", "upper_bound"]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "distillation": {
+      "type": "object",
+      "required": [
+        "evidence_sufficient",
+        "stable_operation",
+        "scope_bounded",
+        "invalidation_rules_declared",
+        "required_calibration_level"
+      ],
+      "properties": {
+        "evidence_sufficient": {
+          "type": "boolean"
+        },
+        "stable_operation": {
+          "type": "boolean"
+        },
+        "scope_bounded": {
+          "type": "boolean"
+        },
+        "invalidation_rules_declared": {
+          "type": "boolean"
+        },
+        "required_calibration_level": {
+          "type": "string",
+          "enum": ["A0", "A1", "A2", "A3"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "tolerancePolicy": {
+      "type": "object",
+      "required": ["abs_tolerance", "rel_tolerance"],
+      "properties": {
+        "abs_tolerance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rel_tolerance": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "evaluatorInput": {
+      "type": "object",
+      "required": [
+        "risk_model_version",
+        "supported_risk_model_versions",
+        "calibration_profile",
+        "decision_horizon",
+        "request_graph_hash",
+        "matrix_interval",
+        "rho_threshold",
+        "autonomy_budget",
+        "decision_time",
+        "required_calibration_level",
+        "loss_in_scope",
+        "loss_bounds",
+        "fastgate",
+        "fastgate_required",
+        "required_controls",
+        "available_controls",
+        "human_gate_required",
+        "scope_reduction_required",
+        "scope_reduction_available",
+        "distillation",
+        "delta_rho_upper",
+        "requested_external_requests",
+        "requested_memory_writes",
+        "requested_output_bytes",
+        "tolerance_policy"
+      ],
+      "properties": {
+        "risk_model_version": {
+          "type": "string",
+          "pattern": "^arcana\\.risk\\.v[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+        },
+        "supported_risk_model_versions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^arcana\\.risk\\.v[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "calibration_profile": {
+          "$ref": "#/$defs/calibrationProfile"
+        },
+        "decision_horizon": {
+          "oneOf": [
+            {"$ref": "#/$defs/decisionHorizon"},
+            {"type": "null"}
+          ]
+        },
+        "request_graph_hash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+        },
+        "matrix_interval": {
+          "$ref": "#/$defs/matrixInterval"
+        },
+        "rho_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "autonomy_budget": {
+          "$ref": "#/$defs/autonomyBudget"
+        },
+        "decision_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "required_calibration_level": {
+          "type": "string",
+          "enum": ["A0", "A1", "A2", "A3"]
+        },
+        "loss_in_scope": {
+          "type": "boolean"
+        },
+        "loss_bounds": {
+          "oneOf": [
+            {"$ref": "#/$defs/lossBounds"},
+            {"type": "null"}
+          ]
+        },
+        "fastgate": {
+          "oneOf": [
+            {"$ref": "#/$defs/fastgate"},
+            {"type": "null"}
+          ]
+        },
+        "fastgate_required": {
+          "type": "boolean"
+        },
+        "required_controls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "available_controls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "human_gate_required": {
+          "type": "boolean"
+        },
+        "scope_reduction_required": {
+          "type": "boolean"
+        },
+        "scope_reduction_available": {
+          "type": "boolean"
+        },
+        "distillation": {
+          "oneOf": [
+            {"$ref": "#/$defs/distillation"},
+            {"type": "null"}
+          ]
+        },
+        "delta_rho_upper": {
+          "type": "number",
+          "minimum": 0
+        },
+        "requested_external_requests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requested_memory_writes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requested_output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tolerance_policy": {
+          "$ref": "#/$defs/tolerancePolicy"
+        }
+      },
+      "additionalProperties": false
+    },
+    "executionCase": {
+      "type": "object",
+      "required": ["scenario_id", "evaluator_input"],
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^arcana-bench-[A-Za-z0-9_.:-]+$"
+        },
+        "evaluator_input": {
+          "$ref": "#/$defs/evaluatorInput"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

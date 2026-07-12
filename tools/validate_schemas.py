@@ -30,7 +30,9 @@ SCHEMAS = {
     "arcana.calibration_profile.v0.2": "ARCANA_CalibrationProfile.schema.v0.2.json",
     "arcana.context.v0.2": "ARCANA_Context.schema.v0.2.json",
     "arcana.certificate.v0.2": "ARCANA_Certificate.schema.v0.2.json",
-    "arcana.benchmark_scenario.v0.2": "ARCANA_BenchmarkScenario.schema.v0.2.json"
+    "arcana.benchmark_scenario.v0.2": "ARCANA_BenchmarkScenario.schema.v0.2.json",
+    "arcana.benchmark_execution_suite.v0.1": "ARCANA_BenchmarkExecutionSuite.schema.v0.1.json",
+    "arcana.benchmark_run_report.v0.1": "ARCANA_BenchmarkRunReport.schema.v0.1.json",
 }
 
 VERDICTS = {
@@ -358,6 +360,35 @@ def validate_benchmark(path: Path, obj: dict[str, Any], registered: set[str]) ->
     return findings
 
 
+def validate_benchmark_execution_suite(path: Path, obj: dict[str, Any]) -> list[Finding]:
+    findings: list[Finding] = []
+    findings.extend(require_keys(path, obj, {"suite_id", "synthetic", "evaluator_api", "cases"}))
+    if not SCENARIO_ID_RE.match(str(obj.get("suite_id"))):
+        findings.append(Finding(rel(path), "benchmark_suite_id_invalid", str(obj.get("suite_id"))))
+    if obj.get("synthetic") is not True:
+        findings.append(Finding(rel(path), "benchmark_suite_not_synthetic", "public execution suite must be synthetic"))
+    if obj.get("evaluator_api") != "arcana.decision.evaluate_decision.v0.1":
+        findings.append(Finding(rel(path), "benchmark_evaluator_api_invalid", str(obj.get("evaluator_api"))))
+    cases = obj.get("cases")
+    if not isinstance(cases, list) or not cases:
+        return [*findings, Finding(rel(path), "benchmark_execution_cases_invalid", "cases must be a non-empty array")]
+    scenario_ids: list[str] = []
+    for index, case in enumerate(cases):
+        if not isinstance(case, dict):
+            findings.append(Finding(rel(path), "benchmark_execution_case_invalid", f"cases[{index}] must be object"))
+            continue
+        scenario_id = case.get("scenario_id")
+        if not SCENARIO_ID_RE.match(str(scenario_id)):
+            findings.append(Finding(rel(path), "scenario_id_invalid", f"cases[{index}].scenario_id={scenario_id!r}"))
+        else:
+            scenario_ids.append(str(scenario_id))
+    if len(scenario_ids) != len(set(scenario_ids)):
+        findings.append(Finding(rel(path), "benchmark_execution_scenario_id_duplicate", "case scenario_id values must be unique"))
+    if scenario_ids != sorted(scenario_ids):
+        findings.append(Finding(rel(path), "benchmark_execution_case_order_invalid", "cases must be sorted by scenario_id"))
+    return findings
+
+
 def validate_example(path: Path, registered: set[str]) -> list[Finding]:
     obj = load_json(path)
     if not isinstance(obj, dict):
@@ -371,6 +402,8 @@ def validate_example(path: Path, registered: set[str]) -> list[Finding]:
         return validate_certificate(path, obj, registered)
     if schema_version == "arcana.benchmark_scenario.v0.2":
         return validate_benchmark(path, obj, registered)
+    if schema_version == "arcana.benchmark_execution_suite.v0.1":
+        return validate_benchmark_execution_suite(path, obj)
     return [Finding(rel(path), "unknown_example_schema_version", str(schema_version))]
 
 

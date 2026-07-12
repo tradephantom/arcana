@@ -5,6 +5,7 @@ import copy
 import pytest
 
 from arcana.calibration import CalibrationProfile
+from arcana.benchmark_input import BenchmarkExecutionSuite
 from arcana.certificate import BoundedAutonomyCertificate
 from arcana.errors import ArcanaValidationError, ReasonCode
 from arcana.model import BenchmarkScenario, FastGateContext, RiskContext
@@ -18,6 +19,7 @@ def _example(name: str) -> dict:
 def test_public_examples_load_as_typed_documents() -> None:
     expected_types = {
         "benchmark_prompt_injection.synthetic.json": BenchmarkScenario,
+        "arcana_bench_execution_suite.synthetic.json": BenchmarkExecutionSuite,
         "calibration_profile_a0.synthetic.json": CalibrationProfile,
         "risk_context_allow_with_controls.synthetic.json": RiskContext,
         "certificate_a0_non_certifiable.synthetic.json": BoundedAutonomyCertificate,

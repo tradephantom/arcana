@@ -90,7 +90,7 @@ Maintainers should:
 - update reason codes if the failure mode is distinct;
 - update schemas when validation is underspecified;
 - update documentation when claim language enabled misuse;
-- run `make check`, `make test`, and `make demo` before resolution.
+- run `make check`, `make test`, `make demo`, and `make bench` before resolution.
 
 Security fixes must not weaken public-boundary audit or replace specific reason codes with generic fallbacks.
 

@@ -92,7 +92,9 @@ ARCANA exports public schema-shaped artifacts:
 - `arcana.context.v0.2`;
 - `arcana.certificate.v0.2`;
 - `arcana.calibration_profile.v0.2`;
-- `arcana.benchmark_scenario.v0.2`.
+- `arcana.benchmark_scenario.v0.2`;
+- `arcana.benchmark_execution_suite.v0.1`;
+- `arcana.benchmark_run_report.v0.1`.
 
 A generic risk-context export contains:
 

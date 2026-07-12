@@ -11,6 +11,8 @@ PACKAGE_MODULES = [
     "arcana",
     "arcana.artifacts",
     "arcana.bench",
+    "arcana.benchmark_input",
+    "arcana.bench_runner",
     "arcana.model",
     "arcana.calibration",
     "arcana.matrices",

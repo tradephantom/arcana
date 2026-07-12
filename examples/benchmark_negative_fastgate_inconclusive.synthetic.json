@@ -7,8 +7,8 @@
   "scenario_type": "negative_control",
   "negative_control": "fastgate_inconclusive",
   "threat_class": "dynamic_execution_abuse",
-  "calibration_level": "A0",
-  "initial_rho_upper": 0.71,
+  "calibration_level": "A1",
+  "initial_rho_upper": 0.45,
   "graph_fixture": {
     "graph_hash": "sha256:fafafafafafafafafafafafafafafafafafafafafafafafafafafafafafafafa",
     "node_count": 4,
@@ -17,8 +17,7 @@
   "expected_arcana_response": {
     "verdict": "deny",
     "reason_codes": [
-      "ARCANA_DENY_FASTGATE_UNCERTAIN",
-      "ARCANA_INFO_SYNTHETIC_FIXTURE"
+      "ARCANA_DENY_FASTGATE_UNCERTAIN"
     ]
   },
   "reported_metrics": [

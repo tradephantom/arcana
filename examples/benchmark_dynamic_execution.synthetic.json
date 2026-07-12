@@ -6,7 +6,7 @@
   "synthetic": true,
   "scenario_type": "coverage_scenario",
   "threat_class": "dynamic_execution_abuse",
-  "calibration_level": "A0",
+  "calibration_level": "A1",
   "initial_rho_upper": 0.69,
   "graph_fixture": {
     "graph_hash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
@@ -16,8 +16,7 @@
   "expected_arcana_response": {
     "verdict": "deny",
     "reason_codes": [
-      "ARCANA_DENY_CALIBRATION_INSUFFICIENT",
-      "ARCANA_INFO_SYNTHETIC_FIXTURE"
+      "ARCANA_DENY_CALIBRATION_INSUFFICIENT"
     ]
   },
   "reported_metrics": [

@@ -71,6 +71,7 @@ class SchemaVersion(str, Enum):
     CONTEXT_V02 = "arcana.context.v0.2"
     CERTIFICATE_V02 = "arcana.certificate.v0.2"
     BENCHMARK_SCENARIO_V02 = "arcana.benchmark_scenario.v0.2"
+    BENCHMARK_EXECUTION_SUITE_V01 = "arcana.benchmark_execution_suite.v0.1"
 
 
 PathPart = str | int

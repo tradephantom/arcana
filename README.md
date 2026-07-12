@@ -10,11 +10,14 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 
 This public repository is live as an open research/reference release for local evaluation.
 
-Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic scenario and negative-control expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, Whitepaper / Paper v1.0 final public manuscript, release-readiness documents, and the initial public release note are present. No production implementation is present in this public release tree.
+Reference implementation through Slice 5 FastGate prototype, ARCANA-Bench v0.1 synthetic evaluator execution, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, Whitepaper / Paper v1.0 final public manuscript, release-readiness documents, and the initial public release note are present. No production implementation is present in this public release tree.
 
 Public artifact handling separates structural validation from semantic
-admission validation. ARCANA-Bench v0.1 is a contract-fixture coverage suite,
-not an executed evaluator benchmark. These boundaries are enforced by tests.
+admission validation. ARCANA-Bench v0.1 executes complete synthetic inputs
+through the public reference evaluator and compares observed decisions with
+fixture contracts. It is not an empirical system benchmark, production
+evaluation, or calibration evidence source. These boundaries are enforced by
+tests and explicit metric availability states.
 
 Public remote:
 
@@ -61,6 +64,8 @@ See `LICENSE.md` for the file-scope license profile.
 - `schemas/ARCANA_Context.schema.v0.2.json`
 - `schemas/ARCANA_Certificate.schema.v0.2.json`
 - `schemas/ARCANA_BenchmarkScenario.schema.v0.2.json`
+- `schemas/ARCANA_BenchmarkExecutionSuite.schema.v0.1.json`
+- `schemas/ARCANA_BenchmarkRunReport.schema.v0.1.json`
 
 ## Local Checks
 
@@ -78,9 +83,12 @@ Run:
 make check
 make test
 make demo
+make bench
 ```
 
-The local gate runs public-boundary audit, schema/example validation, unit tests, and the deterministic synthetic demo.
+`make check` runs the public-boundary audit, schema/example validation, and the
+deterministic synthetic evaluator benchmark. Unit tests and the standalone demo
+remain explicit `make test` and `make demo` gates.
 
 ## Core Claim Discipline
 

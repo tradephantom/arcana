@@ -6,7 +6,7 @@
   "synthetic": true,
   "scenario_type": "coverage_scenario",
   "threat_class": "indirect_prompt_injection",
-  "calibration_level": "A0",
+  "calibration_level": "A1",
   "initial_rho_upper": 0.64,
   "graph_fixture": {
     "graph_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
@@ -16,8 +16,10 @@
   "expected_arcana_response": {
     "verdict": "require_human_gate",
     "reason_codes": [
-      "ARCANA_REQUIRE_HUMAN_GATE",
-      "ARCANA_INFO_SYNTHETIC_FIXTURE"
+      "ARCANA_REQUIRE_HUMAN_GATE"
+    ],
+    "required_controls": [
+      "prompt_route_review"
     ]
   },
   "reported_metrics": [

@@ -7,7 +7,7 @@
   "scenario_type": "negative_control",
   "negative_control": "missing_decision_horizon",
   "threat_class": "over_scoped_operation",
-  "calibration_level": "A0",
+  "calibration_level": "A1",
   "initial_rho_upper": 0.45,
   "graph_fixture": {
     "graph_hash": "sha256:dededededededededededededededededededededededededededededededede",
@@ -17,8 +17,7 @@
   "expected_arcana_response": {
     "verdict": "deny",
     "reason_codes": [
-      "ARCANA_DENY_DECISION_HORIZON_MISMATCH",
-      "ARCANA_INFO_SYNTHETIC_FIXTURE"
+      "ARCANA_DENY_DECISION_HORIZON_MISMATCH"
     ]
   },
   "reported_metrics": [

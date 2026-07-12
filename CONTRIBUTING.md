@@ -39,6 +39,7 @@ Run the local gate:
 make check
 make test
 make demo
+make bench
 ```
 
 For code changes, also run:

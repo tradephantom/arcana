@@ -3,7 +3,7 @@
 > Status: final public manuscript; FWP-REVIEW-008 claim-language review passed
 > Scope: final manuscript artifact for the public ARCANA research/reference track
 > Classification: public-safe final manuscript; not a production approval, enforcement approval, or commercial certificate authorization
-> Implementation status: reference implementation and synthetic benchmark evidence only
+> Implementation status: reference implementation and deterministic synthetic reference-evaluator benchmark evidence only
 
 ## Abstract
 
@@ -558,7 +558,10 @@ risk_bound_status
 artifact_contract_validity_rate
 ```
 
-`artifact_contract_validity_rate` measures whether artifacts include required public fields and reason codes. It does not mean production certification or operational approval.
+`artifact_contract_validity_rate` measures whether benchmark scenario and
+execution artifacts satisfy required public schema and typed contracts. The
+v0.1 runner does not emit or validate a production certificate. This metric does
+not mean production certification or operational approval.
 
 Earlier drafts used the name `certificate_validity_rate`; this manuscript uses
 `artifact_contract_validity_rate` to avoid implying that the metric validates a
@@ -568,11 +571,16 @@ production certificate.
 
 ARCANA-Bench v0.1 includes public synthetic negative-control fixtures that
 declare expected fail-closed outcomes for synthetic failure modes. The current
-loader verifies fixture schema, coverage, and expected-response consistency; it
-does not execute the evaluator and therefore does not establish empirical
-fail-closed performance. Each
+runner validates fixture and execution schemas, constructs typed inputs, invokes
+the actual public reference evaluator, and compares observed verdicts, ordered
+reason codes, and required controls with the declared contracts. This verifies
+deterministic reference-evaluator behavior for those inputs; it does not execute
+an agentic workload or establish empirical fail-closed performance. Each
 negative-control fixture declares `scenario_type: negative_control` and a required
 `negative_control` identifier.
+
+The runner invokes the actual public reference evaluator; it does not copy the
+expected fixture outcome into the observed report.
 
 | Negative-control identifier | Required behavior |
 | --- | --- |
@@ -598,6 +606,8 @@ Public implementation components include:
 - FastGate prototype;
 - ARCANA-Bench synthetic fixture loader;
 - ARCANA-Bench negative-control coverage validator;
+- ARCANA-Bench typed execution-suite loader and actual evaluator runner;
+- deterministic machine-readable report with metric provenance and content hashes;
 - public audit and validation tools.
 
 Local reproduction:
@@ -609,9 +619,12 @@ python -m pip install -e ".[dev]"
 make check
 make test
 make demo
+make bench
 ```
 
-The local gate includes public-boundary audit, schema/example validation, unit tests, and the deterministic synthetic demo.
+`make check` includes public-boundary audit, schema/example validation, and the
+deterministic synthetic evaluator benchmark. Unit tests and the standalone
+synthetic demo remain explicit gates.
 
 The demo does not require network access.
 
@@ -707,6 +720,8 @@ FWP-REVIEW-008 verified that:
 - FastGate fails closed when assumptions fail;
 - benchmark task success is separate from unsafe action rate and artifact-contract validity;
 - every required ARCANA-Bench negative control exists as a public synthetic fixture;
+- every benchmark scenario has exactly one complete typed evaluator input;
+- observed benchmark decisions come from the public evaluator and reports distinguish measured, not-measured, and unavailable metrics;
 - reproduction commands are current;
 - public integration language remains enforcement-neutral;
 - limitations appear before any broad claim;

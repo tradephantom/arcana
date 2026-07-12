@@ -49,6 +49,8 @@ def test_whitepaper_v10_manuscript_preserves_reviewed_claim_boundaries() -> None
         "`certifiable_under_profile` is a bounded public/reference semantic",
         "FastGate is not a weaker model",
         "artifact_contract_validity_rate",
+        "deterministic synthetic reference-evaluator benchmark evidence only",
+        "invokes the actual public reference evaluator",
         "ARCANA remains enforcement-neutral",
     ]
 
@@ -114,6 +116,7 @@ def test_whitepaper_v10_reproduction_commands_are_current() -> None:
         "make check",
         "make test",
         "make demo",
+        "make bench",
         "The demo does not require network access.",
     ]
 

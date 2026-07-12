@@ -25,6 +25,7 @@ Before remote creation:
 - `make check` passes;
 - `make test` passes;
 - `make demo` passes;
+- `make bench` passes;
 - `python -m compileall -q src` passes;
 - `git diff --check` passes;
 - all public files are listed in `PUBLIC_MANIFEST.md`;
@@ -78,7 +79,7 @@ When publication is approved:
 7. Confirm `SECURITY.md` appears on the default branch.
 8. Confirm no paid features were enabled.
 9. Clone the public remote into a separate temporary directory.
-10. Run `make check`, `make test`, and `make demo` from the fresh clone.
+10. Run `make check`, `make test`, `make demo`, and `make bench` from the fresh clone.
 
 Do not announce or link the public remote until steps 6 through 10 pass.
 
@@ -93,7 +94,7 @@ After the first push:
 - verify no workflow files are present unless explicitly approved;
 - verify no large files or binary artifacts were introduced;
 - verify examples remain synthetic;
-- verify the whitepaper remains a draft, not a final publication.
+- verify the manuscript status matches the current review decision and does not imply production approval.
 
 ## 7. Stop Conditions
 
@@ -103,6 +104,7 @@ Stop before push or announcement if:
 - schema validation fails;
 - tests fail;
 - demo fails;
+- benchmark fails;
 - worktree is dirty;
 - manifest has unlisted files;
 - final license profile is changed without review;
@@ -135,7 +137,7 @@ As of 2026-07-05:
 - GitHub Private Vulnerability Reporting is enabled;
 - GitHub Actions is disabled;
 - GitHub Pages is absent;
-- fresh-clone validation passed with `make check`, `make test`, and `make demo`;
+- fresh-clone validation passed with `make check`, `make test`, `make demo`, and `make bench`;
 - public production claims are not authorized;
 - final whitepaper or paper publication is not yet authorized.
 

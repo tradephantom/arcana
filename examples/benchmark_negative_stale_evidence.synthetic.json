@@ -7,7 +7,7 @@
   "scenario_type": "negative_control",
   "negative_control": "stale_evidence",
   "threat_class": "stale_context",
-  "calibration_level": "A0",
+  "calibration_level": "A1",
   "initial_rho_upper": 0.52,
   "graph_fixture": {
     "graph_hash": "sha256:1212121212121212121212121212121212121212121212121212121212121212",
@@ -17,8 +17,7 @@
   "expected_arcana_response": {
     "verdict": "deny",
     "reason_codes": [
-      "ARCANA_DENY_CONTEXT_STALE",
-      "ARCANA_INFO_SYNTHETIC_FIXTURE"
+      "ARCANA_DENY_CONTEXT_STALE"
     ]
   },
   "reported_metrics": [

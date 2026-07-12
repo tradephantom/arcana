@@ -1,8 +1,8 @@
 # ARCANA-Bench v0.1
 
-> Status: public benchmark scenario and negative-control expansion v0.1 draft
-> Scope: synthetic public scenarios and scoring notes
-> Implementation status: `contract_fixture_only_not_executed`; local synthetic fixtures validate scenario coverage and expected-response contracts but do not execute the evaluator
+> Status: public executable synthetic benchmark v0.1
+> Scope: synthetic public scenarios, evaluator execution, and metric provenance
+> Implementation status: `synthetic_evaluator_execution_available`; complete public-safe inputs execute through the public reference evaluator and produce a content-hash-bound report
 
 ARCANA-Bench demonstrates why autonomy risk accounting is different from task-success evaluation.
 
@@ -15,6 +15,7 @@ ARCANA-Bench v0.1 must:
 - use synthetic or public-safe scenarios only;
 - report task success separately from unsafe action rate;
 - expose risk-bound status for each scenario through expected ARCANA verdict and reason codes;
+- compare observed verdicts, ordered reason codes, and required controls exactly;
 - include propagation-risk and loss-bound metrics where relevant;
 - evaluate artifact-contract validity independently of task success;
 - avoid private enterprise, adapter, customer, and lab workflows.
@@ -84,11 +85,24 @@ risk_bound_status
 artifact_contract_validity_rate
 ```
 
-`risk_bound_status` is derived from the expected ARCANA verdict and reason codes. It is not inferred from task success.
+`risk_bound_status` is derived from the observed ARCANA verdict and reason codes
+and compared with the expected contract. It is not inferred from task success.
+
+Every report metric has one explicit availability state:
+
+- `measured`: emitted by the reference evaluator or schema/typed validation;
+- `not_measured`: outside this evaluator-only run, such as task or human performance;
+- `unavailable`: in scope conceptually but not emitted on the executed path.
+
+Missing values are never converted to zero or silently treated as successful
+measurements.
 
 ## 5. Artifact Contract Validity
 
 `artifact_contract_validity_rate` measures whether emitted certificate-like artifacts include required public fields and reason codes under the declared schema and calibration level.
+In the v0.1 evaluator report, it specifically records successful schema and
+typed-contract validation of the scenario and execution artifacts. The runner
+does not emit or validate a production certificate.
 
 Earlier drafts used the name `certificate_validity_rate`. Public v0.3 paper
 work uses `artifact_contract_validity_rate` to avoid implying operational
@@ -105,10 +119,13 @@ A0 benchmark artifacts remain non-certifiable.
 
 ## 6. Negative Controls and Failure Fixtures
 
-ARCANA-Bench must include negative controls that declare the expected
-fail-closed outcome for distinct failure modes. The v0.1 loader validates these
-declared contracts; it does not execute the evaluator or establish empirical
-fail-closed performance. Each negative-control fixture declares
+ARCANA-Bench includes negative controls that declare the expected fail-closed
+outcome for distinct failure modes. The v0.1 runner validates each trigger,
+constructs its typed request, invokes `arcana.decision.evaluate_decision`, and
+compares the observed response exactly. This establishes deterministic
+reference-evaluator behavior for the declared synthetic inputs; it does not
+establish empirical fail-closed performance of a deployed system. Each
+negative-control fixture declares
 `scenario_type: negative_control` and one required `negative_control` identifier.
 
 | Negative-control identifier | Required behavior |
@@ -135,7 +152,51 @@ Benchmark fixtures must:
 - include expected ARCANA verdict and reason codes;
 - avoid treating task success as bounded autonomy.
 
-## 8. Exit Criteria
+The separate `arcana.benchmark_execution_suite.v0.1` contract must provide
+exactly one complete evaluator input for every scenario. Public synthetic
+execution profiles are restricted to non-certifiable A0 or A1. Matrix inputs
+use the declared deterministic `normalized_sparse_pattern_v0.1` construction,
+bind node and edge counts to the scenario, and bind the matrix interval to the
+scenario graph hash except for the explicit graph-mismatch negative control.
+The normalized pattern is an evaluator-path fixture, not a reconstruction of a
+real deployment topology or evidence that the illustrative edge labels were
+empirically calibrated.
+
+`ARCANA_INFO_SYNTHETIC_FIXTURE` is tied to the evaluator calibration source
+`synthetic_demo`, so it appears on A0 paths. A1 scenario inputs use the required
+`static_conservative_prior` source class and therefore do not emit that reason
+code. They remain synthetic and non-certifiable at the execution-suite and
+report levels; absence of that A0-specific info code is not evidence of an
+empirical or production run.
+
+## 8. Deterministic Runner and Report
+
+Run:
+
+```sh
+make bench
+```
+
+The command writes `build/arcana-bench-report.json`, then verifies:
+
+- `ARCANA_BenchmarkRunReport.schema.v0.1.json`;
+- exact observed-versus-expected comparisons;
+- scenario and input-manifest counts and ordering;
+- per-scenario canonical evaluator-input hashes;
+- a source manifest covering fixtures, schemas, evaluator, runner, and declared dependencies;
+- `suite_input_hash` and canonical `report_hash` integrity;
+- current-source equality during `--verify`.
+
+The report excludes wall-clock timestamps and environment-specific paths so
+identical source produces identical report bytes. Immutable commit identity and
+external review evidence remain separate release records.
+
+Decision logic uses the evaluator's unrounded numerical values. For stable JSON
+serialization only, emitted numeric metrics are canonically rounded to 12
+decimal places and their provenance records that reporting policy. Report
+rounding never feeds back into verdict selection or threshold comparison.
+
+## 9. Exit Criteria
 
 ARCANA-Bench v0.1 is ready for review when:
 
@@ -147,8 +208,13 @@ ARCANA-Bench v0.1 is ready for review when:
 - suite validation rejects missing unsafe-action or artifact-contract-validity metrics;
 - suite validation rejects missing negative-control coverage, mismatched
   negative-control reason codes, and allow-like negative-control verdicts;
+- every scenario has exactly one complete execution input;
+- every observed outcome is produced by the public evaluator API rather than copied from the expected fixture;
+- expected verdict, ordered reason codes, and required controls compare exactly;
+- metric provenance and unavailable/not-measured states are explicit;
+- deterministic report generation and tamper verification pass;
 - public audit and schema validation pass.
 
-An executable ARCANA-Bench release additionally requires complete evaluator
-inputs, a deterministic runner, observed-versus-expected comparison, and signed
-run provenance. Those requirements are not satisfied by v0.1.
+These executable benchmark criteria are implemented locally. They support
+reference-code reproduction only and do not create production calibration,
+deployment evidence, safety proof, or certificate authority.

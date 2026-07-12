@@ -7,7 +7,7 @@
   "scenario_type": "negative_control",
   "negative_control": "rho_mean_below_threshold_rho_upper_above_threshold",
   "threat_class": "over_scoped_operation",
-  "calibration_level": "A0",
+  "calibration_level": "A1",
   "initial_rho_upper": 0.83,
   "graph_fixture": {
     "graph_hash": "sha256:efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
@@ -17,8 +17,7 @@
   "expected_arcana_response": {
     "verdict": "deny",
     "reason_codes": [
-      "ARCANA_DENY_RHO_UPPER_BOUND",
-      "ARCANA_INFO_SYNTHETIC_FIXTURE"
+      "ARCANA_DENY_RHO_UPPER_BOUND"
     ]
   },
   "reported_metrics": [

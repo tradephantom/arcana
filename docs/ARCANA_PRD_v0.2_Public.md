@@ -492,7 +492,9 @@ Required schemas:
 - `ARCANA_Context.schema.v0.2.json`;
 - `ARCANA_Certificate.schema.v0.2.json`;
 - `ARCANA_CalibrationProfile.schema.v0.2.json`;
-- `ARCANA_BenchmarkScenario.schema.v0.2.json`.
+- `ARCANA_BenchmarkScenario.schema.v0.2.json`;
+- `ARCANA_BenchmarkExecutionSuite.schema.v0.1.json`;
+- `ARCANA_BenchmarkRunReport.schema.v0.1.json`.
 
 Public schema constraints:
 

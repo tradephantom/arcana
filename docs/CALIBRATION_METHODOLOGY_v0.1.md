@@ -504,7 +504,13 @@ Default public minimums:
 | runtime adaptive autonomy budget update | A3 | `ARCANA_DENY_CALIBRATION_INSUFFICIENT` |
 | distillation eligibility | A2 | `ARCANA_DENY_DISTILLATION_RISK` or `ARCANA_DENY_CALIBRATION_INSUFFICIENT` |
 
-Public v0.1 examples should remain A0 unless an A2 public benchmark fixture is deliberately added later.
+Standalone public demo and certificate-like examples should remain A0 unless a
+stronger public profile is deliberately reviewed. ARCANA-Bench may use
+synthetic, non-certifiable A1 `static_conservative_prior` inputs only to reach
+and test evaluator branches that A0 observe-only semantics cannot reach. Those
+inputs remain `synthetic: true` at the execution-suite and report levels and do
+not constitute A1 empirical evidence, A2 benchmark evidence, production
+calibration, or certificate eligibility.
 
 ## 18. Validation Order
 

@@ -20,3 +20,9 @@ Current examples:
 - `benchmark_negative_missing_decision_horizon.synthetic.json`
 - `benchmark_negative_rho_upper_above_threshold.synthetic.json`
 - `benchmark_negative_stale_evidence.synthetic.json`
+- `arcana_bench_execution_suite.synthetic.json`
+
+The execution suite supplies one complete non-certifiable A0/A1 evaluator
+input per benchmark scenario. `make bench` executes those inputs through the
+public reference evaluator. The resulting report is synthetic evaluator
+evidence only, not empirical system or production evidence.

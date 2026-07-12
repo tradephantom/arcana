@@ -220,8 +220,11 @@ def test_arcana_bench_document_tracks_negative_control_contract() -> None:
         "`scenario_type: negative_control`",
         "suite validation rejects missing negative-control coverage",
         "allow-like negative-control verdicts",
-        "contract_fixture_only_not_executed",
-        "does not execute the evaluator",
+        "synthetic_evaluator_execution_available",
+        "invokes `arcana.decision.evaluate_decision`",
+        "not_measured",
+        "unavailable",
+        "make bench",
     ]
     for negative_control in REQUIRED_V01_NEGATIVE_CONTROLS:
         required_phrases.append(f"`{negative_control}`")
