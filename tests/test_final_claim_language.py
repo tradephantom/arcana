@@ -11,7 +11,6 @@ PUBLIC_DOCS = [
     ROOT / "docs" / "ARCANA_PRD_v0.2_Public.md",
     ROOT / "docs" / "ARCANA_Roadmap_v0.1_Public.md",
     ROOT / "docs" / "ARCANA_Whitepaper_v1.0_Manuscript.md",
-    ROOT / "docs" / "ARCANA_Whitepaper_v0.3_Draft.md",
 ]
 
 
@@ -19,15 +18,16 @@ def _combined_public_claim_text() -> str:
     return "\n".join(path.read_text(encoding="utf-8") for path in PUBLIC_DOCS)
 
 
-def test_final_claim_language_review_is_closed() -> None:
+def test_post_hardening_claim_language_is_consistent() -> None:
     text = _combined_public_claim_text()
 
     required_phrases = [
-        "FWP-REVIEW-008 claim-language review passed",
-        "final public ARCANA manuscript artifact for the repository",
-        "final public claim-language review has passed",
+        "public research manuscript v1.0, post-hardening repository edition",
         "final public claim-language review is closed for the v1.0 manuscript",
+        "final public claim-language review is closed for the repository manuscript",
         "venue-specific paper packaging remains separate from technical claim approval",
+        "empirical_public_benchmark",
+        "synthetic ARCANA-Bench",
     ]
 
     for phrase in required_phrases:
@@ -77,9 +77,9 @@ def test_final_claim_language_preserves_public_non_goals() -> None:
         "no production implementation is present",
         "production certificate issuance",
         "not a production approval, enforcement approval, or commercial certificate authorization",
-        "does not create production readiness, production enforcement",
-        "any venue-specific package, including latex or archive submission formats",
-        "must preserve the claim language and public/private boundary",
+        "not real-world safety, empirical calibration quality, production enforcement",
+        "any latex, pdf, archive, or venue-specific derivative",
+        "must preserve this claim boundary and the public/private product separation",
     ]
 
     for phrase in required_phrases:

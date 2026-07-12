@@ -56,6 +56,7 @@ FASTGATE_POSITIVE_VECTOR_METHODS = {
 EVIDENCE_SOURCE_TYPES = {
     "synthetic_fixture",
     "public_benchmark",
+    "empirical_public_benchmark",
     "controlled_test",
     "hash_bound_context",
 }

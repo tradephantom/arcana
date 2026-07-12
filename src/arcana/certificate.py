@@ -89,6 +89,8 @@ class BoundedAutonomyCertificate:
         if not isinstance(raw_codes, list) or not raw_codes:
             fail("reason_codes_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "reason_codes must be a non-empty array", (*path, "reason_codes"))
         reason_codes = tuple(expect_enum(ReasonCode, item, (*path, "reason_codes", index), ReasonCode.DENY_MODEL_INPUT_INVALID) for index, item in enumerate(raw_codes))
+        if len(reason_codes) != len(set(reason_codes)):
+            fail("reason_codes_not_unique", ReasonCode.DENY_MODEL_INPUT_INVALID, "reason_codes must be unique", (*path, "reason_codes"))
         calibration_profile = CertificateCalibrationProfile.from_mapping(
             require_value(data, "calibration_profile", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
             (*path, "calibration_profile"),

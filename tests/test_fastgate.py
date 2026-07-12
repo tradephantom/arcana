@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import math
+
+import numpy as np
+import pytest
+
 from arcana.certificate import (
     BoundedAutonomyCertificate,
     CertificateCalibrationProfile,
@@ -7,13 +12,15 @@ from arcana.certificate import (
     certificate_to_mapping,
     risk_context_to_mapping,
 )
-from arcana.errors import CalibrationLevel, CertificationStatus, FastGateMode, PositiveVectorMethod, ReasonCode, SchemaVersion, Verdict
+from arcana.errors import ArcanaValidationError, CalibrationLevel, CertificationStatus, FastGateMode, PositiveVectorMethod, ReasonCode, SchemaVersion, Verdict
 from arcana.fastgate import (
     FastGateCacheBinding,
     FastGateRequest,
     PositiveVector,
     SparseDeltaEntry,
     SparseMatrixDelta,
+    _collatz_bound,
+    compute_sparse_delta_hash,
     evaluate_fastgate,
 )
 from arcana.matrices import PropagationMatrix, TolerancePolicy
@@ -23,7 +30,7 @@ from arcana.schemas import validate_document
 
 GRAPH_HASH = "sha256:" + "6" * 64
 OTHER_GRAPH_HASH = "sha256:" + "7" * 64
-DELTA_HASH = "sha256:" + "8" * 64
+EVIDENCE_HASH = "sha256:" + "a" * 64
 DECISION_TIME = "2026-06-09T00:10:00Z"
 
 
@@ -31,7 +38,7 @@ def _horizon(seconds: int = 300) -> DecisionHorizon:
     return DecisionHorizon(id="fastgate_5m", duration_seconds=seconds, context="synthetic FastGate unit test")
 
 
-def _budget(max_delta: float = 0.1) -> AutonomyBudget:
+def _budget(max_delta: float = 0.11) -> AutonomyBudget:
     return AutonomyBudget(
         expires_at="2026-06-09T00:30:00Z",
         max_delta_rho_upper=max_delta,
@@ -58,19 +65,35 @@ def _reducible_before_matrix(graph_hash: str = GRAPH_HASH) -> PropagationMatrix:
 
 
 def _delta(value: float = 0.1, *, graph_hash: str = GRAPH_HASH, horizon: DecisionHorizon | None = None) -> SparseMatrixDelta:
+    decision_horizon = horizon or _horizon()
+    entries = (SparseDeltaEntry(row=0, column=1, value=value),)
+    delta_hash = (
+        compute_sparse_delta_hash(
+            graph_hash=graph_hash,
+            decision_horizon=decision_horizon,
+            entries=entries,
+        )
+        if value >= 0
+        else "sha256:" + "8" * 64
+    )
     return SparseMatrixDelta(
-        delta_hash=DELTA_HASH,
+        delta_hash=delta_hash,
         graph_hash=graph_hash,
-        decision_horizon=horizon or _horizon(),
-        entries=(SparseDeltaEntry(row=0, column=1, value=value),),
+        decision_horizon=decision_horizon,
+        entries=entries,
     )
 
 
 def _empty_delta(*, graph_hash: str = GRAPH_HASH, horizon: DecisionHorizon | None = None) -> SparseMatrixDelta:
+    decision_horizon = horizon or _horizon()
     return SparseMatrixDelta(
-        delta_hash=DELTA_HASH,
+        delta_hash=compute_sparse_delta_hash(
+            graph_hash=graph_hash,
+            decision_horizon=decision_horizon,
+            entries=(),
+        ),
         graph_hash=graph_hash,
-        decision_horizon=horizon or _horizon(),
+        decision_horizon=decision_horizon,
         entries=(),
     )
 
@@ -102,6 +125,7 @@ def _request(**overrides: object) -> FastGateRequest:
         delta_upper=_delta(),
         threshold=0.8,
         autonomy_budget=_budget(),
+        evidence_hash=EVIDENCE_HASH,
     )
     return request.__class__(**{**request.__dict__, **overrides})
 
@@ -144,7 +168,9 @@ def test_warm_path_allows_with_valid_positive_vector() -> None:
     _assert_result(evaluation, Verdict.ALLOW_BOUNDED_AUTONOMY, ReasonCode.ALLOW_BOUNDED_AUTONOMY)
     assert evaluation.fastgate.mode is FastGateMode.PERRON_COLLATZ_BOUND
     assert evaluation.fastgate.positive_vector_method is PositiveVectorMethod.IRREDUCIBLE_PERRON_VECTOR
-    assert evaluation.fastgate.upper_bound == 0.30000000000000004
+    assert evaluation.fastgate.upper_bound is not None
+    assert evaluation.after_upper is not None
+    assert evaluation.fastgate.upper_bound >= evaluation.after_upper.spectral_radius()
 
 
 def test_warm_path_returns_uncertain_when_margin_is_insufficient_and_exact_unavailable() -> None:
@@ -269,7 +295,7 @@ def test_stale_hot_path_cache_returns_context_stale() -> None:
         decision_horizon_id="fastgate_5m",
         decision_horizon_duration_seconds=300,
         graph_hash=GRAPH_HASH,
-        delta_hash=DELTA_HASH,
+        delta_hash=_delta().delta_hash,
         threshold=0.8,
         positive_vector_method=PositiveVectorMethod.IRREDUCIBLE_PERRON_VECTOR,
         expires_at="2026-06-09T00:00:00Z",
@@ -294,13 +320,13 @@ def test_hot_path_cache_tolerance_mismatch_returns_context_stale() -> None:
         decision_horizon_id="fastgate_5m",
         decision_horizon_duration_seconds=300,
         graph_hash=GRAPH_HASH,
-        delta_hash=DELTA_HASH,
+        delta_hash=_delta().delta_hash,
         threshold=0.8,
         positive_vector_method=PositiveVectorMethod.IRREDUCIBLE_PERRON_VECTOR,
         expires_at="2026-06-09T00:20:00Z",
         abs_tolerance=0.02,
         rel_tolerance=0.0,
-        evidence_hash="sha256:" + "a" * 64,
+        evidence_hash=EVIDENCE_HASH,
     )
 
     evaluation = evaluate_fastgate(
@@ -308,7 +334,7 @@ def test_hot_path_cache_tolerance_mismatch_returns_context_stale() -> None:
             mode=FastGateMode.PERRON_COLLATZ_BOUND,
             positive_vector=_positive_vector(),
             cache_binding=cache,
-            evidence_hash="sha256:" + "a" * 64,
+            evidence_hash=EVIDENCE_HASH,
         )
     )
 
@@ -323,7 +349,7 @@ def test_hot_path_cache_requires_evidence_binding() -> None:
         decision_horizon_id="fastgate_5m",
         decision_horizon_duration_seconds=300,
         graph_hash=GRAPH_HASH,
-        delta_hash=DELTA_HASH,
+        delta_hash=_delta().delta_hash,
         threshold=0.8,
         positive_vector_method=PositiveVectorMethod.IRREDUCIBLE_PERRON_VECTOR,
         expires_at="2026-06-09T00:20:00Z",
@@ -360,6 +386,149 @@ def test_malformed_sparse_delta_returns_model_input_invalid() -> None:
 
     _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_MODEL_INPUT_INVALID)
     assert evaluation.decision.metrics["issue_code"] == "number_invalid"
+
+
+def test_sparse_delta_hash_mismatch_returns_model_input_invalid() -> None:
+    original = _delta(0.1)
+    tampered = SparseMatrixDelta(
+        delta_hash=original.delta_hash,
+        graph_hash=original.graph_hash,
+        decision_horizon=original.decision_horizon,
+        entries=(SparseDeltaEntry(row=0, column=1, value=0.2),),
+    )
+
+    evaluation = evaluate_fastgate(_request(delta_upper=tampered))
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_MODEL_INPUT_INVALID)
+    assert evaluation.decision.metrics["issue_code"] == "sparse_delta_hash_mismatch"
+
+
+def test_sparse_delta_hash_is_independent_of_entry_order() -> None:
+    entries_forward = (
+        SparseDeltaEntry(row=0, column=1, value=0.1),
+        SparseDeltaEntry(row=1, column=0, value=0.2),
+    )
+    entries_reverse = tuple(reversed(entries_forward))
+
+    assert compute_sparse_delta_hash(
+        graph_hash=GRAPH_HASH,
+        decision_horizon=_horizon(),
+        entries=entries_forward,
+    ) == compute_sparse_delta_hash(
+        graph_hash=GRAPH_HASH,
+        decision_horizon=_horizon(),
+        entries=entries_reverse,
+    )
+
+
+def test_sparse_delta_hash_binds_graph_horizon_and_additive_mode() -> None:
+    entries = (SparseDeltaEntry(row=0, column=1, value=0.1),)
+    baseline = compute_sparse_delta_hash(
+        graph_hash=GRAPH_HASH,
+        decision_horizon=_horizon(),
+        entries=entries,
+    )
+
+    assert baseline != compute_sparse_delta_hash(
+        graph_hash=OTHER_GRAPH_HASH,
+        decision_horizon=_horizon(),
+        entries=entries,
+    )
+    assert baseline != compute_sparse_delta_hash(
+        graph_hash=GRAPH_HASH,
+        decision_horizon=_horizon(seconds=600),
+        entries=entries,
+    )
+    assert baseline != compute_sparse_delta_hash(
+        graph_hash=GRAPH_HASH,
+        decision_horizon=_horizon(),
+        entries=entries,
+        additive=False,
+    )
+
+
+def test_non_additive_delta_has_specific_rejection_even_with_valid_hash() -> None:
+    entries = (SparseDeltaEntry(row=0, column=1, value=0.1),)
+    delta = SparseMatrixDelta(
+        delta_hash=compute_sparse_delta_hash(
+            graph_hash=GRAPH_HASH,
+            decision_horizon=_horizon(),
+            entries=entries,
+            additive=False,
+        ),
+        graph_hash=GRAPH_HASH,
+        decision_horizon=_horizon(),
+        entries=entries,
+        additive=False,
+    )
+
+    evaluation = evaluate_fastgate(_request(delta_upper=delta))
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_MODEL_INPUT_INVALID)
+    assert evaluation.decision.metrics["issue_code"] == "sparse_delta_not_additive"
+
+
+def test_sparse_delta_hash_rejects_duplicate_entries() -> None:
+    entry = SparseDeltaEntry(row=0, column=1, value=0.1)
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        compute_sparse_delta_hash(
+            graph_hash=GRAPH_HASH,
+            decision_horizon=_horizon(),
+            entries=(entry, entry),
+        )
+
+    assert exc_info.value.code == "sparse_delta_entry_duplicate"
+
+
+def test_fastgate_admission_requires_evidence_hash_without_cache() -> None:
+    evaluation = evaluate_fastgate(_request(evidence_hash=None))
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
+    assert evaluation.decision.metrics["issue_code"] == "fastgate_evidence_hash_missing"
+
+
+def test_fastgate_admission_does_not_accept_source_id_without_evidence_hash() -> None:
+    evaluation = evaluate_fastgate(
+        _request(evidence_hash=None, evidence_source_id="evidence-source-only")
+    )
+
+    _assert_result(evaluation, Verdict.DENY, ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
+    assert evaluation.decision.metrics["issue_code"] == "fastgate_evidence_hash_missing"
+
+
+def test_fastgate_observe_only_allows_missing_evidence_hash() -> None:
+    evaluation = evaluate_fastgate(
+        _request(mode=FastGateMode.OBSERVE_ONLY, evidence_hash=None)
+    )
+
+    _assert_result(evaluation, Verdict.OBSERVE_ONLY, ReasonCode.REQUIRE_OBSERVE_ONLY)
+    assert evaluation.decision.metrics["issue_code"] == "fastgate_observe_only"
+
+
+def test_collatz_bound_is_conservative_across_deterministic_numerical_cases() -> None:
+    rng = np.random.default_rng(20260712)
+    minimum_gap = math.inf
+
+    for size in range(1, 7):
+        for _ in range(64):
+            values = rng.lognormal(mean=-4.0, sigma=3.0, size=(size, size))
+            vector_values = rng.lognormal(mean=0.0, sigma=3.0, size=size)
+            matrix = PropagationMatrix.from_values(values)
+            vector = PositiveVector(
+                values=tuple(float(value) for value in vector_values),
+                node_order=tuple(f"node-{index}" for index in range(size)),
+                graph_hash=GRAPH_HASH,
+                method=PositiveVectorMethod.IRREDUCIBLE_PERRON_VECTOR,
+                irreducible_declared=True,
+            )
+
+            bound = _collatz_bound(matrix, vector)
+            radius = matrix.spectral_radius()
+            minimum_gap = min(minimum_gap, bound - radius)
+            assert bound >= radius
+
+    assert minimum_gap >= 0
 
 
 def test_budget_exhaustion_returns_budget_reason() -> None:

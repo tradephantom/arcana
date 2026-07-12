@@ -1,7 +1,7 @@
 # ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems
 
-> Status: final public manuscript; FWP-REVIEW-008 claim-language review passed
-> Scope: final manuscript artifact for the public ARCANA research/reference track
+> Status: public research manuscript v1.0, post-hardening repository edition
+> Scope: reviewed manuscript artifact for the public ARCANA research/reference track
 > Classification: public-safe final manuscript; not a production approval, enforcement approval, or commercial certificate authorization
 > Implementation status: reference implementation and deterministic synthetic reference-evaluator benchmark evidence only
 
@@ -343,7 +343,7 @@ ARCANA uses four public calibration levels:
 | --- | --- | --- | --- |
 | A0 | Heuristic / Demo Only | Synthetic examples, tutorials, paper illustrations. | Always `non_certifiable`. |
 | A1 | Static Conservative Prior | Conservative offline estimates from declared static factors. | Public v0.2 default is `non_certifiable`; no certificate-like artifact support. |
-| A2 | Empirical / Red-Team Calibration | Controlled adversarial evidence, replay, and benchmark evidence. | Eligible for `certifiable_under_profile` only after reviewed scope, coverage, freshness, and non-synthetic evidence checks. |
+| A2 | Empirical / Red-Team Calibration | Controlled adversarial evidence, reviewed replay, or empirical public benchmark evidence. | Eligible for `certifiable_under_profile` only after reviewed scope, coverage, freshness, and non-synthetic evidence checks. |
 | A3 | Runtime Bayesian Calibration | Maintained segmented distributions with decay and priors. | Eligible for `certifiable_under_profile` only after reviewed runtime evidence and auditability checks. |
 
 A0 is demo-only. A0 outputs must preserve:
@@ -367,6 +367,13 @@ The public claim boundary after production-readiness review is:
   distributions, telemetry, or deployment mechanics.
 - No public calibration level in this manuscript authorizes production enforcement or
   certificate issuance by itself.
+
+The public source classes deliberately distinguish `public_benchmark` from
+`empirical_public_benchmark`. The first names the current synthetic ARCANA-Bench
+reference-evaluator evidence and never qualifies A2 or a certifiable state. The
+second is reserved for non-synthetic public benchmark evidence with separately
+reviewed provenance, scope, coverage, freshness, and reproducibility. Relabeling
+a synthetic run cannot upgrade its calibration level.
 
 The phrase `certifiable_under_profile` is a bounded public/reference semantic
 state. It means that an artifact may support a bounded-under-profile claim
@@ -492,6 +499,12 @@ Recognized public modes:
 
 FastGate must validate positive-vector assumptions, reducible graph handling, cache keys, numerical margin, and evidence binding.
 
+The public FastGate implementation also recomputes a domain-separated canonical
+hash over each sparse delta and requires a current evidence hash for every
+admission-capable path. Its Collatz products, sums, and ratios are rounded upward
+before the separate numerical margin is applied. These controls are reference
+semantics, not a production latency or enforcement claim.
+
 If the fast path is inconclusive:
 
 ```text
@@ -604,6 +617,7 @@ Public implementation components include:
 - decision evaluator with explicit reason-code branches;
 - A0 certificate-like demo output marked non-certifiable;
 - FastGate prototype;
+- canonical sparse-delta hashing and evidence-bound FastGate admission;
 - ARCANA-Bench synthetic fixture loader;
 - ARCANA-Bench negative-control coverage validator;
 - ARCANA-Bench typed execution-suite loader and actual evaluator runner;
@@ -666,6 +680,8 @@ Core limitations:
 - A2/A3 language remains conditional on separate review, evidence coverage,
   freshness, horizon compatibility, non-synthetic evidence, expiry, and
   revocation handling;
+- synthetic `public_benchmark` evidence cannot qualify A2; only the distinct
+  reviewed `empirical_public_benchmark` class can do so;
 - FastGate depends on valid assumptions and fallback paths;
 - evidence hashes bind artifacts but do not prove evidence quality;
 - local policy may be stricter than ARCANA's bounded result;
@@ -708,53 +724,45 @@ This manuscript is grounded in the current public research/reference artifacts:
 | `src/arcana/` | Public reference implementation. |
 | `tests/` | Local reproducibility and contract tests. |
 
-## 21. Final Claim-Language Review
+## 21. Reproducibility and Falsifiability
 
-FWP-REVIEW-008 verified that:
+The public repository makes the reference claims inspectable through four
+separate gates:
 
-- every claim names or implies model, calibration, horizon, uncertainty, and evidence scope;
-- `rho_upper`, not `rho_mean`, is the admission-like metric;
-- `K` and `L` remain separate;
-- A0 artifacts remain non-certifiable;
-- reason-code branches remain distinct;
-- FastGate fails closed when assumptions fail;
-- benchmark task success is separate from unsafe action rate and artifact-contract validity;
-- every required ARCANA-Bench negative control exists as a public synthetic fixture;
-- every benchmark scenario has exactly one complete typed evaluator input;
-- observed benchmark decisions come from the public evaluator and reports distinguish measured, not-measured, and unavailable metrics;
-- reproduction commands are current;
-- public integration language remains enforcement-neutral;
-- limitations appear before any broad claim;
-- final license profile and GitHub Private Vulnerability Reporting remain in place for the public remote;
-- the manuscript does not claim production readiness, production enforcement,
-  commercial certificate issuance, universal safety, or risk elimination.
+1. `make check` validates the public boundary, schemas, examples, and executable
+   ARCANA-Bench contract.
+2. `make test` exercises typed contracts, explicit reason-code branches,
+   numerical edge cases, artifact semantics, benchmark tamper detection, and
+   claim-language guardrails.
+3. `make demo` produces the deterministic A0 non-certifiable example.
+4. `make bench` executes all synthetic benchmark inputs through the reference
+   evaluator and verifies the source-bound report hash.
 
-## 22. Manuscript Status
+The benchmark report distinguishes measured, not-measured, and unavailable
+metrics. A failed expected-versus-observed comparison, source-manifest mismatch,
+content-hash mismatch, semantic artifact contradiction, or changed decision
+reason is therefore visible rather than silently normalized.
 
-This is the v1.0 public manuscript transformed from the reviewed v0.3 draft.
-FWP-REVIEW-008 final public claim-language review has passed. The manuscript is
-approved as the final public ARCANA manuscript artifact for the repository.
+These checks make the reference implementation reproducible and falsifiable at
+the contract level. They do not constitute external academic peer review,
+empirical deployment validation, or evidence that an unmodeled path is absent.
+Exact commit, dependency, and artifact hashes belong in the accompanying release
+record so that this manuscript does not make mutable operational claims.
 
-This approval does not create production readiness, production enforcement,
-commercial certificate issuance, customer approval, or proof of safety. Any
-venue-specific package, including LaTeX or archive submission formats, must
-preserve the claim language and public/private boundary in this manuscript.
+## 22. Conclusion
 
-Open FWP manuscript blockers:
+ARCANA defines a model-bounded autonomy-accounting layer for agentic operations.
+Its central discipline is to bind every bounded result to a declared model,
+calibration profile, horizon, graph, uncertainty interval, evidence assumption,
+budget, and reason-code contract while keeping propagation pressure separate
+from loss.
 
-- none.
+The public reference implementation demonstrates these contracts on
+deterministic synthetic inputs, including executable negative controls and a
+conservative FastGate prototype. It establishes reference-evaluator behavior,
+not real-world safety, empirical calibration quality, production enforcement,
+or commercial certificate authority. Those stronger claims require evidence and
+governance outside the public reference package.
 
-Completed publication prerequisites:
-
-- public remote preflight validation;
-- GitHub Private Vulnerability Reporting configuration;
-- public release-note publication;
-- fresh-clone validation of `make check`, `make test`, and `make demo`;
-- mathematical review of public subcritical threshold semantics;
-- calibration-level review of A1/A2/A3 public semantics;
-- public schema contract review;
-- FastGate numerical and graph-edge-case review;
-- ARCANA-Bench scenario coverage review;
-- independent reproduction of local tests and deterministic demo;
-- final manuscript transformation from draft to publication artifact;
-- final public claim-language review.
+Any LaTeX, PDF, archive, or venue-specific derivative of this manuscript must
+preserve this claim boundary and the public/private product separation.

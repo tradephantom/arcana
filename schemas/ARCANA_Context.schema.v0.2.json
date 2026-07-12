@@ -231,6 +231,7 @@
           "enum": [
             "synthetic_fixture",
             "public_benchmark",
+            "empirical_public_benchmark",
             "controlled_test",
             "hash_bound_context"
           ]

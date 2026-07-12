@@ -1,8 +1,8 @@
 # ARCANA-FastGate Design v0.1
 
-> Status: public FastGate design v0.1 draft
+> Status: public FastGate design v0.1 implemented reference contract
 > Scope: low-latency admission design for public ARCANA reference work
-> Implementation status: no FastGate prototype is approved by this document
+> Implementation status: implemented and regression-tested in `src/arcana/fastgate.py`; reference-only, not production enforcement
 
 This document defines the public ARCANA-FastGate design for conservative admission of sparse graph changes without a full spectral recompute on every action.
 
@@ -97,6 +97,7 @@ Warm path is allowed only when:
 - the positive vector is strictly positive for every covered component;
 - reducible graph handling is valid;
 - the bound has enough margin below `theta_rho`;
+- a current evidence hash is present;
 - the autonomy budget remains available.
 
 ### Hot Path
@@ -109,14 +110,17 @@ Required cache keys:
 - calibration profile ID;
 - decision horizon ID and duration;
 - graph hash before delta;
-- delta hash or canonical delta fingerprint;
+- canonical delta hash recomputed from graph hash, horizon, additive mode, and
+  sorted sparse entries;
 - positive-vector method;
 - threshold;
 - numerical tolerance profile;
-- evidence hash or evidence source ID;
+- evidence hash, plus evidence source ID when one is declared;
 - context expiry.
 
-If any cache key mismatches, hot path must fall back to warm or cold path.
+If any cache key mismatches, cache reuse fails with a specific reason code. A
+caller may construct a fresh warm- or cold-path request, but the stale cache is
+never silently reused.
 
 Hot path must not issue a new certifiable result from stale context.
 
@@ -149,7 +153,11 @@ Sparse delta requirements:
 - all entries use the same compatible decision horizon;
 - every changed entry is derived from the calibration profile;
 - loss values are not embedded in the delta;
-- delta hash or canonical fingerprint is available for cache binding.
+- the declared delta hash exactly matches the domain-separated canonical hash
+  recomputed from the delta content.
+
+A caller-provided hash string is not sufficient. A content/hash mismatch is a
+malformed model input and returns `ARCANA_DENY_MODEL_INPUT_INVALID`.
 
 Malformed deltas return:
 
@@ -179,6 +187,12 @@ fastgate_upper_bound + numeric_margin < theta_rho
 ```
 
 where `numeric_margin` is declared by the implementation or tolerance profile.
+
+The public reference implementation evaluates each nonnegative row using
+upward-rounded products, sums, and ratios before taking the maximum. This
+prevents ordinary floating-point rounding from turning the computed Collatz
+quantity into an optimistic lower value. The separate numerical margin still
+applies after this directed rounding.
 
 If any `x_i <= 0`, `x_i` is missing, or `x` is not bound to the graph state, ARCANA returns:
 
@@ -369,14 +383,17 @@ Required order:
 5. Validate graph hash binding.
 6. Validate `K_before_upper` shape and nonnegativity.
 7. Validate `DeltaK_upper` shape, sparsity, nonnegativity, and horizon.
-8. Validate budget.
-9. Validate loss model if loss is in scope.
-10. Select FastGate mode.
-11. Validate positive-vector method if warm path is used.
-12. Validate reducible graph handling if needed.
-13. Compute conservative bound or exact recompute.
-14. Apply numerical margin.
-15. Return verdict and reason codes.
+8. Recompute and validate the canonical sparse-delta hash.
+9. Require a hash-bound evidence reference for every admission-capable mode.
+10. Validate cache evidence binding when a cache is reused.
+11. Validate budget.
+12. Validate loss model if loss is in scope.
+13. Select FastGate mode.
+14. Validate positive-vector method if warm path is used.
+15. Validate reducible graph handling if needed.
+16. Compute conservative bound or exact recompute.
+17. Apply numerical margin.
+18. Return verdict and reason codes.
 
 Each failure must map to its specific reason code. FastGate must not absorb unrelated failures into `ARCANA_DENY_FASTGATE_UNCERTAIN`.
 
@@ -450,24 +467,26 @@ FastGate v0.1 does not:
 - infer control effectiveness without calibration;
 - make risk-reducing deltas fast-allowable without reviewed proof.
 
-## 17. Reference Implementation Entry Contract
+## 17. Reference Implementation Conformance
 
-The future reference implementation should implement FastGate in this order:
+The public reference implementation applies FastGate in this order:
 
 1. exact recompute path for `K_after_upper`;
 2. sparse delta validation;
-3. graph and delta hash binding;
-4. positive-vector validation;
-5. Collatz bound calculation;
-6. numerical margin policy;
-7. SCC decomposition fallback;
-8. epsilon-floor fallback;
-9. component-local gate fallback;
-10. exact recompute fallback;
-11. explicit reason-code tests for every failure path;
-12. certificate/context FastGate field emission.
+3. graph binding and canonical delta-hash recomputation;
+4. evidence-hash admission binding;
+5. positive-vector validation;
+6. upward-rounded Collatz bound calculation;
+7. numerical margin policy;
+8. SCC decomposition fallback;
+9. epsilon-floor fallback;
+10. component-local gate fallback;
+11. exact recompute fallback;
+12. explicit reason-code tests for every failure path;
+13. certificate/context FastGate field emission.
 
-FastGate prototype work should start only after exact spectral calculation and upper-bound decision evaluator tests pass.
+The implementation remains a reference prototype. It does not establish
+production latency, production graph decomposition, or enforcement readiness.
 
 ## 18. Minimal Test Matrix
 
@@ -487,21 +506,30 @@ The first implementation must include tests for:
 - graph hash mismatch;
 - horizon mismatch;
 - malformed sparse delta;
+- canonical sparse-delta hash mismatch;
+- missing evidence hash on an admission-capable path;
 - budget exhaustion;
 - A0 observe-only FastGate artifact.
 
-## 19. Open Questions
+## 19. v0.1 Decisions and Residual Questions
 
-- Should public v0.1 default to `scc_decomposition` or `exact_recompute` for reducible graphs?
-- Should risk-reducing deltas be exact-only for all v0.1 examples?
-- Should `numeric_margin` be schema-visible in v0.3?
-- Should FastGate expose component-local bounds in a separate public schema object?
-- Should `exact_recompute` certificates include `positive_vector_method: fallback_exact` or omit the method?
+- There is no implicit reducible-graph fast-path default. Callers must declare a
+  valid method; exact recompute is the conservative fallback.
+- Risk-reducing deltas remain exact-only in public v0.1.
+- `numeric_margin` remains evaluator metadata rather than a v0.2 artifact field.
+- Component-local bounds remain internal evaluator detail in v0.1.
+- Exact-recompute artifacts omit `positive_vector_method`; `fallback_exact` is
+  only the dispatch marker that delegates to exact recompute.
+- A future schema may expose richer component-level proof objects after a
+  separate public contract review.
 
-## 20. Next Artifact
+## 20. Current Artifact Relationship
 
-The next public planning artifact is:
+This design is implemented jointly by:
 
 ```text
-Public Demo and Reference Implementation Plan v0.1
+src/arcana/fastgate.py
+src/arcana/matrices.py
+tests/test_fastgate.py
+docs/FORMAL_MODEL_v0.2.md
 ```

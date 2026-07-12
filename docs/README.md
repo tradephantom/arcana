@@ -25,11 +25,11 @@ Current order:
 19. `PUBLIC_RELEASE_NOTES_v0.1.md`
 20. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
 
-Next public documents:
+Next public artifacts:
 
 1. Venue-specific paper package, if a separate LaTeX or archive submission is prepared.
 2. Follow-up release notes after maintainer-approved changes.
 
-Schema drafts live in `../schemas/`.
+Versioned public schemas live in `../schemas/`.
 
 Synthetic examples live in `../examples/`.

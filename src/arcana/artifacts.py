@@ -17,6 +17,7 @@ from arcana.model import DecisionHorizon, EvidenceReference, LossBounds, RhoInte
 
 
 _ALLOW_VERDICTS = frozenset({Verdict.ALLOW_BOUNDED_AUTONOMY, Verdict.ALLOW_WITH_CONTROLS})
+_SYNTHETIC_EVIDENCE_SOURCE_TYPES = frozenset({"synthetic_fixture", "public_benchmark"})
 _DENY_REASON_CODES = frozenset(
     {
         ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
@@ -171,9 +172,9 @@ def _validate_expected_bindings(
 def _validate_evidence(evidence: EvidenceReference, reason_codes: tuple[ReasonCode, ...], path: tuple[str, ...]) -> None:
     if not isinstance(evidence, EvidenceReference):
         fail("evidence_reference_invalid", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "evidence must be EvidenceReference", path)
-    if evidence.source_type == "synthetic_fixture" and not evidence.synthetic:
-        fail("synthetic_evidence_flag_mismatch", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "synthetic_fixture evidence must set synthetic=true", (*path, "synthetic"))
-    if evidence.source_type != "synthetic_fixture" and evidence.synthetic:
+    if evidence.source_type in _SYNTHETIC_EVIDENCE_SOURCE_TYPES and not evidence.synthetic:
+        fail("synthetic_evidence_flag_mismatch", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "synthetic evidence source types must set synthetic=true", (*path, "synthetic"))
+    if evidence.source_type not in _SYNTHETIC_EVIDENCE_SOURCE_TYPES and evidence.synthetic:
         fail("non_synthetic_source_flag_mismatch", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "non-synthetic source types must set synthetic=false", (*path, "synthetic"))
     if evidence.evidence_hash is None:
         fail("evidence_hash_missing", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "admissible artifacts require a hash-bound evidence reference", (*path, "evidence_hash"))

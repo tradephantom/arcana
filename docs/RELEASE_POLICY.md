@@ -9,7 +9,7 @@ The internal ARCANA research workspace is separate. This repository should conta
 
 ## Remote Policy
 
-Do not create or push a remote repository until:
+Do not create or update a public remote repository until:
 
 - `make check` passes locally;
 - `make test` passes locally;
@@ -22,7 +22,7 @@ Do not create or push a remote repository until:
 - no private enterprise, customer, or lab details are present;
 - no paid GitHub feature is needed for the current milestone.
 
-Initial remote publication should use:
+Initial remote publication and follow-up releases should use:
 
 - no GitHub Actions by default;
 - no Git LFS;

@@ -1,11 +1,11 @@
 # PRD: ARCANA v0.2 Public
 
 > Product: ARCANA - Autonomy Risk Calculus for Agentic Network Assurance
-> Status: public-safe draft for review
+> Status: active public research/reference product contract v0.2
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal baseline and publication boundary review
-> Classification: public-safe draft
-> Implementation status: documentation only; no reference implementation is approved by this document
+> Classification: public-safe
+> Implementation status: standalone reference implementation and synthetic benchmark are present; production implementation, enforcement, and certificate issuance remain out of scope
 
 ## 1. Executive Summary
 

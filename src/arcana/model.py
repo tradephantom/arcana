@@ -37,6 +37,7 @@ from arcana.errors import (
 ALLOWED_EVIDENCE_SOURCE_TYPES = {
     "synthetic_fixture",
     "public_benchmark",
+    "empirical_public_benchmark",
     "controlled_test",
     "hash_bound_context",
 }
@@ -330,7 +331,15 @@ class GraphState:
             fail("graph_edges_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "edges must be an array", (*path, "edges"))
         nodes = tuple(GraphNode.from_mapping(item, (*path, "nodes", index)) for index, item in enumerate(raw_nodes))
         edges = tuple(GraphEdge.from_mapping(item, (*path, "edges", index)) for index, item in enumerate(raw_edges))
-        node_ids = {node.node_id for node in nodes}
+        if not nodes:
+            fail("graph_nodes_empty", ReasonCode.DENY_MODEL_INPUT_INVALID, "graph requires at least one node", (*path, "nodes"))
+        node_id_sequence = tuple(node.node_id for node in nodes)
+        node_ids = set(node_id_sequence)
+        if len(node_id_sequence) != len(node_ids):
+            fail("graph_node_id_duplicate", ReasonCode.DENY_MODEL_INPUT_INVALID, "graph node_id values must be unique", (*path, "nodes"))
+        edge_keys = tuple((edge.source, edge.target, edge.edge_type) for edge in edges)
+        if len(edge_keys) != len(set(edge_keys)):
+            fail("graph_edge_duplicate", ReasonCode.DENY_MODEL_INPUT_INVALID, "graph edges must be unique by source,target,edge_type", (*path, "edges"))
         for index, edge in enumerate(edges):
             if edge.source not in node_ids or edge.target not in node_ids:
                 fail("graph_edge_endpoint_unknown", ReasonCode.DENY_MODEL_INPUT_INVALID, "edge endpoint is not present in nodes", (*path, "edges", index))
@@ -356,10 +365,18 @@ class GraphDelta:
             fail("graph_delta_nodes_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "added_nodes must be an array", (*path, "added_nodes"))
         if not isinstance(raw_edges, list):
             fail("graph_delta_edges_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "added_edges must be an array", (*path, "added_edges"))
+        added_nodes = tuple(GraphNode.from_mapping(item, (*path, "added_nodes", index)) for index, item in enumerate(raw_nodes))
+        added_edges = tuple(GraphEdge.from_mapping(item, (*path, "added_edges", index)) for index, item in enumerate(raw_edges))
+        added_node_ids = tuple(node.node_id for node in added_nodes)
+        if len(added_node_ids) != len(set(added_node_ids)):
+            fail("graph_delta_node_id_duplicate", ReasonCode.DENY_MODEL_INPUT_INVALID, "added node_id values must be unique", (*path, "added_nodes"))
+        added_edge_keys = tuple((edge.source, edge.target, edge.edge_type) for edge in added_edges)
+        if len(added_edge_keys) != len(set(added_edge_keys)):
+            fail("graph_delta_edge_duplicate", ReasonCode.DENY_MODEL_INPUT_INVALID, "added edges must be unique by source,target,edge_type", (*path, "added_edges"))
         return cls(
             delta_hash=expect_sha256(require_value(data, "delta_hash", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "delta_hash"), ReasonCode.DENY_MODEL_INPUT_INVALID),
-            added_nodes=tuple(GraphNode.from_mapping(item, (*path, "added_nodes", index)) for index, item in enumerate(raw_nodes)),
-            added_edges=tuple(GraphEdge.from_mapping(item, (*path, "added_edges", index)) for index, item in enumerate(raw_edges)),
+            added_nodes=added_nodes,
+            added_edges=added_edges,
         )
 
 
@@ -377,10 +394,14 @@ class DecisionResult:
         raw_codes = require_value(data, "reason_codes", path, ReasonCode.DENY_MODEL_INPUT_INVALID)
         if not isinstance(raw_codes, list) or not raw_codes:
             fail("reason_codes_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "reason_codes must be a non-empty array", (*path, "reason_codes"))
+        reason_codes = tuple(expect_enum(ReasonCode, item, (*path, "reason_codes", index), ReasonCode.DENY_MODEL_INPUT_INVALID) for index, item in enumerate(raw_codes))
+        if len(reason_codes) != len(set(reason_codes)):
+            fail("reason_codes_not_unique", ReasonCode.DENY_MODEL_INPUT_INVALID, "reason_codes must be unique", (*path, "reason_codes"))
+        metrics = expect_mapping(data.get("metrics", {}), (*path, "metrics"), ReasonCode.DENY_MODEL_INPUT_INVALID)
         return cls(
             verdict=expect_enum(Verdict, require_value(data, "verdict", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "verdict"), ReasonCode.DENY_MODEL_INPUT_INVALID),
-            reason_codes=tuple(expect_enum(ReasonCode, item, (*path, "reason_codes", index), ReasonCode.DENY_MODEL_INPUT_INVALID) for index, item in enumerate(raw_codes)),
-            metrics=data.get("metrics", {}),
+            reason_codes=reason_codes,
+            metrics=dict(metrics),
             required_controls=expect_string_list(data.get("required_controls", []), (*path, "required_controls"), ReasonCode.DENY_MODEL_INPUT_INVALID, unique=True),
             caveats=expect_string_list(data.get("caveats", []), (*path, "caveats"), ReasonCode.DENY_MODEL_INPUT_INVALID),
         )
@@ -408,6 +429,9 @@ class RiskContext:
         raw_codes = require_value(data, "reason_codes", path, ReasonCode.DENY_MODEL_INPUT_INVALID)
         if not isinstance(raw_codes, list) or not raw_codes:
             fail("reason_codes_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "reason_codes must be a non-empty array", (*path, "reason_codes"))
+        reason_codes = tuple(expect_enum(ReasonCode, item, (*path, "reason_codes", index), ReasonCode.DENY_MODEL_INPUT_INVALID) for index, item in enumerate(raw_codes))
+        if len(reason_codes) != len(set(reason_codes)):
+            fail("reason_codes_not_unique", ReasonCode.DENY_MODEL_INPUT_INVALID, "reason_codes must be unique", (*path, "reason_codes"))
         return cls(
             risk_model_version=expect_risk_model_version(require_value(data, "risk_model_version", path, ReasonCode.DENY_RISK_MODEL_UNSUPPORTED), (*path, "risk_model_version")),
             calibration_profile_id=expect_calibration_profile_id(require_value(data, "calibration_profile_id", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "calibration_profile_id")),
@@ -416,7 +440,7 @@ class RiskContext:
             graph_hash=expect_sha256(require_value(data, "graph_hash", path, ReasonCode.DENY_GRAPH_HASH_MISMATCH), (*path, "graph_hash"), ReasonCode.DENY_GRAPH_HASH_MISMATCH),
             rho_interval=RhoInterval.from_mapping(require_value(data, "rho_interval", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "rho_interval")),
             decision=expect_enum(Verdict, require_value(data, "decision", path, ReasonCode.DENY_MODEL_INPUT_INVALID), (*path, "decision"), ReasonCode.DENY_MODEL_INPUT_INVALID),
-            reason_codes=tuple(expect_enum(ReasonCode, item, (*path, "reason_codes", index), ReasonCode.DENY_MODEL_INPUT_INVALID) for index, item in enumerate(raw_codes)),
+            reason_codes=reason_codes,
             evidence=EvidenceReference.from_mapping(require_value(data, "evidence", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "evidence")),
             autonomy_budget=AutonomyBudget.from_mapping(require_value(data, "autonomy_budget", path, ReasonCode.DENY_BUDGET_EXHAUSTED), (*path, "autonomy_budget")),
             loss_bounds=LossBounds.from_mapping(data["loss_bounds"], (*path, "loss_bounds")) if "loss_bounds" in data else None,

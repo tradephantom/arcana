@@ -1,8 +1,8 @@
 # ARCANA Calibration Methodology v0.1
 
-> Status: public calibration methodology v0.1 draft
+> Status: public calibration methodology v0.1 implemented reference contract
 > Scope: public calibration contract for ARCANA reference work
-> Implementation status: no calibration loader or certificate generator is approved by this document
+> Implementation status: enforced by the public schemas, typed calibration loader, evaluator, artifact validators, and tests; not a production calibration approval
 
 This document defines how public ARCANA calibration profiles should derive edge-weight factors, uncertainty intervals, evidence quality, calibration levels, temporal validity, and certification status.
 
@@ -81,7 +81,7 @@ ARCANA uses four public calibration levels.
 | --- | --- | --- | --- |
 | A0 | Heuristic / Demo Only | Synthetic examples, tutorials, paper illustrations. | Always `non_certifiable`. |
 | A1 | Static Conservative Prior | Conservative offline estimates from declared static factors. | Public v0.2 default is `non_certifiable`; no certificate-like artifact support. |
-| A2 | Empirical / Red-Team Calibration | Controlled adversarial evidence, scenario replay, benchmark evidence. | May be `certifiable_under_profile` only when reviewed coverage, segmentation, freshness, and non-synthetic evidence requirements pass. |
+| A2 | Empirical / Red-Team Calibration | Controlled adversarial evidence, reviewed replay, or empirical public benchmark evidence. | May be `certifiable_under_profile` only when reviewed coverage, segmentation, freshness, and non-synthetic evidence requirements pass. |
 | A3 | Runtime Bayesian Calibration | Segmented runtime distributions with decay, priors, and controlled evidence separation. | May be `certifiable_under_profile` only when runtime evidence is reviewed, calibrated, segmented, fresh, and auditable. |
 
 Level ordering is:
@@ -174,7 +174,7 @@ Allowed evidence classes:
 - benchmark-gaming test;
 - dynamic execution risk test;
 - fail-closed test;
-- public benchmark scenario run.
+- empirical public benchmark run with non-synthetic execution provenance.
 
 A2 requirements:
 
@@ -217,7 +217,8 @@ Public calibration profiles may declare these source classes:
 | `static_conservative_prior` | Conservative static assumptions. | A1 |
 | `controlled_redteam` | Controlled adversarial tests. | A2 |
 | `adversarial_replay` | Replay of known scenario classes. | A2 |
-| `public_benchmark` | Public ARCANA-Bench or public-source-safe benchmark evidence. | A2 |
+| `public_benchmark` | Synthetic public reference-evaluator benchmark evidence, including the current ARCANA-Bench v0.1 suite. | Supplemental only; never an A2 qualifier or certifiable source. |
+| `empirical_public_benchmark` | Non-synthetic public benchmark evidence with reviewed execution provenance, scope, coverage, freshness, and reproducibility. | A2 |
 | `runtime_observation` | Runtime observations handled through documented priors and segmentation. | A3 |
 
 Evidence source labels must not expose private customer, enterprise, adapter, or lab mechanics.
@@ -228,10 +229,17 @@ level upgrade. Public contract validation additionally requires:
 - A0 to use `synthetic_demo` only;
 - A1 to use `static_conservative_prior` only;
 - A2 to include at least one of `controlled_redteam`, `adversarial_replay`, or
-  `public_benchmark`, and not to use `runtime_observation`;
+  `empirical_public_benchmark`, and not to use `runtime_observation`;
 - A3 to include `runtime_observation`;
 - `certifiable_under_profile` to satisfy the qualifying source rule for its
-  declared A2/A3 level and to exclude synthetic demo evidence.
+  declared A2/A3 level and to exclude both `synthetic_demo` and
+  `public_benchmark` evidence.
+
+The source label `public_benchmark` is intentionally non-qualifying because a
+public fixture can still be synthetic. Renaming or relabeling a synthetic run
+must not upgrade calibration. Only the separate
+`empirical_public_benchmark` class can qualify A2, and the class declaration is
+still subject to independent evidence review outside this reference code.
 
 A level label without qualifying evidence is invalid rather than weakly
 accepted.
@@ -476,7 +484,7 @@ certifiable_under_profile
 
 - calibration level is A2 or A3;
 - calibration level is sufficient for the requested action;
-- evidence is not synthetic-only;
+- evidence contains no synthetic source class for the certifiable claim;
 - risk model version is supported;
 - decision horizon is compatible;
 - evidence quality passes;
@@ -549,9 +557,9 @@ Required caveat classes:
 
 A caveat is binding. If a requested action violates a caveat, the profile is insufficient for that action.
 
-## 20. Reference Implementation Entry Contract
+## 20. Reference Implementation Conformance
 
-The future reference implementation should implement calibration in this order:
+The public reference implementation enforces calibration in this order:
 
 1. typed calibration profile object;
 2. schema-level validation;
@@ -568,22 +576,26 @@ The future reference implementation should implement calibration in this order:
 
 No implementation should issue a certifiable non-demo artifact before this
 methodology, the schemas, and the formal model are reviewed together. Public
-v0.2 non-demo certificate-like artifacts require A2 or A3 calibration and
-non-synthetic evidence.
+v0.2 non-demo certificate-like artifacts require A2 or A3 calibration,
+non-synthetic evidence, and a qualifying source class. The current repository
+contains no production-eligible profile or empirical A2/A3 evidence package.
 
-## 21. Open Questions
+## 21. Residual Research Questions
 
-- What public benchmark evidence should define the first A2 profile?
+- What empirical public benchmark evidence package should define the first A2 profile?
 - What default temporal decay parameter should be used for public reference fixtures?
 - Should calibration profiles include explicit per-factor intervals in v0.3 schemas?
 - Should evidence quality become a separate public schema object?
 
-## 22. Next Artifact
+## 22. Current Artifact Relationship
 
-This artifact is followed by FastGate design before reference implementation work.
-
-The next implementation-planning artifact should be:
+This methodology is implemented jointly by:
 
 ```text
-Public Demo and Reference Implementation Plan v0.1
+schemas/ARCANA_CalibrationProfile.schema.v0.2.json
+src/arcana/calibration.py
+src/arcana/decision.py
+src/arcana/artifacts.py
+tests/test_typed_contracts.py
+tests/test_schema_validation.py
 ```

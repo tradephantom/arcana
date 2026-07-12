@@ -125,6 +125,27 @@ def test_calibration_schema_rejects_unqualified_a2_source() -> None:
     assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
 
 
+def test_calibration_schema_rejects_synthetic_public_benchmark_as_a2_qualifier() -> None:
+    document = copy.deepcopy(_example("calibration_profile_a0.synthetic.json"))
+    document["level"] = "A2"
+    document["source"] = ["public_benchmark"]
+    document["certification_status"] = "non_certifiable"
+
+    with pytest.raises(ArcanaValidationError) as exc_info:
+        validate_document(document)
+
+    assert exc_info.value.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+
+
+def test_calibration_schema_accepts_empirical_public_benchmark_a2_qualifier() -> None:
+    document = copy.deepcopy(_example("calibration_profile_a0.synthetic.json"))
+    document["level"] = "A2"
+    document["source"] = ["empirical_public_benchmark"]
+    document["certification_status"] = "certifiable_under_profile"
+
+    validate_document(document)
+
+
 def test_calibration_schema_rejects_a3_without_runtime_observation() -> None:
     document = copy.deepcopy(_example("calibration_profile_a0.synthetic.json"))
     document["level"] = "A3"

@@ -62,6 +62,7 @@
               "controlled_redteam",
               "adversarial_replay",
               "public_benchmark",
+              "empirical_public_benchmark",
               "runtime_observation"
             ]
           },
@@ -108,8 +109,8 @@
           "then": {
             "properties": {
               "source": {
-                "items": {"enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark"]},
-                "contains": {"enum": ["controlled_redteam", "adversarial_replay", "public_benchmark"]}
+                "items": {"enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark", "empirical_public_benchmark"]},
+                "contains": {"enum": ["controlled_redteam", "adversarial_replay", "empirical_public_benchmark"]}
               }
             }
           }
@@ -119,7 +120,7 @@
           "then": {
             "properties": {
               "source": {
-                "items": {"enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark", "runtime_observation"]},
+                "items": {"enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark", "empirical_public_benchmark", "runtime_observation"]},
                 "contains": {"const": "runtime_observation"}
               }
             }
@@ -270,7 +271,7 @@
               "source": {
                 "not": {
                   "contains": {
-                    "const": "synthetic_demo"
+                    "enum": ["synthetic_demo", "public_benchmark"]
                   }
                 }
               }
@@ -419,6 +420,7 @@
           "enum": [
             "synthetic_fixture",
             "public_benchmark",
+            "empirical_public_benchmark",
             "controlled_test",
             "hash_bound_context"
           ]

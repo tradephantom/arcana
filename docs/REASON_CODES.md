@@ -1,6 +1,6 @@
 # ARCANA Public Reason-Code Registry
 
-> Status: public reason-code registry v0.1 draft
+> Status: public reason-code registry v0.1 implemented contract
 > Scope: public ARCANA research/reference outcomes
 > Contract: every code has one meaning and one primary handling path
 
@@ -38,7 +38,7 @@ Rules:
 | Verdict | Required reason-code class |
 | --- | --- |
 | `allow_bounded_autonomy` | `ARCANA_ALLOW_*` or `ARCANA_INFO_*` |
-| `allow_with_controls` | `ARCANA_REQUIRE_*` or `ARCANA_INFO_*` |
+| `allow_with_controls` | `ARCANA_ALLOW_WITH_CONTROLS` followed by optional `ARCANA_INFO_*` codes |
 | `require_scope_reduction` | `ARCANA_REQUIRE_SCOPE_REDUCTION` |
 | `require_human_gate` | `ARCANA_REQUIRE_HUMAN_GATE` |
 | `observe_only` | `ARCANA_REQUIRE_OBSERVE_ONLY` |
@@ -72,6 +72,11 @@ Guidance: emit a non-demo bounded autonomy certificate-like artifact only if all
 certificate fields are present, calibration is A2 or A3, evidence is
 non-synthetic, and the reviewed profile permits `certifiable_under_profile`
 semantics. This does not authorize commercial certificate issuance.
+
+The current synthetic `public_benchmark` source class is not qualifying A2
+evidence. A benchmark-qualified A2 profile must use the distinct
+`empirical_public_benchmark` source class or another qualifying non-synthetic
+class and still pass the separate evidence review.
 
 ### `ARCANA_ALLOW_WITH_CONTROLS`
 
@@ -177,7 +182,6 @@ Meaning: upper-bound propagation risk exceeds the declared threshold.
 Use when:
 
 - `rho_upper_after > rho_threshold`;
-- `delta_rho_upper` exceeds available budget;
 - uncertainty widens enough that the upper bound breaches threshold.
 
 Actionable guidance: reduce scope, remove risky edges, add controls with measurable effect, or require human approval if policy permits.

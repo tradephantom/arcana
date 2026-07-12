@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import json
+import math
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -126,6 +130,56 @@ class FastGateEvaluation:
         return self.decision.verdict in {Verdict.ALLOW_BOUNDED_AUTONOMY, Verdict.ALLOW_WITH_CONTROLS}
 
 
+def compute_sparse_delta_hash(
+    *,
+    graph_hash: str,
+    decision_horizon: DecisionHorizon,
+    entries: Sequence[SparseDeltaEntry],
+    additive: bool = True,
+) -> str:
+    """Hash the canonical, domain-separated public sparse-delta contract."""
+
+    normalized_graph_hash = expect_sha256(graph_hash, ("DeltaK_upper", "graph_hash"), ReasonCode.DENY_GRAPH_HASH_MISMATCH)
+    normalized_horizon = _validate_horizon(decision_horizon)
+    if not isinstance(additive, bool):
+        fail("sparse_delta_additive_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "additive must be boolean", ("DeltaK_upper", "additive"))
+    if isinstance(entries, (str, bytes)) or not isinstance(entries, Sequence):
+        fail("sparse_delta_entries_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "entries must be a sequence", ("DeltaK_upper", "entries"))
+
+    normalized_entries: list[dict[str, int | float]] = []
+    seen: set[tuple[int, int]] = set()
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, SparseDeltaEntry):
+            fail("sparse_delta_entry_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "delta entry must be SparseDeltaEntry", ("DeltaK_upper", "entries", index))
+        row = expect_int_min(entry.row, 0, ("DeltaK_upper", "entries", index, "row"), ReasonCode.DENY_MODEL_INPUT_INVALID)
+        column = expect_int_min(entry.column, 0, ("DeltaK_upper", "entries", index, "column"), ReasonCode.DENY_MODEL_INPUT_INVALID)
+        key = (row, column)
+        if key in seen:
+            fail("sparse_delta_entry_duplicate", ReasonCode.DENY_MODEL_INPUT_INVALID, "delta entries must not repeat row,column", ("DeltaK_upper", "entries", index))
+        seen.add(key)
+        normalized_entries.append(
+            {
+                "row": row,
+                "column": column,
+                "value": expect_number_min(entry.value, 0, ("DeltaK_upper", "entries", index, "value"), ReasonCode.DENY_MODEL_INPUT_INVALID),
+            }
+        )
+
+    payload = {
+        "schema_version": "arcana.fastgate.sparse_delta_hash.v0.1",
+        "graph_hash": normalized_graph_hash,
+        "decision_horizon": {
+            "id": normalized_horizon.id,
+            "duration_seconds": normalized_horizon.duration_seconds,
+            "context": normalized_horizon.context,
+        },
+        "additive": additive,
+        "entries": sorted(normalized_entries, key=lambda item: (int(item["row"]), int(item["column"]))),
+    }
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
+    return "sha256:" + hashlib.sha256(canonical).hexdigest()
+
+
 def evaluate_fastgate(request: FastGateRequest) -> FastGateEvaluation:
     if not isinstance(request, FastGateRequest):
         return _evaluation(
@@ -167,6 +221,17 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         request.max_changed_entries,
         request.max_delta_density,
     )
+    evidence_hash = _validate_optional_hash(request.evidence_hash, ("evidence_hash",))
+    evidence_source_id = _validate_optional_source_id(request.evidence_source_id, ("evidence_source_id",))
+    if mode is not FastGateMode.OBSERVE_ONLY and evidence_hash is None:
+        return _evaluation(
+            _deny(
+                ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+                "fastgate_evidence_hash_missing",
+                "FastGate admission requires a hash-bound evidence reference",
+            ),
+            FastGateContext(mode=FastGateMode.OBSERVE_ONLY),
+        )
     cache_failure = _cache_failure(
         request.cache_binding,
         decision_time,
@@ -178,8 +243,8 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         threshold,
         request.positive_vector.method if request.positive_vector is not None else None,
         tolerance_policy,
-        request.evidence_hash,
-        request.evidence_source_id,
+        evidence_hash,
+        evidence_source_id,
     )
     if cache_failure is not None:
         return _evaluation(cache_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
@@ -419,7 +484,7 @@ def _validate_sparse_delta(
 ) -> np.ndarray:
     if not isinstance(delta, SparseMatrixDelta):
         fail("sparse_delta_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "delta_upper must be SparseMatrixDelta", ("DeltaK_upper",))
-    expect_sha256(delta.delta_hash, ("DeltaK_upper", "delta_hash"), ReasonCode.DENY_MODEL_INPUT_INVALID)
+    declared_delta_hash = expect_sha256(delta.delta_hash, ("DeltaK_upper", "delta_hash"), ReasonCode.DENY_MODEL_INPUT_INVALID)
     delta_graph_hash = expect_sha256(delta.graph_hash, ("DeltaK_upper", "graph_hash"), ReasonCode.DENY_GRAPH_HASH_MISMATCH)
     if delta_graph_hash != graph_hash:
         fail("sparse_delta_graph_hash_mismatch", ReasonCode.DENY_GRAPH_HASH_MISMATCH, "delta graph_hash does not match request", ("DeltaK_upper", "graph_hash"))
@@ -450,6 +515,19 @@ def _validate_sparse_delta(
             fail("sparse_delta_entry_duplicate", ReasonCode.DENY_MODEL_INPUT_INVALID, "delta entries must not repeat row,column", ("DeltaK_upper", "entries", index))
         seen.add(key)
         dense[row, column] = expect_number_min(entry.value, 0, ("DeltaK_upper", "entries", index, "value"), ReasonCode.DENY_MODEL_INPUT_INVALID)
+    computed_delta_hash = compute_sparse_delta_hash(
+        graph_hash=delta_graph_hash,
+        decision_horizon=decision_horizon,
+        entries=delta.entries,
+        additive=delta.additive,
+    )
+    if not hmac.compare_digest(declared_delta_hash, computed_delta_hash):
+        fail(
+            "sparse_delta_hash_mismatch",
+            ReasonCode.DENY_MODEL_INPUT_INVALID,
+            "delta_hash does not match canonical sparse-delta content",
+            ("DeltaK_upper", "delta_hash"),
+        )
     dense.setflags(write=False)
     return dense
 
@@ -516,17 +594,17 @@ def _cache_failure(
     request_evidence_hash = _validate_optional_hash(evidence_hash, ("evidence_hash",))
     cache_evidence_source_id = _validate_optional_source_id(cache.evidence_source_id, ("cache_binding", "evidence_source_id"))
     request_evidence_source_id = _validate_optional_source_id(evidence_source_id, ("evidence_source_id",))
-    if request_evidence_hash is None and request_evidence_source_id is None:
+    if request_evidence_hash is None:
         return _deny(
             ReasonCode.DENY_CONTEXT_STALE,
             "fastgate_cache_evidence_binding_missing",
-            "FastGate cache reuse requires a current evidence_hash or evidence_source_id",
+            "FastGate cache reuse requires a current evidence_hash",
         )
-    if cache_evidence_hash is None and cache_evidence_source_id is None:
+    if cache_evidence_hash is None:
         return _deny(
             ReasonCode.DENY_CONTEXT_STALE,
             "fastgate_cache_evidence_binding_missing",
-            "FastGate cache binding requires evidence_hash or evidence_source_id",
+            "FastGate cache binding requires evidence_hash",
         )
     if cache_evidence_hash != request_evidence_hash:
         return _deny(
@@ -628,9 +706,25 @@ def _collatz_bound(matrix: PropagationMatrix, vector: PositiveVector) -> float:
         values = np.maximum(values, vector.epsilon)
     if np.any(values <= 0):
         fail("fastgate_positive_vector_entry_nonpositive", ReasonCode.DENY_FASTGATE_VECTOR_INVALID, "positive vector entries must be > 0", ("positive_vector", "values"))
-    products = matrix.values @ values
-    ratios = products / values
-    bound = float(np.max(ratios))
+    ratios: list[float] = []
+    for row_index, row in enumerate(matrix.values):
+        terms: list[float] = []
+        for coefficient, vector_value in zip(row, values, strict=True):
+            product = float(coefficient) * float(vector_value)
+            if coefficient > 0 and vector_value > 0:
+                product = math.nextafter(product, math.inf)
+            terms.append(product)
+        try:
+            numerator = math.fsum(terms)
+        except OverflowError:
+            fail("fastgate_collatz_bound_nonfinite", ReasonCode.DENY_FASTGATE_UNCERTAIN, "Collatz numerator must be finite", ("fastgate", "upper_bound", row_index))
+        if numerator > 0:
+            numerator = math.nextafter(numerator, math.inf)
+        ratio = numerator / float(values[row_index])
+        if ratio > 0:
+            ratio = math.nextafter(ratio, math.inf)
+        ratios.append(ratio)
+    bound = max(ratios)
     if not np.isfinite(bound):
         fail("fastgate_collatz_bound_nonfinite", ReasonCode.DENY_FASTGATE_UNCERTAIN, "Collatz bound must be finite", ("fastgate", "upper_bound"))
     return bound
@@ -801,5 +895,6 @@ __all__ = [
     "PositiveVectorMethod",
     "SparseDeltaEntry",
     "SparseMatrixDelta",
+    "compute_sparse_delta_hash",
     "evaluate_fastgate",
 ]

@@ -63,6 +63,7 @@
           "controlled_redteam",
           "adversarial_replay",
           "public_benchmark",
+          "empirical_public_benchmark",
           "runtime_observation"
         ]
       },
@@ -216,10 +217,10 @@
         "properties": {
           "source": {
             "items": {
-              "enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark"]
+              "enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark", "empirical_public_benchmark"]
             },
             "contains": {
-              "enum": ["controlled_redteam", "adversarial_replay", "public_benchmark"]
+              "enum": ["controlled_redteam", "adversarial_replay", "empirical_public_benchmark"]
             }
           }
         }
@@ -235,7 +236,7 @@
         "properties": {
           "source": {
             "items": {
-              "enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark", "runtime_observation"]
+              "enum": ["static_conservative_prior", "controlled_redteam", "adversarial_replay", "public_benchmark", "empirical_public_benchmark", "runtime_observation"]
             },
             "contains": {"const": "runtime_observation"}
           }
@@ -258,7 +259,7 @@
           "source": {
             "not": {
               "contains": {
-                "const": "synthetic_demo"
+                "enum": ["synthetic_demo", "public_benchmark"]
               }
             }
           }

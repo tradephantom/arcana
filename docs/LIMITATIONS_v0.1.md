@@ -1,8 +1,8 @@
 # ARCANA Limitations v0.1
 
-> Status: public limitations document v0.1 draft
+> Status: active public limitations contract v0.1
 > Scope: public ARCANA research/reference track
-> Classification: public-safe draft
+> Classification: public-safe
 
 This document states the limits of ARCANA public artifacts. It should be read before any whitepaper, demo, benchmark, certificate-like artifact, or integration guidance is treated as release-ready.
 
@@ -70,6 +70,12 @@ A0 is demo-only and always non-certifiable.
 
 A1, A2, and A3 require review before any certifiable-under-profile language is used.
 
+The synthetic `public_benchmark` source class never qualifies a profile for A2.
+The separate `empirical_public_benchmark` class may qualify only when its
+non-synthetic execution provenance, scope, coverage, freshness, and
+reproducibility have been reviewed. Declaring that source class is not itself
+proof that those conditions hold.
+
 Public documentation may describe A1-A3 semantics, but it must not imply that a
 public example, local demo, or synthetic benchmark is production calibration.
 Any deployment-specific calibration review remains outside the public reference
@@ -135,6 +141,9 @@ Limitations:
 - Collatz or positive-vector assumptions must be valid and declared;
 - reducible graphs need explicit handling;
 - cache keys must match model, calibration, horizon, graph, threshold, evidence, and tolerance profile;
+- sparse-delta hashes must be recomputed from the canonical graph binding,
+  decision horizon, additive mode, and ordered sparse entries;
+- admission-capable paths require an evidence hash even when no cache is used;
 - invalid vector state must fail through vector-specific denial;
 - uncertainty must not become allow-like output.
 

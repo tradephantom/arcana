@@ -24,7 +24,8 @@ def test_whitepaper_v10_manuscript_sections_are_present() -> None:
         "### Proposition 3 - FastGate conservative bound",
         "### Negative Controls and Failure Fixtures",
         "## 19. Related Work",
-        "## 22. Manuscript Status",
+        "## 21. Reproducibility and Falsifiability",
+        "## 22. Conclusion",
     ]
 
     for heading in required_headings:
@@ -35,7 +36,7 @@ def test_whitepaper_v10_manuscript_preserves_reviewed_claim_boundaries() -> None
     text = _doc_text()
 
     required_phrases = [
-        "final public manuscript; FWP-REVIEW-008 claim-language review passed",
+        "public research manuscript v1.0, post-hardening repository edition",
         "not a production approval, enforcement approval, or commercial certificate authorization",
         "This manuscript does not claim production readiness, production enforcement, universal safety, or production certificate issuance.",
         "ARCANA estimates bounded autonomy under explicit risk model versions, calibration profiles, decision horizons, uncertainty bounds, and evidence assumptions.",
@@ -51,6 +52,8 @@ def test_whitepaper_v10_manuscript_preserves_reviewed_claim_boundaries() -> None
         "artifact_contract_validity_rate",
         "deterministic synthetic reference-evaluator benchmark evidence only",
         "invokes the actual public reference evaluator",
+        "`empirical_public_benchmark`",
+        "recomputes a domain-separated canonical",
         "ARCANA remains enforcement-neutral",
     ]
 
@@ -58,17 +61,17 @@ def test_whitepaper_v10_manuscript_preserves_reviewed_claim_boundaries() -> None
         assert phrase in text
 
 
-def test_whitepaper_v10_manuscript_tracks_publication_gate_state() -> None:
+def test_whitepaper_v10_manuscript_is_publication_artifact_not_internal_gate_log() -> None:
     text = _doc_text()
 
     required_phrases = [
-        "Open FWP manuscript blockers:",
-        "none.",
-        "FWP-REVIEW-008 final public claim-language review has passed",
-        "approved as the final public ARCANA manuscript artifact for the repository",
-        "final manuscript transformation from draft to publication artifact",
-        "final public claim-language review",
-        "independent reproduction of local tests and deterministic demo",
+        "The public repository makes the reference claims inspectable through four",
+        "make check",
+        "make test",
+        "make demo",
+        "make bench",
+        "They do not constitute external academic peer review",
+        "Any LaTeX, PDF, archive, or venue-specific derivative",
     ]
 
     for phrase in required_phrases:
@@ -83,6 +86,8 @@ def test_whitepaper_v10_manuscript_tracks_publication_gate_state() -> None:
         "not final publication until FWP-REVIEW-008 passes",
         "ready for final claim-language review, not final public publication",
         "final paper publication gate is still in progress",
+        "FWP-REVIEW-",
+        "Open FWP manuscript blockers",
     ]
     for phrase in forbidden_stale_phrases:
         assert phrase not in text

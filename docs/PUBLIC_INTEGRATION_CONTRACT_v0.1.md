@@ -1,9 +1,9 @@
 # ARCANA Public Integration Contract v0.1
 
-> Status: public integration contract v0.1 draft
+> Status: public integration contract v0.1 implemented reference contract
 > Scope: generic import/export and reason-code bridge for public ARCANA artifacts
-> Classification: public-safe draft; enforcement-neutral
-> Implementation status: documentation contract only
+> Classification: public-safe; enforcement-neutral
+> Implementation status: schema, typed parsing, semantic artifact validation, and reason-code behavior are implemented locally; production enforcement is out of scope
 
 This document defines how a surrounding system can consume ARCANA outputs without depending on private operational mechanics.
 
@@ -192,12 +192,23 @@ Requirements:
 
 - `source_type` must be a public schema value;
 - `source_id` must be stable within the public or local evidence namespace;
-- `evidence_hash`, when present, must use `sha256:<64 hex chars>`;
+- `evidence_hash` must use `sha256:<64 hex chars>` and is required before an
+  artifact can be treated as admission-capable;
 - the canonicalization method used before hashing must be declared by the producer;
 - `synthetic` must be true for public examples and fixtures;
 - stale, missing, or mismatched evidence must not be treated as bounded autonomy.
 
 The evidence hash binds an artifact to evidence. It does not prove evidence quality by itself.
+
+Public evidence source semantics distinguish:
+
+- `synthetic_fixture`: synthetic example or tutorial evidence;
+- `public_benchmark`: the current synthetic public reference-evaluator
+  benchmark class; it must keep `synthetic: true` and cannot qualify A2;
+- `empirical_public_benchmark`: non-synthetic public benchmark evidence that
+  may qualify A2 only after separate review;
+- `controlled_test` and `hash_bound_context`: non-synthetic source classes
+  whose quality still depends on their declared scope and review.
 
 ## 7. Reason-Code Bridge
 

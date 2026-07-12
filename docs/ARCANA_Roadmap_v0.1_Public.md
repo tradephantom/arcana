@@ -1,11 +1,11 @@
 # ARCANA Roadmap v0.1 Public
 
 > Product: ARCANA - Autonomy Risk Calculus for Agentic Network Assurance
-> Status: public-safe draft for review
+> Status: active public roadmap v0.1, post-hardening repository edition
 > Date: 2026-06-05
 > Source: derived from the ARCANA internal roadmap, public PRD v0.2, and publication boundary review
-> Classification: public-safe draft
-> Implementation status: local reference implementation through Slice 5, ARCANA-Bench v0.1 scenario expansion, Public Integration Contract v0.1, Whitepaper / Paper v0.2 outline and draft, Whitepaper / Paper v0.3 draft, Whitepaper / Paper v1.0 final public manuscript, release-readiness documents, public remote preflight checklist, and public release note exist; venue-specific paper packaging remains separate from technical claim approval
+> Classification: public-safe
+> Implementation status: public model, schemas, standalone reference implementation, synthetic ARCANA-Bench, integration contract, and manuscript v1.0 are implemented and locally gated; empirical calibration evidence, production enforcement, and production certificate issuance are not present
 
 ## 1. Roadmap Rule
 
@@ -41,43 +41,32 @@ This roadmap does not cover:
 
 ## 3. Current Baseline
 
-Already produced in this workspace:
+The repository baseline now contains:
 
-- publication boundary freeze candidate;
-- public ARCANA PRD v0.2 draft;
-- internal canonical v0.3.1 baseline used only as source material;
-- initial synthetic research seed material;
-- initial schemas requiring public sanitization.
+- an active public PRD, roadmap, glossary, reason-code registry, and publication boundary;
+- versioned public schemas with structural and semantic admission validation;
+- a standalone typed reference implementation for graph, calibration, spectral,
+  loss, decision, artifact, and FastGate contracts;
+- deterministic synthetic examples, negative controls, and ARCANA-Bench v0.1;
+- a public enforcement-neutral integration contract;
+- a post-hardening public research manuscript v1.0;
+- final license, contribution, security, limitations, release, and remote
+  preflight documents;
+- a live public remote with GitHub Private Vulnerability Reporting configured.
 
-Blocking status:
+The current public release boundary is:
 
-- public roadmap review is still required;
-- public glossary is drafted;
-- public reason-code registry is drafted;
-- public schema drafts use public IDs;
-- formal model draft exists;
-- calibration methodology draft exists;
-- FastGate design draft exists;
-- public demo/reference implementation plan draft exists;
-- reference implementation Slice 0 scaffold is present;
-- reference implementation Slice 1 typed contracts and schema validation are present;
-- reference implementation Slice 2 matrix validation and spectral calculator are present;
-- reference implementation Slice 3 decision evaluator is present;
-- reference implementation Slice 4 certificate/demo output is present;
-- reference implementation Slice 5 FastGate prototype is present;
-- ARCANA-Bench v0.1 synthetic scenario expansion is present;
-- public integration contract v0.1 is present;
-- whitepaper or paper v0.2 outline is present;
-- whitepaper or paper v0.2 full draft is present;
-- whitepaper or paper v0.3 draft is present;
-- whitepaper or paper v1.0 final public manuscript is present;
 - final public claim-language review is closed for the v1.0 manuscript;
-- release-readiness document drafts are present;
-- final license profile is present;
-- public remote preflight checklist is present;
-- public remote is live;
-- GitHub Private Vulnerability Reporting is configured;
-- public release note v0.1 is present.
+- venue-specific paper packaging remains separate from technical claim approval;
+- the repository can support reproducible public research and reference-code
+  review after its local release gate passes;
+- the synthetic `public_benchmark` source class does not qualify an A2 profile;
+- only reviewed, non-synthetic `empirical_public_benchmark`, controlled red-team,
+  or adversarial replay evidence can satisfy the public A2 source-class rule;
+- no public artifact demonstrates deployment-specific A2/A3 calibration;
+- no public artifact authorizes production enforcement or certificate issuance;
+- venue-specific LaTeX, PDF, archive, and external peer-review packaging remain
+  separate publication steps.
 
 ## 4. Milestone 0 - Boundary Freeze
 
@@ -98,7 +87,7 @@ Exit criteria:
 - prohibited claims are documented;
 - A0/demo output cannot be mistaken for production-grade certification.
 
-Status: draft complete, review pending.
+Status: complete and maintained as the public release boundary.
 
 ## 5. Milestone 1 - Public PRD v0.2
 
@@ -125,7 +114,7 @@ Exit criteria:
 - PRD does not disclose private enterprise or lab details;
 - PRD blocks implementation until roadmap review.
 
-Status: draft complete, review pending.
+Status: complete and active for the public research/reference track.
 
 ## 6. Milestone 2 - Public Roadmap v0.1
 
@@ -148,7 +137,7 @@ Exit criteria:
 - reference implementation entry criteria are explicit;
 - next artifacts are unambiguous.
 
-Status: draft complete, review pending.
+Status: complete and active; subsequent work is governed by this sequence.
 
 ## 7. Milestone 3 - Public Glossary and Reason-Code Registry
 
@@ -192,7 +181,7 @@ Exit criteria:
 
 Implementation gate: schemas may not finalize before this registry exists.
 
-Status: draft complete, review pending.
+Status: implemented and covered by public contract tests.
 
 ## 8. Milestone 4 - Public Schema Draft v0.2
 
@@ -231,7 +220,7 @@ Exit criteria:
 
 Implementation gate: reference code may not emit certificates before schemas are reviewed.
 
-Status: draft complete, review pending.
+Status: implemented with public IDs, examples, and validation tests.
 
 ## 9. Milestone 5 - Formal Model v0.2
 
@@ -260,7 +249,7 @@ Exit criteria:
 
 Implementation gate: spectral risk calculator should not be implemented before this model is reviewed.
 
-Status: draft complete, review pending.
+Status: implemented as the public mathematical contract and reference behavior.
 
 ## 10. Milestone 6 - ARCANA-Cal v0.1
 
@@ -288,7 +277,8 @@ Exit criteria:
 
 Implementation gate: certificate generation should not support non-demo outputs before calibration contracts are reviewed.
 
-Status: draft complete, review pending.
+Status: implemented as a versioned public calibration contract; no production
+calibration profile or deployment evidence is included.
 
 ## 11. Milestone 7 - ARCANA-FastGate v0.1
 
@@ -316,7 +306,8 @@ Exit criteria:
 
 Implementation gate: FastGate prototype should not start before this design is reviewed.
 
-Status: draft complete, review pending.
+Status: implemented and post-hardening reviewed as a conservative reference
+path; it is not a production latency or enforcement claim.
 
 ## 12. Milestone 8 - Reference Implementation v0.1
 
@@ -353,7 +344,8 @@ Exit criteria:
 - A0 demo certificate is marked non-certifiable;
 - unsupported model, stale context, horizon mismatch, graph mismatch, threshold breach, calibration insufficiency, budget exhaustion, FastGate uncertainty, and invalid vector all have distinct paths.
 
-Status: local slices 0-5 implemented, review pending.
+Status: slices 0-5 implemented with typed contracts, explicit reason paths,
+deterministic fixtures, and local validation gates.
 
 ## 13. Milestone 9 - ARCANA-Bench v0.1
 
@@ -405,8 +397,9 @@ Exit criteria:
 - source and report hashes verify deterministically;
 - synthetic evaluator execution is not described as empirical system performance.
 
-Status: executable synthetic scenario and negative-control suite implemented;
-post-change publication review and independent reproduction are required.
+Status: executable synthetic scenario and negative-control suite implemented.
+Repository publication requires the local gate and independent clean-source
+reproduction; empirical system-performance claims remain prohibited.
 
 ## 14. Milestone 10 - Public Integration Contract v0.1
 
@@ -428,7 +421,7 @@ Exit criteria:
 - integration examples use synthetic or abstract fixtures;
 - public fields are clearly separated from adapter-private fields.
 
-Status: public integration contract draft implemented, review pending.
+Status: implemented and maintained as an enforcement-neutral public contract.
 
 ## 15. Milestone 11 - Whitepaper / Paper v0.2
 
@@ -452,7 +445,7 @@ Exit criteria:
 - all certificate language is model-bounded;
 - public artifact is ready for staged expert review.
 
-Status: whitepaper/paper v1.0 final public manuscript implemented; final public claim-language review is closed for the repository manuscript.
+Status: whitepaper/paper v1.0 public research manuscript implemented; final public claim-language review is closed for the repository manuscript. This is not external academic peer review or venue acceptance.
 
 ## 16. Sequencing Gates
 
@@ -470,7 +463,7 @@ Release-readiness status:
 - final file-scope license profile exists;
 - contribution policy exists;
 - security policy exists;
-- draft limitations document exists;
+- active limitations document exists;
 - public remote preflight checklist exists;
 - GitHub Private Vulnerability Reporting is enabled for the public remote.
 
@@ -496,9 +489,10 @@ Review checkpoints:
 | Demo misread as production | A synthetic demo appears deployable. | Label demos A0/non-certifiable and require synthetic fixtures. |
 | Benchmark gaming | Task success hides unsafe behavior. | Score unsafe actions, containment, risk delta, and artifact-contract validity separately. |
 
-## 18. First Implementation Entry Criteria
+## 18. Historical Implementation Entry Criteria
 
-Before any `src/` implementation starts, these must be true:
+These criteria governed entry into `src/` implementation and are retained as
+the historical gate:
 
 - public boundary reviewed;
 - public PRD v0.2 reviewed;
@@ -523,5 +517,13 @@ The first implementation slice should be:
 
 ## 19. Next Artifacts
 
-1. Maintainer-approved public remote creation run.
-2. Final reviewed whitepaper or paper publication after expert review.
+1. Complete the post-hardening local release gate and clean-source independent
+   reproduction from an immutable commit.
+2. Produce a venue-neutral LaTeX/PDF package with reproducibility metadata and
+   the same claim boundary as the repository manuscript.
+3. Obtain external technical review and record unresolved limitations.
+4. Publish only the reviewed public commit, then repeat the full gate from a
+   fresh clone of the public remote.
+5. Keep deployment calibration, enforcement activation, and certificate
+   issuance outside this public roadmap and subject to separate production
+   governance.

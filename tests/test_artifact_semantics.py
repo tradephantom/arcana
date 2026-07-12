@@ -29,6 +29,31 @@ def test_context_semantics_accept_coherent_current_fixture() -> None:
     assert validate_risk_context_semantics(context, now=NOW) is context
 
 
+def test_context_semantics_accepts_synthetic_public_benchmark_only_when_disclosed() -> None:
+    context = _context()
+    benchmark_context = dataclasses.replace(
+        context,
+        evidence=dataclasses.replace(context.evidence, source_type="public_benchmark"),
+    )
+
+    assert validate_risk_context_semantics(benchmark_context, now=NOW) is benchmark_context
+
+
+def test_context_semantics_accepts_empirical_public_benchmark_as_non_synthetic() -> None:
+    context = _context()
+    empirical_context = dataclasses.replace(
+        context,
+        evidence=dataclasses.replace(
+            context.evidence,
+            source_type="empirical_public_benchmark",
+            synthetic=False,
+        ),
+        reason_codes=(ReasonCode.ALLOW_WITH_CONTROLS,),
+    )
+
+    assert validate_risk_context_semantics(empirical_context, now=NOW) is empirical_context
+
+
 @pytest.mark.parametrize(
     ("mutation", "expected_code"),
     [

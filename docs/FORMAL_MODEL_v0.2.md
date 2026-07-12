@@ -1,8 +1,8 @@
 # ARCANA Formal Model v0.2
 
-> Status: public formal model v0.2 draft
+> Status: public formal model v0.2 implemented reference contract
 > Scope: mathematical contract for public ARCANA reference work
-> Implementation status: no code is approved by this document
+> Implementation status: implemented by the public reference evaluator, matrix, artifact, and FastGate modules; not a production approval
 
 This document defines the public ARCANA model contract for graph state, propagation risk, loss, uncertainty, decision horizons, admission rules, and FastGate assumptions.
 
@@ -144,7 +144,8 @@ Matrix requirements:
 
 - `K` is square;
 - `K` is nonnegative;
-- row and column order are bound to the graph hash;
+- row and column order are explicit and consistent across the matrix interval;
+- the matrix graph hash matches the request graph hash;
 - all weights are normalized to the same compatible horizon;
 - `K` contains propagation risk only.
 
@@ -153,6 +154,11 @@ If the model input is malformed, not square, negative, unbound to graph state, o
 ```text
 ARCANA_DENY_MODEL_INPUT_INVALID
 ```
+
+The public evaluator validates declared node ordering and graph-hash equality.
+The producer remains responsible for computing the graph hash from a declared
+canonical graph representation; a well-formed hash string alone does not prove
+that omitted topology is absent.
 
 ## 6. Uncertainty Bounds
 
@@ -301,7 +307,9 @@ An ARCANA decision requires:
 - graph state or graph delta;
 - `K_lower`, `K_mean`, `K_upper` or sufficient calibrated inputs to derive them;
 - loss model or explicit declaration that loss is out of scope;
-- evidence source or evidence hash;
+- calibration evidence-source declaration for evaluator use;
+- evidence source and evidence hash before any exported artifact is treated as
+  admission-capable;
 - requested verdict mode;
 - applicable thresholds and budget.
 
@@ -377,6 +385,8 @@ Requirements:
 - `x_i > 0` for every component used in the bound;
 - reducible graphs must use SCC decomposition, epsilon floor, component-local gate, or exact recompute;
 - the positive-vector method must be declared;
+- the sparse delta hash must match domain-separated canonical delta content;
+- admission-capable FastGate paths require a current evidence hash;
 - the computed bound must be compared against `theta_rho`;
 - uncertainty in the fast path must not allow.
 
@@ -461,9 +471,9 @@ ARCANA_DENY_MODEL_INPUT_INVALID
 
 unless the violation is specifically a horizon mismatch, graph mismatch, stale context, or unsupported model version.
 
-## 17. Implementation Entry Contract
+## 17. Implementation Conformance
 
-The first reference implementation must implement this model in the following order:
+The public reference implementation applies this model in the following order:
 
 1. typed graph and horizon structures;
 2. matrix validation;
@@ -478,19 +488,31 @@ The first reference implementation must implement this model in the following or
 
 No wildcard branch may silently convert unknown failures into allow-like outcomes.
 
-## 18. Open Questions
+## 18. v0.2 Decisions and Residual Questions
 
-- Should `theta_rho` be public-schema required in every risk context or only in certificate-like artifacts?
-- Should `activation_e(H)` allow values greater than `1` in the first reference implementation, or should repeated activation be expanded into explicit repeated edges for v0.2?
-- Should `AES_alpha` use strict `loss > AaR_alpha` or inclusive `loss >= AaR_alpha` in the reference implementation?
-- Which FastGate positive-vector method should be the default for public v0.1 implementation?
+- `theta_rho` is required in public v0.2 risk contexts and certificate-like
+  artifacts.
+- `activation_e(H)` may exceed `1` only when repeated transition pressure is
+  intentional, horizon-bound, and disclosed; the reference matrix API therefore
+  accepts nonnegative values above `1`.
+- Public v0.2 accepts reviewed `AaR_99_upper` and `AES_99_upper` bounds; it does
+  not estimate a loss distribution and therefore does not choose a strict or
+  inclusive empirical tail convention.
+- FastGate has no implicit positive-vector default. The method is explicit and
+  exact recompute is the conservative fallback.
+- Canonical graph-payload hashing remains a producer/integration contract;
+  future public versions may add a standalone canonical graph schema.
 
-## 19. Next Artifact
+## 19. Current Artifact Relationship
 
-This artifact is followed by calibration methodology and FastGate design before reference implementation work.
-
-The next implementation-planning artifact should be:
+This model is implemented jointly by:
 
 ```text
-Public Demo and Reference Implementation Plan v0.1
+src/arcana/matrices.py
+src/arcana/decision.py
+src/arcana/fastgate.py
+src/arcana/artifacts.py
+tests/test_matrix_validation.py
+tests/test_decision_reason_codes.py
+tests/test_fastgate.py
 ```

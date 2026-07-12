@@ -12,13 +12,13 @@ The remote repository is a publication channel. It is not the development author
 
 ## 1. Hard Rule
 
-Do not create or push a public remote unless every item in this document passes.
+Do not create or update a public remote unless every item in this document passes.
 
 The source for publication is this public-track repository only. Do not publish the parent research workspace or any workspace that contains private operational material.
 
 ## 2. Required Local State
 
-Before remote creation:
+Before remote creation or any follow-up push:
 
 - `git status --short` is clean;
 - `git remote -v` is empty or points only to an explicitly approved public remote;
@@ -32,7 +32,8 @@ Before remote creation:
 - `LICENSE.md` contains the final license profile;
 - `SECURITY.md` names GitHub Private Vulnerability Reporting;
 - `docs/LIMITATIONS_v0.1.md` is present;
-- `docs/ARCANA_Whitepaper_v0.2_Draft.md` remains marked as a review draft.
+- historical manuscript drafts remain clearly marked and the v1.0 manuscript
+  carries the current public claim boundary.
 
 ## 3. Boundary Checks
 
@@ -68,7 +69,7 @@ Local checks remain the authority until billing and CI controls are reviewed.
 
 ## 5. Remote Creation Sequence
 
-When publication is approved:
+For initial creation, when publication is approved:
 
 1. Create an empty public GitHub repository.
 2. Do not add a generated README, license, or gitignore in GitHub.
@@ -82,6 +83,9 @@ When publication is approved:
 10. Run `make check`, `make test`, `make demo`, and `make bench` from the fresh clone.
 
 Do not announce or link the public remote until steps 6 through 10 pass.
+
+For follow-up releases, apply the same local gates, push only the reviewed
+immutable commit, and repeat steps 7 through 10 from a fresh clone.
 
 ## 6. Post-Push Validation
 
@@ -129,7 +133,7 @@ Do not treat deletion alone as sufficient when sensitive material may have been 
 
 ## 9. Current Publication Status
 
-As of 2026-07-05:
+As of 2026-07-12:
 
 - final license profile is decided;
 - security channel is decided;
@@ -141,5 +145,6 @@ As of 2026-07-05:
 - public production claims are not authorized;
 - final whitepaper or paper publication is not yet authorized.
 
-The next publication action is maintainer-approved public-safe messaging or a
-separate final whitepaper/paper publication decision.
+The next publication action is a post-hardening local release decision,
+followed by venue-neutral LaTeX/PDF packaging and external technical review.
+Production claims remain unauthorized.

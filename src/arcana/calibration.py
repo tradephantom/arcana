@@ -28,6 +28,7 @@ ALLOWED_CALIBRATION_SOURCES = {
     "controlled_redteam",
     "adversarial_replay",
     "public_benchmark",
+    "empirical_public_benchmark",
     "runtime_observation",
 }
 CALIBRATION_LEVEL_RANK = {
@@ -42,12 +43,13 @@ CALIBRATION_SOURCE_MIN_LEVEL = {
     "controlled_redteam": CalibrationLevel.A2,
     "adversarial_replay": CalibrationLevel.A2,
     "public_benchmark": CalibrationLevel.A2,
+    "empirical_public_benchmark": CalibrationLevel.A2,
     "runtime_observation": CalibrationLevel.A3,
 }
 CALIBRATION_LEVEL_QUALIFYING_SOURCES = {
     CalibrationLevel.A0: frozenset({"synthetic_demo"}),
     CalibrationLevel.A1: frozenset({"static_conservative_prior"}),
-    CalibrationLevel.A2: frozenset({"controlled_redteam", "adversarial_replay", "public_benchmark"}),
+    CalibrationLevel.A2: frozenset({"controlled_redteam", "adversarial_replay", "empirical_public_benchmark"}),
     CalibrationLevel.A3: frozenset({"runtime_observation"}),
 }
 
@@ -250,11 +252,11 @@ def validate_certification_status_for_level(
                 "certifiable_under_profile requires A2 or A3 calibration",
                 path,
             )
-        if "synthetic_demo" in sources:
+        if frozenset(sources).intersection({"synthetic_demo", "public_benchmark"}):
             fail(
                 "certifiable_profile_synthetic_source_invalid",
                 ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
-                "certifiable_under_profile cannot be based on synthetic_demo source",
+                "certifiable_under_profile cannot include synthetic calibration sources",
                 path,
             )
         qualifying_sources = CALIBRATION_LEVEL_QUALIFYING_SOURCES[level]
