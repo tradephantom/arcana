@@ -74,3 +74,6 @@ def test_ci_workflow_binds_release_replay_and_paper_hashes() -> None:
     assert "60b13a0826ae7ad9ce34b4a2df06bff2cfcfa6dda8a915477c0cbb84e1a4a902" in text
     assert "7a467329544a5de883252335a311dc25458da0c5558280f72a6c17a33ae15ebe" in text
     assert "d8ee043ccbcb35331dc4e0b6a57fe94bbdec1893f9f175367c861d8f20474eab" in text
+    assert "508386177cf942a45077439508c090f2507af2258b376f64a8a9a62542dbdf4c" in text
+    assert "fc5a769a9599c3063f459d479365f88fb5cbd746cad2083b4d30d5906dd5930d" in text
+    assert 'if [[ "$REPLAY_TARGET" == "v0.1.0" ]]' in text

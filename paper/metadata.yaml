@@ -1,7 +1,18 @@
-title: "ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems"
+title: "ARCANA: Autonomy Risk Calculus for Agentic Network Assurance"
+subtitle: "Model-Bounded Autonomy Accounting for Agentic Systems"
 author:
-  - "ARCANA Research Project"
-date: "July 2026"
+  - "Julio Elizondo Rodriguez"
+date: "13 July 2026"
+identifier: "https://doi.org/10.5281/zenodo.21333463"
+rights: "Creative Commons Attribution 4.0 International"
+subject: "Open research preprint on model-bounded autonomy accounting for agentic systems"
+keywords:
+  - "agentic systems"
+  - "autonomy accounting"
+  - "model-bounded risk"
+  - "capability graphs"
+  - "calibration uncertainty"
+  - "FastGate"
 lang: "en-US"
 documentclass: article
 classoption:

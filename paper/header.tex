@@ -55,13 +55,31 @@
 \pretitle{\begin{flushleft}\color{ArcanaInk}\Huge\bfseries\sffamily}
 \posttitle{\par\vspace{6pt}\color{ArcanaGreen}\rule{\textwidth}{1.2pt}\end{flushleft}}
 \preauthor{\begin{flushleft}\large\sffamily}
-\postauthor{\par\end{flushleft}}
+\postauthor{%
+  \par\vspace{2pt}%
+  {\small TradePhantom LLC\\
+  \href{mailto:dev@tradephantom.com}{\texttt{dev@tradephantom.com}}\\
+  \href{https://getaxcp.com}{\texttt{getaxcp.com}}}%
+  \par\end{flushleft}%
+}
 \predate{\begin{flushleft}\small\sffamily\color{ArcanaGreen}}
-\postdate{\par\end{flushleft}\vspace{4pt}}
+\postdate{%
+  \par\vspace{3pt}%
+  \href{https://doi.org/10.5281/zenodo.21333463}{%
+    \texttt{doi:10.5281/zenodo.21333463}}%
+  \par\end{flushleft}\vspace{4pt}%
+}
 
 \setlist[itemize]{leftmargin=1.35em,itemsep=2pt,topsep=3pt}
 \setlist[enumerate]{leftmargin=1.55em,itemsep=2pt,topsep=3pt}
 \setcounter{tocdepth}{2}
 
 \AtBeginEnvironment{longtable}{\small}
-\AtBeginDocument{\fvset{breaklines=true,breakanywhere=true,fontsize=\small}}
+\AtBeginDocument{%
+  \fvset{breaklines=true,breakanywhere=true,fontsize=\small}%
+  \hypersetup{pdfinfo={%
+    DOI={10.5281/zenodo.21333463},%
+    License={CC BY 4.0},%
+    Website={https://getaxcp.com}%
+  }}%
+}

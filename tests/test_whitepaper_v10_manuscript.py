@@ -15,7 +15,7 @@ def test_whitepaper_v10_manuscript_sections_are_present() -> None:
     text = _doc_text()
 
     required_headings = [
-        "# ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems",
+        "# ARCANA: Autonomy Risk Calculus for Agentic Network Assurance",
         "## Abstract",
         "## Contributions",
         "## Mathematical Propositions and Proof Sketches",
@@ -26,6 +26,7 @@ def test_whitepaper_v10_manuscript_sections_are_present() -> None:
         "## 19. Related Work",
         "## 21. Reproducibility and Falsifiability",
         "## 22. Conclusion",
+        "## 23. References",
     ]
 
     for heading in required_headings:
@@ -55,6 +56,11 @@ def test_whitepaper_v10_manuscript_preserves_reviewed_claim_boundaries() -> None
         "`empirical_public_benchmark`",
         "recomputes a domain-separated canonical",
         "ARCANA remains enforcement-neutral",
+        "10.5281/zenodo.21333463",
+        "Model-Bounded Autonomy Accounting for Agentic Systems",
+        "ARCANA is not an AXCP Core dependency",
+        "https://doi.org/10.6028/NIST.AI.100-1",
+        "https://doi.org/10.1007/0-387-32792-4",
     ]
 
     for phrase in required_phrases:

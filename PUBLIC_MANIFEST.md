@@ -10,6 +10,7 @@ Only files listed here are part of this public repository tree.
 | Path | Status | Notes |
 | --- | --- | --- |
 | `README.md` | public release | Public research/reference repository entrypoint. |
+| `CITATION.cff` | public release | Machine-readable software metadata and preferred preprint citation. |
 | `PUBLIC_MANIFEST.md` | public release | Manifest of public repository files. |
 | `LICENSE.md` | public release | Final file-scope license profile. |
 | `CONTRIBUTING.md` | public release | Public contribution policy. |
@@ -53,10 +54,12 @@ Only files listed here are part of this public repository tree.
 | `docs/ARCANA_Whitepaper_v1.0_Manuscript.md` | public-safe research manuscript | Public whitepaper/paper v1.0 post-hardening repository edition with executable-reference claim boundaries. |
 | `docs/LIMITATIONS_v0.1.md` | public-safe release artifact | Active public limitations and non-goals contract. |
 | `docs/PUBLIC_RELEASE_NOTES_v0.1.md` | public release | Initial public release note and public claim boundary. |
+| `docs/PUBLIC_RELEASE_NOTES_v0.1.1.md` | public release | DOI-bound archival preprint and attribution release note. |
 | `docs/RELEASE_POLICY.md` | public release | Local-first release and remote policy. |
 | `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md` | public release | Public remote publication preflight checklist. |
 | `paper/README.md` | public release | Venue-neutral LaTeX package build and claim-boundary instructions. |
-| `paper/SOURCE.json` | public release | Reviewed manuscript hash, source revision, epoch, and claim-boundary binding. |
+| `paper/SOURCE.json` | public release | Reviewed manuscript, publication metadata, source revision, epoch, and claim-boundary hash binding. |
+| `paper/PUBLICATION.json` | public release | DOI, author, license, archive, and citation metadata contract for the v1.0 preprint. |
 | `paper/metadata.yaml` | public release | Public paper metadata and layout configuration. |
 | `paper/header.tex` | public release | Venue-neutral ARCANA LaTeX style. |
 | `paper/before-body.tex` | public release | Public research-status and non-production notice. |
@@ -104,6 +107,7 @@ Only files listed here are part of this public repository tree.
 | `tests/test_whitepaper_v10_manuscript.py` | public release | Whitepaper/paper v1.0 final manuscript claim discipline and publication-gate tests. |
 | `tests/test_final_claim_language.py` | public release | Final public claim-language guardrails for manuscript and public-facing docs. |
 | `tests/test_latex_paper.py` | public release | LaTeX source provenance, parity, and claim-boundary tests. |
+| `tests/test_publication_metadata.py` | public release | Cross-artifact DOI, author, license, release, and citation metadata tests. |
 | `tests/test_ci_workflow_contract.py` | public release | Public CI permissions, action pinning, gate, and release-replay guardrails. |
 | `tools/audit_public.py` | public release | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public release | Public schema and synthetic example validator. |

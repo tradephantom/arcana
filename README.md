@@ -2,7 +2,7 @@
 
 [![ARCANA Public CI](https://github.com/tradephantom/arcana/actions/workflows/ci.yml/badge.svg)](https://github.com/tradephantom/arcana/actions/workflows/ci.yml)
 
-ARCANA is an open research and reference framework for autonomy accounting in agentic systems.
+ARCANA, the **Autonomy Risk Calculus for Agentic Network Assurance**, is an open research and reference framework for autonomy accounting in agentic systems.
 
 ARCANA estimates whether a proposed operation, delegation, tool call, memory action, capability grant, or distillation event remains within a bounded risk envelope under explicit model, calibration, horizon, uncertainty, and evidence assumptions.
 
@@ -15,7 +15,9 @@ This public repository is live as an open research/reference release for local e
 The standalone reference implementation through Slice 5, ARCANA-Bench v0.1
 synthetic evaluator execution, Public Integration Contract v0.1, Whitepaper /
 Paper v1.0 public research manuscript, and release-readiness contracts are
-present. No production implementation is present in this public release tree.
+present. The Zenodo DOI assigned to the preprint is
+`10.5281/zenodo.21333463`. No production implementation is present in this
+public release tree.
 
 Public artifact handling separates structural validation from semantic
 admission validation. ARCANA-Bench v0.1 executes complete synthetic inputs
@@ -38,6 +40,7 @@ Security reports should use GitHub Private Vulnerability Reporting, as described
 
 ## Documents
 
+- `CITATION.cff`
 - `LICENSE.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
@@ -57,8 +60,10 @@ Security reports should use GitHub Private Vulnerability Reporting, as described
 - `docs/ARCANA_Whitepaper_v1.0_Manuscript.md`
 - `docs/LIMITATIONS_v0.1.md`
 - `docs/PUBLIC_RELEASE_NOTES_v0.1.md`
+- `docs/PUBLIC_RELEASE_NOTES_v0.1.1.md`
 - `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
 - `paper/README.md`
+- `paper/PUBLICATION.json`
 - `paper/ARCANA_Whitepaper_v1.0.tex`
 - `PUBLIC_MANIFEST.md`
 
@@ -68,6 +73,20 @@ Security reports should use GitHub Private Vulnerability Reporting, as described
 - Public documentation: `CC-BY-4.0`
 
 See `LICENSE.md` for the file-scope license profile.
+
+## Citation
+
+Preferred paper citation:
+
+```text
+Elizondo Rodriguez, Julio. ARCANA: Autonomy Risk Calculus for Agentic Network
+Assurance. Version 1.0. Zenodo, 2026.
+https://doi.org/10.5281/zenodo.21333463
+```
+
+`CITATION.cff` provides machine-readable software and preferred-paper citation
+metadata. The paper is licensed under `CC-BY-4.0`; the public reference
+software remains under `Apache-2.0`.
 
 ## Schemas
 
@@ -135,6 +154,6 @@ absolute-safety or risk-elimination claims
 
 - production implementation;
 - production certificate issuance;
-- venue-specific paper submission or external archive publication;
+- external academic peer review or venue acceptance;
 - public production claim;
 - gateway enforcement mode.

@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+message: "If you use ARCANA, cite the preprint below and identify the software release used."
+title: "ARCANA - Autonomy Risk Calculus for Agentic Network Assurance"
+type: software
+version: 0.1.1
+date-released: "2026-07-13"
+license: Apache-2.0
+authors:
+  - family-names: "Elizondo Rodriguez"
+    given-names: "Julio"
+    affiliation: "TradePhantom LLC"
+    email: "dev@tradephantom.com"
+repository-code: "https://github.com/tradephantom/arcana"
+url: "https://getaxcp.com"
+abstract: >-
+  ARCANA is an open research and reference framework for model-bounded
+  autonomy accounting in agentic systems. The public implementation and
+  benchmark evidence are deterministic and synthetic, not production
+  calibration evidence or proof of absolute safety.
+keywords:
+  - "agentic systems"
+  - "autonomy accounting"
+  - "model-bounded risk"
+  - "capability graphs"
+  - "calibration uncertainty"
+  - "FastGate"
+identifiers:
+  - type: url
+    value: "https://github.com/tradephantom/arcana/releases/tag/v0.1.1"
+    description: "ARCANA public reference release v0.1.1."
+  - type: doi
+    value: "10.5281/zenodo.21333463"
+    description: "ARCANA preprint version 1.0."
+preferred-citation:
+  type: article
+  title: "ARCANA: Autonomy Risk Calculus for Agentic Network Assurance"
+  authors:
+    - family-names: "Elizondo Rodriguez"
+      given-names: "Julio"
+      affiliation: "TradePhantom LLC"
+  doi: "10.5281/zenodo.21333463"
+  date-published: "2026-07-13"
+  year: 2026
+  version: "1.0"
+  publisher:
+    name: "Zenodo"
+  url: "https://doi.org/10.5281/zenodo.21333463"

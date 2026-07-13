@@ -1,0 +1,34 @@
+{
+  "schema_version": "arcana.paper_publication.v0.1",
+  "title": "ARCANA: Autonomy Risk Calculus for Agentic Network Assurance",
+  "subtitle": "Model-Bounded Autonomy Accounting for Agentic Systems",
+  "version": "1.0",
+  "publication_type": "preprint",
+  "publication_date": "2026-07-13",
+  "doi": "10.5281/zenodo.21333463",
+  "publisher": "Zenodo",
+  "license": "CC-BY-4.0",
+  "language": "eng",
+  "authors": [
+    {
+      "family_name": "Elizondo Rodriguez",
+      "given_name": "Julio",
+      "display_name": "Julio Elizondo Rodriguez",
+      "affiliation": "TradePhantom LLC",
+      "email": "dev@tradephantom.com"
+    }
+  ],
+  "website": "https://getaxcp.com",
+  "repository": "https://github.com/tradephantom/arcana",
+  "repository_release": "https://github.com/tradephantom/arcana/releases/tag/v0.1.1",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.18475648",
+      "relation": "isRelatedTo",
+      "description": "Related AXCP preprint; ARCANA remains independently usable."
+    }
+  ],
+  "review_status": "not_externally_peer_reviewed",
+  "evidence_scope": "deterministic_synthetic_reference_only",
+  "claim_boundary": "research_reference_only_no_production_authority"
+}

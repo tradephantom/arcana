@@ -6,7 +6,7 @@ Domain behavior is added through the roadmap slices defined in the public plan.
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from arcana.artifacts import validate_certificate_semantics, validate_risk_context_semantics
 
