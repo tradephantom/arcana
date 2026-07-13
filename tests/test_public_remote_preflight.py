@@ -57,7 +57,11 @@ def test_public_remote_preflight_preserves_cost_controls_and_security_channel() 
 
     required_phrases = [
         "GitHub Private Vulnerability Reporting",
-        "no GitHub Actions by default",
+        "only `.github/workflows/ci.yml`",
+        "standard Ubuntu GitHub-hosted runners",
+        "read-only workflow permissions",
+        "pinned to full commit SHAs",
+        "no persisted workflow artifacts or caches",
         "no Git LFS",
         "no GitHub Packages",
         "no Codespaces",

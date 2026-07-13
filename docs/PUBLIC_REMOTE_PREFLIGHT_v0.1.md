@@ -5,6 +5,7 @@
 > Remote status: public remote is live and validated
 > License decision: final public license profile is defined in `LICENSE.md`
 > Security decision: GitHub Private Vulnerability Reporting is enabled for the public remote
+> CI decision: read-only public CI on standard runners is approved
 
 This checklist controls when the local public-track repository can be published to a public GitHub remote and how follow-up public updates are validated.
 
@@ -55,9 +56,14 @@ Synthetic examples must stay synthetic and visibly labeled.
 
 ## 4. GitHub Cost Controls
 
-Initial remote publication must use:
+The initial remote publication used no hosted CI. Current public CI must use:
 
-- no GitHub Actions by default;
+- only `.github/workflows/ci.yml`;
+- only standard Ubuntu GitHub-hosted runners;
+- read-only workflow permissions;
+- no repository secrets;
+- approved GitHub-owned Actions pinned to full commit SHAs;
+- no persisted workflow artifacts or caches;
 - no Git LFS;
 - no GitHub Packages;
 - no Codespaces;
@@ -65,7 +71,8 @@ Initial remote publication must use:
 - no larger hosted runners;
 - no paid GitHub feature unless explicitly reviewed.
 
-Local checks remain the authority until billing and CI controls are reviewed.
+Local checks remain required. CI is an independent remote reproduction gate,
+not production, empirical-calibration, or peer-review evidence.
 
 ## 5. Remote Creation Sequence
 
@@ -73,7 +80,7 @@ For initial creation, when publication is approved:
 
 1. Create an empty public GitHub repository.
 2. Do not add a generated README, license, or gitignore in GitHub.
-3. Keep GitHub Actions disabled or unused.
+3. Keep GitHub Actions disabled until an approved, SHA-pinned workflow exists.
 4. Add the remote locally only after the repository is empty and reviewed.
 5. Push the local `main` branch.
 6. Enable GitHub Private Vulnerability Reporting.
@@ -87,6 +94,17 @@ Do not announce or link the public remote until steps 6 through 10 pass.
 For follow-up releases, apply the same local gates, push only the reviewed
 immutable commit, and repeat steps 7 through 10 from a fresh clone.
 
+For CI-bearing follow-up updates:
+
+1. create a reviewed branch from current `main`;
+2. run all local gates before push;
+3. restrict Actions to the approved workflow dependencies and require full-SHA
+   pinning;
+4. open a pull request and require all CI jobs to pass;
+5. merge without bypassing required checks;
+6. confirm the post-merge `main` run passes before treating the commit as the
+   current public source.
+
 ## 6. Post-Push Validation
 
 After the first push:
@@ -95,7 +113,10 @@ After the first push:
 - verify license rendering in GitHub matches the intended profile;
 - verify `SECURITY.md` is visible;
 - verify GitHub Private Vulnerability Reporting is enabled;
-- verify no workflow files are present unless explicitly approved;
+- verify only the explicitly approved workflow is present;
+- verify workflow permissions are read-only and all external Actions use full
+  commit SHAs;
+- verify no paid/larger runner, artifact upload, cache, or secret was added;
 - verify no large files or binary artifacts were introduced;
 - verify examples remain synthetic;
 - verify the manuscript status matches the current review decision and does not imply production approval.
@@ -133,18 +154,19 @@ Do not treat deletion alone as sufficient when sensitive material may have been 
 
 ## 9. Current Publication Status
 
-As of 2026-07-12:
+As of 2026-07-13:
 
 - final license profile is decided;
 - security channel is decided;
 - public remote is live at `https://github.com/tradephantom/arcana`;
 - GitHub Private Vulnerability Reporting is enabled;
-- GitHub Actions is disabled;
+- controlled GitHub Actions CI is approved and enabled under the restrictions
+  in section 4;
 - GitHub Pages is absent;
 - fresh-clone validation passed with `make check`, `make test`, `make demo`, and `make bench`;
 - public production claims are not authorized;
-- final whitepaper or paper publication is not yet authorized.
+- immutable public research release `v0.1.0` remains unchanged;
+- external archive or venue submission is not yet authorized.
 
-The next publication action is a post-hardening local release decision,
-followed by venue-neutral LaTeX/PDF packaging and external technical review.
-Production claims remain unauthorized.
+The next publication action is independent external technical review and
+archive metadata completion. Production claims remain unauthorized.

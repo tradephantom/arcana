@@ -1,5 +1,7 @@
 # ARCANA
 
+[![ARCANA Public CI](https://github.com/tradephantom/arcana/actions/workflows/ci.yml/badge.svg)](https://github.com/tradephantom/arcana/actions/workflows/ci.yml)
+
 ARCANA is an open research and reference framework for autonomy accounting in agentic systems.
 
 ARCANA estimates whether a proposed operation, delegation, tool call, memory action, capability grant, or distillation event remains within a bounded risk envelope under explicit model, calibration, horizon, uncertainty, and evidence assumptions.
@@ -102,6 +104,18 @@ remain explicit `make test` and `make demo` gates.
 
 `make paper` compiles the venue-neutral LaTeX package locally with Pandoc and
 Tectonic. Generated PDF and auxiliary files remain under ignored `build/`.
+
+## Public CI
+
+GitHub Actions independently repeats the public-boundary audit, schema checks,
+the reference test suite, deterministic benchmark and demo replay, and pinned
+Pandoc/Tectonic paper reproduction on standard Ubuntu runners. The workflow is
+read-only, uses no repository secrets, persists no build artifacts or caches,
+and pins every external Action to a full commit SHA.
+
+CI validates the checked-out public research/reference revision. A green run is
+not empirical A2/A3 evidence, peer review, production approval, or proof of
+absolute safety.
 
 ## Core Claim Discipline
 
