@@ -1,0 +1,175 @@
+name: ARCANA Public CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      replay_target:
+        description: Source revision to validate
+        required: true
+        default: current
+        type: choice
+        options:
+          - current
+          - v0.1.0
+
+permissions:
+  contents: read
+
+concurrency:
+  group: arcana-public-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_NO_INPUT: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  quality:
+    name: quality / Python ${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.14"
+
+    steps:
+      - name: Check out governed source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.replay_target == 'v0.1.0' && 'e34482bc46a5efbab13bf15cd7f63da52cea612c' || github.sha }}
+          persist-credentials: false
+
+      - name: Verify source binding
+        shell: bash
+        env:
+          REPLAY_TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.replay_target || 'current' }}
+        run: |
+          set -euo pipefail
+          head_sha="$(git rev-parse HEAD)"
+          if [[ "$REPLAY_TARGET" == "v0.1.0" && "$head_sha" != "e34482bc46a5efbab13bf15cd7f63da52cea612c" ]]; then
+            printf 'release_replay_source_mismatch: observed=%s\n' "$head_sha" >&2
+            exit 1
+          fi
+          printf 'validated_source=%s replay_target=%s\n' "$head_sha" "$REPLAY_TARGET"
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install reference implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-input --only-binary=:all: -e ".[dev]"
+          python -m pip check
+
+      - name: Run public gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q src tests tools
+          make check PYTHON=python
+          make test PYTHON=python
+          make demo PYTHON=python
+
+      - name: Verify hash-seed and demo determinism
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/ci
+          PYTHONHASHSEED=1 python -m arcana.bench_runner --output build/ci/bench-seed-1.json
+          PYTHONHASHSEED=104729 python -m arcana.bench_runner --output build/ci/bench-seed-104729.json
+          cmp build/ci/bench-seed-1.json build/ci/bench-seed-104729.json
+          PYTHONHASHSEED=1 python -m arcana.demo --scenario synthetic_prompt_injection > build/ci/demo-seed-1.json
+          PYTHONHASHSEED=104729 python -m arcana.demo --scenario synthetic_prompt_injection > build/ci/demo-seed-104729.json
+          cmp build/ci/demo-seed-1.json build/ci/demo-seed-104729.json
+
+      - name: Verify tracked source remains unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+
+  paper:
+    name: paper / reproducible PDF
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out governed source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.replay_target == 'v0.1.0' && 'e34482bc46a5efbab13bf15cd7f63da52cea612c' || github.sha }}
+          persist-credentials: false
+
+      - name: Verify source binding
+        shell: bash
+        env:
+          REPLAY_TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.replay_target || 'current' }}
+        run: |
+          set -euo pipefail
+          head_sha="$(git rev-parse HEAD)"
+          if [[ "$REPLAY_TARGET" == "v0.1.0" && "$head_sha" != "e34482bc46a5efbab13bf15cd7f63da52cea612c" ]]; then
+            printf 'release_replay_source_mismatch: observed=%s\n' "$head_sha" >&2
+            exit 1
+          fi
+          printf 'validated_source=%s replay_target=%s\n' "$head_sha" "$REPLAY_TARGET"
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.14"
+
+      - name: Install pinned paper toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_root="$RUNNER_TEMP/arcana-paper-tools"
+          download_root="$RUNNER_TEMP/arcana-paper-downloads"
+          mkdir -p "$tool_root" "$download_root"
+          cd "$download_root"
+
+          curl --fail --location --proto '=https' --tlsv1.2 --output pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-linux-amd64.tar.gz
+          printf '%s  %s\n' e0f8af62d0f267d22baa5bcefe6d5dda3a097ccc60de794b759fe03159923244 pandoc.tar.gz | sha256sum --check --strict
+          tar --extract --gzip --file pandoc.tar.gz
+          install -m 0755 pandoc-3.10/bin/pandoc "$tool_root/pandoc"
+
+          curl --fail --location --proto '=https' --tlsv1.2 --output tectonic.tar.gz https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.16.9/tectonic-0.16.9-x86_64-unknown-linux-musl.tar.gz
+          printf '%s  %s\n' 60b13a0826ae7ad9ce34b4a2df06bff2cfcfa6dda8a915477c0cbb84e1a4a902 tectonic.tar.gz | sha256sum --check --strict
+          tar --extract --gzip --file tectonic.tar.gz
+          install -m 0755 tectonic "$tool_root/tectonic"
+
+          printf '%s\n' "$tool_root" >> "$GITHUB_PATH"
+
+      - name: Reproduce TeX and PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          pandoc --version | head -n 1
+          tectonic --version
+          make paper-check PYTHON=python
+          make paper PYTHON=python
+          printf '%s  %s\n' 7a467329544a5de883252335a311dc25458da0c5558280f72a6c17a33ae15ebe paper/ARCANA_Whitepaper_v1.0.tex | sha256sum --check --strict
+          printf '%s  %s\n' d8ee043ccbcb35331dc4e0b6a57fe94bbdec1893f9f175367c861d8f20474eab build/paper/ARCANA_Whitepaper_v1.0.pdf | sha256sum --check --strict
+          cp build/paper/ARCANA_Whitepaper_v1.0.pdf "$RUNNER_TEMP/arcana-paper-first.pdf"
+          make paper PYTHON=python
+          cmp "$RUNNER_TEMP/arcana-paper-first.pdf" build/paper/ARCANA_Whitepaper_v1.0.pdf
+
+      - name: Verify tracked source remains unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code

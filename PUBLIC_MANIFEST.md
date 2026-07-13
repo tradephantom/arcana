@@ -15,6 +15,7 @@ Only files listed here are part of this public repository tree.
 | `CONTRIBUTING.md` | public release | Public contribution policy. |
 | `SECURITY.md` | public release | Public security reporting policy and GitHub Private Vulnerability Reporting decision. |
 | `.gitignore` | public release | Local development exclusions. |
+| `.github/workflows/ci.yml` | public release | Read-only public CI, deterministic replay, and reproducible paper gate. |
 | `Makefile` | public release | Local check, test, and demo entrypoint. |
 | `pyproject.toml` | public release | Python package and dependency declaration. |
 | `examples/README.md` | public release | Synthetic example index. |
@@ -103,6 +104,7 @@ Only files listed here are part of this public repository tree.
 | `tests/test_whitepaper_v10_manuscript.py` | public release | Whitepaper/paper v1.0 final manuscript claim discipline and publication-gate tests. |
 | `tests/test_final_claim_language.py` | public release | Final public claim-language guardrails for manuscript and public-facing docs. |
 | `tests/test_latex_paper.py` | public release | LaTeX source provenance, parity, and claim-boundary tests. |
+| `tests/test_ci_workflow_contract.py` | public release | Public CI permissions, action pinning, gate, and release-replay guardrails. |
 | `tools/audit_public.py` | public release | Public release-boundary audit script. |
 | `tools/validate_schemas.py` | public release | Public schema and synthetic example validator. |
 | `tools/build_paper.py` | public release | Hash-bound Markdown-to-LaTeX/PDF build and reproduction tool. |

@@ -22,16 +22,24 @@ Do not create or update a public remote repository until:
 - no private enterprise, customer, or lab details are present;
 - no paid GitHub feature is needed for the current milestone.
 
-Initial remote publication and follow-up releases should use:
+The initial remote publication used no hosted CI. GitHub Actions is now
+approved only under this controlled public-CI profile:
 
-- no GitHub Actions by default;
+- the sole workflow is `.github/workflows/ci.yml`;
+- only standard Ubuntu GitHub-hosted runners are allowed;
+- workflow permissions are read-only and no repository secrets are used;
+- external Actions are limited to approved GitHub-owned Actions pinned to full
+  commit SHAs;
+- no workflow artifact or cache storage is persisted;
 - no Git LFS;
 - no Packages;
 - no Codespaces;
 - no GitHub Pages;
 - no larger hosted runners.
 
-CI can be added later only after local checks are stable and billing controls are explicitly reviewed.
+The CI and billing review was completed on 2026-07-13. Standard hosted runners
+for this public repository are accepted; paid/larger runners and paid storage
+remain prohibited without a new explicit review.
 
 ## Local-First Development Rule
 
@@ -58,3 +66,7 @@ make demo
 ```
 
 before every commit and before any remote push.
+
+GitHub CI is an independent reproduction surface, not a replacement for this
+local gate and not evidence of production readiness, peer review, or A2/A3
+calibration.
