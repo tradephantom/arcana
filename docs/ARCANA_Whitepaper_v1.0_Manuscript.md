@@ -1,13 +1,17 @@
-# ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems
+# ARCANA: Autonomy Risk Calculus for Agentic Network Assurance
 
 > Status: public research manuscript v1.0, post-hardening repository edition
 > Scope: reviewed manuscript artifact for the public ARCANA research/reference track
 > Classification: public-safe final manuscript; not a production approval, enforcement approval, or commercial certificate authorization
 > Implementation status: reference implementation and deterministic synthetic reference-evaluator benchmark evidence only
+> Author: Julio Elizondo Rodriguez, TradePhantom LLC
+> Archival preprint DOI: 10.5281/zenodo.21333463
+> License: Creative Commons Attribution 4.0 International
+> Subtitle: Model-Bounded Autonomy Accounting for Agentic Systems
 
 ## Abstract
 
-Agentic systems can act through tools, memory, delegation, capability envelopes, repeated operations, and external services. Task success alone does not show whether a proposed operation remains inside an acceptable autonomy-risk envelope. ARCANA introduces a public research/reference framework for autonomy accounting: it estimates whether a proposed operation remains bounded under an explicit risk model version, calibration profile, decision horizon, uncertainty bounds, evidence assumptions, graph state, and reason-code contract.
+Agentic systems can act through tools, memory, delegation, capability envelopes, repeated operations, and external services. Task success alone does not show whether a proposed operation remains inside an acceptable autonomy-risk envelope. ARCANA, the Autonomy Risk Calculus for Agentic Network Assurance, introduces a public research/reference framework for autonomy accounting: it estimates whether a proposed operation remains bounded under an explicit risk model version, calibration profile, decision horizon, uncertainty bounds, evidence assumptions, graph state, and reason-code contract.
 
 ARCANA models unsafe propagation pressure separately from loss or impact. It represents an agentic system as a capability graph, assigns horizon-bound propagation weights, computes upper-bound spectral propagation risk, evaluates loss-side quantities separately, and emits schema-shaped risk contexts or certificate-like artifacts with explicit caveats. The public reference implementation uses deterministic synthetic fixtures, public schemas, public reason codes, and local reproducibility gates.
 
@@ -87,6 +91,12 @@ Public ARCANA does not include:
 - production operational approval.
 
 The public repository is a research/reference track. It is not a production control plane.
+
+ARCANA is protocol-independent and can be used without AXCP. Within the related
+AXCP project family, AXCP addresses secure message exchange while ARCANA
+addresses model-bounded autonomy accounting. The two projects remain separable:
+ARCANA is not an AXCP Core dependency, and this paper does not make AXCP a
+precondition for the ARCANA model or reference implementation [1].
 
 ## 4. Model Overview
 
@@ -254,6 +264,12 @@ The public model relies on standard facts about nonnegative matrices. These
 propositions are model-bounded statements, not claims about all real-world
 behavior.
 
+The nonnegative-matrix results used below are standard consequences of
+Perron-Frobenius and Collatz-Wielandt theory [5, 8]. The subcritical
+propagation interpretation is an analogy to finite-type branching-process
+models [6], not a claim that an agentic system satisfies every independence
+assumption of a classical branching process.
+
 ### Proposition 1 - Subcritical finite propagation
 
 For a nonnegative propagation matrix `K` with:
@@ -332,6 +348,11 @@ ARCANA_DENY_AES_UPPER_BOUND
 ```
 
 An operation can have bounded propagation risk but unacceptable loss bounds. It can also have low expected impact but unacceptable propagation-risk upper bound.
+
+The tail-loss terminology is informed by the Value-at-Risk and conditional
+Value-at-Risk literature [7]. ARCANA does not import a financial loss model
+into `K`; it applies loss-side quantities only through the separately declared
+`L` contract.
 
 ## 9. Calibration
 
@@ -699,12 +720,14 @@ financial tail-risk methods.
 
 | Area | Relationship to ARCANA |
 | --- | --- |
-| Model Context Protocol (MCP) | MCP standardizes how AI applications connect to external systems such as data sources, tools, and workflows. ARCANA does not compete with tool connectivity; it accounts for autonomy risk in operations that such connectivity can enable. Source: https://modelcontextprotocol.io/docs/getting-started/intro |
-| OWASP Agentic AI threats | OWASP's Agentic AI guidance frames emerging agentic threats and mitigations through a threat-model lens. ARCANA can complement such taxonomies with model-bounded risk artifacts, reason codes, and calibration-scoped decisions. Source: https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/ |
-| NIST AI Risk Management Framework | NIST AI RMF is a voluntary framework for managing AI risks to individuals, organizations, and society. ARCANA does not replace AI RMF; it provides a narrower mechanism for bounded-under-model decisions in agentic operations. Source: https://www.nist.gov/itl/ai-risk-management-framework |
-| Runtime verification and authorization | ARCANA can inform runtime checks, but the public reference track does not define private enforcement or authorization infrastructure. |
-| Branching processes and network propagation | ARCANA borrows the subcritical intuition of finite propagation pressure, but every claim remains bound to the declared graph, horizon, and calibration. |
-| VaR and expected shortfall | ARCANA separates propagation risk from loss-side tail quantities such as Autonomy-at-Risk and Agentic Expected Shortfall. |
+| Secure message exchange | AXCP defines a separate protocol-oriented security layer for agent communication [1]. ARCANA does not replace message security and does not require AXCP; it accounts for model-bounded autonomy at the operation and capability-graph layer. |
+| Model Context Protocol (MCP) | MCP standardizes client-server access to resources, prompts, tools, and related protocol primitives [2]. ARCANA does not compete with tool connectivity; it accounts for autonomy risk in operations that such connectivity can enable. |
+| OWASP Agentic AI threats | OWASP's Agentic AI guidance frames emerging agentic threats and mitigations through a threat-model lens [3]. ARCANA can complement such taxonomies with model-bounded risk artifacts, reason codes, and calibration-scoped decisions. |
+| NIST AI Risk Management Framework | NIST AI RMF is a voluntary framework for managing AI risks to individuals, organizations, and society [4]. ARCANA does not replace AI RMF; it provides a narrower mechanism for bounded-under-model decisions in agentic operations. |
+| Nonnegative matrix theory | ARCANA uses standard spectral-radius and nonnegative-matrix results [5, 8], while binding their interpretation to an explicit graph, horizon, calibration profile, and uncertainty policy. |
+| Branching processes and network propagation | ARCANA borrows the subcritical intuition of finite propagation pressure from branching-process theory [6], without assuming that real agentic systems satisfy a classical branching model. |
+| VaR and expected shortfall | ARCANA separates propagation risk from loss-side tail quantities informed by conditional Value-at-Risk methods [7]. |
+| Runtime verification and authorization | Runtime verification monitors executions against specified properties [9]. ARCANA can inform runtime checks, but the public reference track does not define enforcement or authorization infrastructure. |
 
 ## 20. Related Public Artifacts
 
@@ -766,3 +789,30 @@ governance outside the public reference package.
 
 Any LaTeX, PDF, archive, or venue-specific derivative of this manuscript must
 preserve this claim boundary and the public/private product separation.
+
+## 23. References
+
+1. J. Elizondo Rodriguez, "AXCP: Adaptive eXchange Context Protocol - Secure
+   Communication for Autonomous AI Agents," version 1.0, Zenodo, 2026.
+   https://doi.org/10.5281/zenodo.18475648
+2. Model Context Protocol Contributors, "Architecture overview," Model Context
+   Protocol documentation. Accessed 2026-07-13.
+   https://modelcontextprotocol.io/docs/learn/architecture
+3. OWASP Agentic Security Initiative, "Agentic AI - Threats and Mitigations,"
+   OWASP GenAI Security Project. Accessed 2026-07-13.
+   https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/
+4. E. Tabassi, "Artificial Intelligence Risk Management Framework (AI RMF
+   1.0)," NIST AI 100-1, National Institute of Standards and Technology, 2023.
+   https://doi.org/10.6028/NIST.AI.100-1
+5. E. Seneta, *Non-negative Matrices and Markov Chains*, 2nd ed., Springer,
+   1981. https://doi.org/10.1007/0-387-32792-4
+6. T. E. Harris, *The Theory of Branching Processes*, Springer, 1963.
+   ISBN 978-3-642-51868-3.
+7. R. T. Rockafellar and S. Uryasev, "Optimization of Conditional
+   Value-at-Risk," *The Journal of Risk*, vol. 2, no. 3, pp. 21-41, 2000.
+   https://doi.org/10.21314/JOR.2000.038
+8. R. A. Horn and C. R. Johnson, *Matrix Analysis*, 2nd ed., Cambridge
+   University Press, 2012. https://doi.org/10.1017/CBO9780511810817
+9. M. Leucker and C. Schallhart, "A Brief Account of Runtime Verification,"
+   *The Journal of Logic and Algebraic Programming*, vol. 78, no. 5,
+   pp. 293-303, 2009. https://doi.org/10.1016/j.jlap.2008.08.004

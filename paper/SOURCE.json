@@ -1,10 +1,12 @@
 {
-  "schema_version": "arcana.paper_source.v0.1",
+  "schema_version": "arcana.paper_source.v0.2",
   "manuscript": "docs/ARCANA_Whitepaper_v1.0_Manuscript.md",
-  "manuscript_sha256": "sha256:e03b06b634c27f3dcaef799b3bea5a02a12a33630f165289e4e3791ed819e6cd",
+  "manuscript_sha256": "sha256:3686849dbc26e891a3f099617cfa95a3ae3bd6f69fcf0a90bcd2d7a9de2cc352",
+  "publication": "paper/PUBLICATION.json",
+  "publication_sha256": "sha256:b52f8ea4701c6bd5e70052ca9bf3a14be25de8240e1179ec6cfb31cda6f7081f",
   "reviewed_public_commit": "8cf41e69c62eea4e51dbdde05b6cb74e842e7b1e",
   "reviewed_public_tree": "9af92e0ea7252dcf21fb2530def5ebda27fe58bb",
-  "source_date_epoch": 1783884985,
+  "source_date_epoch": 1783900800,
   "toolchain": {
     "pandoc": "3.10",
     "tectonic": "0.16.9"

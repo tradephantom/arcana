@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ from tools import build_paper
 ROOT = Path(__file__).resolve().parents[1]
 PAPER_ROOT = ROOT / "paper"
 SOURCE_CONTRACT = PAPER_ROOT / "SOURCE.json"
+PUBLICATION_CONTRACT = PAPER_ROOT / "PUBLICATION.json"
 TEX_PATH = PAPER_ROOT / "ARCANA_Whitepaper_v1.0.tex"
 
 
@@ -23,11 +25,19 @@ def _source_contract() -> dict[str, object]:
 def test_paper_source_contract_binds_reviewed_manuscript() -> None:
     contract = _source_contract()
     manuscript = ROOT / str(contract["manuscript"])
-    observed = "sha256:" + hashlib.sha256(manuscript.read_bytes()).hexdigest()
+    publication = ROOT / str(contract["publication"])
+    observed_manuscript = "sha256:" + hashlib.sha256(manuscript.read_bytes()).hexdigest()
+    observed_publication = "sha256:" + hashlib.sha256(publication.read_bytes()).hexdigest()
 
-    assert contract["schema_version"] == "arcana.paper_source.v0.1"
+    assert contract["schema_version"] == "arcana.paper_source.v0.2"
     assert contract["claim_boundary"] == "research_reference_only_no_production_authority"
-    assert observed == contract["manuscript_sha256"]
+    assert observed_manuscript == contract["manuscript_sha256"]
+    assert observed_publication == contract["publication_sha256"]
+    assert contract["publication"] == "paper/PUBLICATION.json"
+    publication_contract = json.loads(publication.read_text(encoding="ascii"))
+    assert datetime.fromtimestamp(contract["source_date_epoch"], tz=UTC).date().isoformat() == (
+        publication_contract["publication_date"]
+    )
     assert contract["paper_tex"] == "paper/ARCANA_Whitepaper_v1.0.tex"
     assert contract["toolchain"] == {"pandoc": "3.10", "tectonic": "0.16.9"}
 
@@ -45,6 +55,11 @@ def test_latex_paper_preserves_public_claim_boundary() -> None:
         "\\tableofcontents",
         "\\section{18. Limitations}",
         "\\section{22. Conclusion}",
+        "\\section{23. References}",
+        "10.5281/zenodo.21333463",
+        "Julio Elizondo Rodriguez",
+        "TradePhantom LLC",
+        "CC BY 4.0",
     ]
     for phrase in required:
         assert phrase.lower() in lower_text
@@ -67,6 +82,7 @@ def test_latex_paper_preserves_public_claim_boundary() -> None:
 def test_paper_build_inputs_are_ascii_and_public_safe() -> None:
     for path in [
         PAPER_ROOT / "SOURCE.json",
+        PUBLICATION_CONTRACT,
         PAPER_ROOT / "metadata.yaml",
         PAPER_ROOT / "header.tex",
         PAPER_ROOT / "before-body.tex",

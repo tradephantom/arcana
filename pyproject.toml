@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arcana-reference"
-version = "0.1.0"
-description = "Public reference implementation scaffold for ARCANA autonomy accounting."
+version = "0.1.1"
+description = "Public reference implementation for the Autonomy Risk Calculus for Agentic Network Assurance."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [
-  { name = "ARCANA Public Reference Maintainers" }
+  { name = "Julio Elizondo Rodriguez", email = "dev@tradephantom.com" }
 ]
 dependencies = [
   "jsonschema>=4.22,<5",
@@ -19,8 +19,14 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8,<9"
+  "pytest>=8,<9",
+  "PyYAML>=6.0.2,<7"
 ]
+
+[project.urls]
+Homepage = "https://getaxcp.com"
+Repository = "https://github.com/tradephantom/arcana"
+Paper = "https://doi.org/10.5281/zenodo.21333463"
 
 [project.scripts]
 arcana-demo = "arcana.demo:main"

@@ -450,8 +450,9 @@ Exit criteria:
 
 Status: whitepaper/paper v1.0 public research manuscript and reproducible
 venue-neutral LaTeX package implemented; final public claim-language review is
-closed for the repository manuscript. This is not external academic peer
-review or venue acceptance.
+closed for the repository manuscript. The archival preprint package is bound
+to DOI `10.5281/zenodo.21333463` and release `v0.1.1`. This is not external
+academic peer review or venue acceptance.
 
 ## 16. Sequencing Gates
 

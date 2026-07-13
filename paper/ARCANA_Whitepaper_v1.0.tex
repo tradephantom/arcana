@@ -120,16 +120,34 @@
 \pretitle{\begin{flushleft}\color{ArcanaInk}\Huge\bfseries\sffamily}
 \posttitle{\par\vspace{6pt}\color{ArcanaGreen}\rule{\textwidth}{1.2pt}\end{flushleft}}
 \preauthor{\begin{flushleft}\large\sffamily}
-\postauthor{\par\end{flushleft}}
+\postauthor{%
+  \par\vspace{2pt}%
+  {\small TradePhantom LLC\\
+  \href{mailto:dev@tradephantom.com}{\texttt{dev@tradephantom.com}}\\
+  \href{https://getaxcp.com}{\texttt{getaxcp.com}}}%
+  \par\end{flushleft}%
+}
 \predate{\begin{flushleft}\small\sffamily\color{ArcanaGreen}}
-\postdate{\par\end{flushleft}\vspace{4pt}}
+\postdate{%
+  \par\vspace{3pt}%
+  \href{https://doi.org/10.5281/zenodo.21333463}{%
+    \path{doi:10.5281/zenodo.21333463}}%
+  \par\end{flushleft}\vspace{4pt}%
+}
 
 \setlist[itemize]{leftmargin=1.35em,itemsep=2pt,topsep=3pt}
 \setlist[enumerate]{leftmargin=1.55em,itemsep=2pt,topsep=3pt}
 \setcounter{tocdepth}{2}
 
 \AtBeginEnvironment{longtable}{\small}
-\AtBeginDocument{\fvset{breaklines=true,breakanywhere=true,fontsize=\small}}
+\AtBeginDocument{%
+  \fvset{breaklines=true,breakanywhere=true,fontsize=\small}%
+  \hypersetup{pdfinfo={%
+    DOI={10.5281/zenodo.21333463},%
+    License={CC BY 4.0},%
+    Website={https://getaxcp.com}%
+  }}%
+}
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
@@ -138,9 +156,14 @@
 \@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
 \makeatother
 \hypersetup{
-  pdftitle={ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems},
-  pdfauthor={ARCANA Research Project},
+  pdftitle={ARCANA: Autonomy Risk Calculus for Agentic Network Assurance},
+  pdfauthor={Julio Elizondo Rodriguez},
   pdflang={en-US},
+  pdfsubject={Open research preprint on model-bounded autonomy accounting for agentic
+systems},
+  pdfkeywords={\xmpquote{agentic systems}, \xmpquote{autonomy
+accounting}, \xmpquote{model-bounded risk}, \xmpquote{capability
+graphs}, \xmpquote{calibration uncertainty}, \xmpquote{FastGate}},
   colorlinks=true,
   linkcolor={ArcanaGreen},
   filecolor={Maroon},
@@ -149,19 +172,26 @@
   pdfcreator={LaTeX via pandoc}}
 
 \ifXeTeX
-\special{pdf:trailerid [ <a7ab049e35789782fdc1929481857f1e> <a7ab049e35789782fdc1929481857f1e> ]}
+\special{pdf:trailerid [ <7c07dbb952113d4a604dbaecf2db8afd> <7c07dbb952113d4a604dbaecf2db8afd> ]}
 \fi
 \ifPDFTeX
 \pdftrailerid{}
-\pdftrailer{/ID [ <a7ab049e35789782fdc1929481857f1e> <a7ab049e35789782fdc1929481857f1e> ]}
+\pdftrailer{/ID [ <7c07dbb952113d4a604dbaecf2db8afd> <7c07dbb952113d4a604dbaecf2db8afd> ]}
 \fi
 \ifLuaTeX
-\pdfvariable trailerid {[ <a7ab049e35789782fdc1929481857f1e> <a7ab049e35789782fdc1929481857f1e> ]}
+\pdfvariable trailerid {[ <7c07dbb952113d4a604dbaecf2db8afd> <7c07dbb952113d4a604dbaecf2db8afd> ]}
 \fi
 
-\title{ARCANA: Model-Bounded Autonomy Accounting for Agentic Systems}
-\author{ARCANA Research Project}
-\date{July 2026}
+\title{ARCANA: Autonomy Risk Calculus for Agentic Network Assurance}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Model-Bounded Autonomy Accounting for Agentic Systems}
+\author{Julio Elizondo Rodriguez}
+\date{13 July 2026}
 
 \begin{document}
 \maketitle
@@ -173,7 +203,8 @@
     \textbf{Public research manuscript v1.0, post-hardening repository edition.}
     Reference implementation and deterministic synthetic evaluator evidence
     only. This artifact is not a production approval, enforcement approval,
-    external peer-review claim, or commercial certificate authorization.
+    external peer-review claim, or commercial certificate authorization. The
+    DOI identifies this preprint; it does not elevate its evidence class.
   }%
 }
 \vspace{10pt}
@@ -182,11 +213,12 @@
 \begin{abstract}
 Agentic systems can act through tools, memory, delegation, capability envelopes,
 repeated operations, and external services. Task success alone does not show whether a
-proposed operation remains inside an acceptable autonomy-risk envelope. ARCANA
-introduces a public research/reference framework for autonomy accounting: it estimates
-whether a proposed operation remains bounded under an explicit risk model version,
-calibration profile, decision horizon, uncertainty bounds, evidence assumptions, graph
-state, and reason-code contract.
+proposed operation remains inside an acceptable autonomy-risk envelope. ARCANA, the
+Autonomy Risk Calculus for Agentic Network Assurance, introduces a public
+research/reference framework for autonomy accounting: it estimates whether a proposed
+operation remains bounded under an explicit risk model version, calibration profile,
+decision horizon, uncertainty bounds, evidence assumptions, graph state, and reason-code
+contract.
 
 ARCANA models unsafe propagation pressure separately from loss or impact. It represents
 an agentic system as a capability graph, assigns horizon-bound propagation weights,
@@ -330,6 +362,12 @@ Public ARCANA does not include:
 
 The public repository is a research/reference track. It is not a production control
 plane.
+
+ARCANA is protocol-independent and can be used without AXCP. Within the related AXCP
+project family, AXCP addresses secure message exchange while ARCANA addresses
+model-bounded autonomy accounting. The two projects remain separable: ARCANA is not an
+AXCP Core dependency, and this paper does not make AXCP a precondition for the ARCANA
+model or reference implementation {[}1{]}.
 
 \section{4. Model Overview}\label{4-model-overview}
 
@@ -531,6 +569,11 @@ Sketches}\label{mathematical-propositions-and-proof-sketches}
 The public model relies on standard facts about nonnegative matrices. These propositions
 are model-bounded statements, not claims about all real-world behavior.
 
+The nonnegative-matrix results used below are standard consequences of Perron-Frobenius
+and Collatz-Wielandt theory {[}5, 8{]}. The subcritical propagation interpretation is an
+analogy to finite-type branching-process models {[}6{]}, not a claim that an agentic
+system satisfies every independence assumption of a classical branching process.
+
 \subsection{Proposition 1 - Subcritical finite
 propagation}\label{proposition-1---subcritical-finite-propagation}
 
@@ -619,6 +662,10 @@ ARCANA_DENY_AES_UPPER_BOUND
 
 An operation can have bounded propagation risk but unacceptable loss bounds. It can also
 have low expected impact but unacceptable propagation-risk upper bound.
+
+The tail-loss terminology is informed by the Value-at-Risk and conditional Value-at-Risk
+literature {[}7{]}. ARCANA does not import a financial loss model into \texttt{K}; it
+applies loss-side quantities only through the separately declared \texttt{L} contract.
 
 \section{9. Calibration}\label{9-calibration}
 
@@ -1141,27 +1188,33 @@ Area & Relationship to ARCANA \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Model Context Protocol (MCP) & MCP standardizes how AI applications connect to external
-systems such as data sources, tools, and workflows. ARCANA does not compete with tool
-connectivity; it accounts for autonomy risk in operations that such connectivity can
-enable. Source: \url{https://modelcontextprotocol.io/docs/getting-started/intro} \\
+Secure message exchange & AXCP defines a separate protocol-oriented security layer for
+agent communication {[}1{]}. ARCANA does not replace message security and does not
+require AXCP; it accounts for model-bounded autonomy at the operation and
+capability-graph layer. \\
+Model Context Protocol (MCP) & MCP standardizes client-server access to resources,
+prompts, tools, and related protocol primitives {[}2{]}. ARCANA does not compete with
+tool connectivity; it accounts for autonomy risk in operations that such connectivity
+can enable. \\
 OWASP Agentic AI threats & OWASP\textquotesingle s Agentic AI guidance frames emerging
-agentic threats and mitigations through a threat-model lens. ARCANA can complement such
-taxonomies with model-bounded risk artifacts, reason codes, and calibration-scoped
-decisions. Source:
-\url{https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/} \\
+agentic threats and mitigations through a threat-model lens {[}3{]}. ARCANA can
+complement such taxonomies with model-bounded risk artifacts, reason codes, and
+calibration-scoped decisions. \\
 NIST AI Risk Management Framework & NIST AI RMF is a voluntary framework for managing AI
-risks to individuals, organizations, and society. ARCANA does not replace AI RMF; it
-provides a narrower mechanism for bounded-under-model decisions in agentic operations.
-Source: \url{https://www.nist.gov/itl/ai-risk-management-framework} \\
-Runtime verification and authorization & ARCANA can inform runtime checks, but the
-public reference track does not define private enforcement or authorization
-infrastructure. \\
+risks to individuals, organizations, and society {[}4{]}. ARCANA does not replace AI
+RMF; it provides a narrower mechanism for bounded-under-model decisions in agentic
+operations. \\
+Nonnegative matrix theory & ARCANA uses standard spectral-radius and nonnegative-matrix
+results {[}5, 8{]}, while binding their interpretation to an explicit graph, horizon,
+calibration profile, and uncertainty policy. \\
 Branching processes and network propagation & ARCANA borrows the subcritical intuition
-of finite propagation pressure, but every claim remains bound to the declared graph,
-horizon, and calibration. \\
+of finite propagation pressure from branching-process theory {[}6{]}, without assuming
+that real agentic systems satisfy a classical branching model. \\
 VaR and expected shortfall & ARCANA separates propagation risk from loss-side tail
-quantities such as Autonomy-at-Risk and Agentic Expected Shortfall. \\
+quantities informed by conditional Value-at-Risk methods {[}7{]}. \\
+Runtime verification and authorization & Runtime verification monitors executions
+against specified properties {[}9{]}. ARCANA can inform runtime checks, but the public
+reference track does not define enforcement or authorization infrastructure. \\
 \end{longtable}
 }
 
@@ -1244,5 +1297,46 @@ stronger claims require evidence and governance outside the public reference pac
 
 Any LaTeX, PDF, archive, or venue-specific derivative of this manuscript must preserve
 this claim boundary and the public/private product separation.
+
+\clearpage
+\section{23. References}\label{23-references}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  J. Elizondo Rodriguez, "AXCP: Adaptive eXchange Context Protocol - Secure
+  Communication for Autonomous AI Agents," version 1.0, Zenodo, 2026.
+  \url{https://doi.org/10.5281/zenodo.18475648}
+\item
+  Model Context Protocol Contributors, "Architecture overview," Model Context Protocol
+  documentation. Accessed 2026-07-13.
+  \url{https://modelcontextprotocol.io/docs/learn/architecture}
+\item
+  OWASP Agentic Security Initiative, "Agentic AI - Threats and Mitigations," OWASP GenAI
+  Security Project. Accessed 2026-07-13.
+  \url{https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/}
+\item
+  E. Tabassi, "Artificial Intelligence Risk Management Framework (AI RMF 1.0)," NIST AI
+  100-1, National Institute of Standards and Technology, 2023.
+  \url{https://doi.org/10.6028/NIST.AI.100-1}
+\item
+  E. Seneta, \emph{Non-negative Matrices and Markov Chains}, 2nd ed., Springer, 1981.
+  \url{https://doi.org/10.1007/0-387-32792-4}
+\item
+  T. E. Harris, \emph{The Theory of Branching Processes}, Springer, 1963. ISBN
+  978-3-642-51868-3.
+\item
+  R. T. Rockafellar and S. Uryasev, "Optimization of Conditional Value-at-Risk,"
+  \emph{The Journal of Risk}, vol. 2, no. 3, pp. 21-41, 2000.
+  \url{https://doi.org/10.21314/JOR.2000.038}
+\item
+  R. A. Horn and C. R. Johnson, \emph{Matrix Analysis}, 2nd ed., Cambridge University
+  Press, 2012. \url{https://doi.org/10.1017/CBO9780511810817}
+\item
+  M. Leucker and C. Schallhart, "A Brief Account of Runtime Verification," \emph{The
+  Journal of Logic and Algebraic Programming}, vol. 78, no. 5, pp. 293-303, 2009.
+  \url{https://doi.org/10.1016/j.jlap.2008.08.004}
+\end{enumerate}
 
 \end{document}

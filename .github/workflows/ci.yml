@@ -155,14 +155,23 @@ jobs:
 
       - name: Reproduce TeX and PDF
         shell: bash
+        env:
+          REPLAY_TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.replay_target || 'current' }}
         run: |
           set -euo pipefail
           pandoc --version | head -n 1
           tectonic --version
           make paper-check PYTHON=python
           make paper PYTHON=python
-          printf '%s  %s\n' 7a467329544a5de883252335a311dc25458da0c5558280f72a6c17a33ae15ebe paper/ARCANA_Whitepaper_v1.0.tex | sha256sum --check --strict
-          printf '%s  %s\n' d8ee043ccbcb35331dc4e0b6a57fe94bbdec1893f9f175367c861d8f20474eab build/paper/ARCANA_Whitepaper_v1.0.pdf | sha256sum --check --strict
+          if [[ "$REPLAY_TARGET" == "v0.1.0" ]]; then
+            expected_tex_sha=7a467329544a5de883252335a311dc25458da0c5558280f72a6c17a33ae15ebe
+            expected_pdf_sha=d8ee043ccbcb35331dc4e0b6a57fe94bbdec1893f9f175367c861d8f20474eab
+          else
+            expected_tex_sha=508386177cf942a45077439508c090f2507af2258b376f64a8a9a62542dbdf4c
+            expected_pdf_sha=fc5a769a9599c3063f459d479365f88fb5cbd746cad2083b4d30d5906dd5930d
+          fi
+          printf '%s  %s\n' "$expected_tex_sha" paper/ARCANA_Whitepaper_v1.0.tex | sha256sum --check --strict
+          printf '%s  %s\n' "$expected_pdf_sha" build/paper/ARCANA_Whitepaper_v1.0.pdf | sha256sum --check --strict
           cp build/paper/ARCANA_Whitepaper_v1.0.pdf "$RUNNER_TEMP/arcana-paper-first.pdf"
           make paper PYTHON=python
           cmp "$RUNNER_TEMP/arcana-paper-first.pdf" build/paper/ARCANA_Whitepaper_v1.0.pdf

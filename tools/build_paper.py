@@ -12,8 +12,10 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +27,8 @@ EXPECTED_SOURCE_KEYS = {
     "schema_version",
     "manuscript",
     "manuscript_sha256",
+    "publication",
+    "publication_sha256",
     "reviewed_public_commit",
     "reviewed_public_tree",
     "source_date_epoch",
@@ -33,6 +37,33 @@ EXPECTED_SOURCE_KEYS = {
     "claim_boundary",
 }
 EXPECTED_TOOLCHAIN_KEYS = {"pandoc", "tectonic"}
+EXPECTED_PUBLICATION_KEYS = {
+    "schema_version",
+    "title",
+    "subtitle",
+    "version",
+    "publication_type",
+    "publication_date",
+    "doi",
+    "publisher",
+    "license",
+    "language",
+    "authors",
+    "website",
+    "repository",
+    "repository_release",
+    "related_identifiers",
+    "review_status",
+    "evidence_scope",
+    "claim_boundary",
+}
+EXPECTED_AUTHOR_KEYS = {
+    "family_name",
+    "given_name",
+    "display_name",
+    "affiliation",
+    "email",
+}
 FORBIDDEN_TEX_TOKENS = (
     "/".join(("", "Users", "")),
     "file" + "://",
@@ -55,7 +86,7 @@ def _load_source_contract() -> dict[str, Any]:
         raise PaperBuildError(f"paper_source_contract_invalid: {exc}") from exc
     if not isinstance(contract, dict) or set(contract) != EXPECTED_SOURCE_KEYS:
         raise PaperBuildError("paper_source_contract_shape_invalid")
-    if contract["schema_version"] != "arcana.paper_source.v0.1":
+    if contract["schema_version"] != "arcana.paper_source.v0.2":
         raise PaperBuildError("paper_source_schema_unsupported")
     if contract["claim_boundary"] != "research_reference_only_no_production_authority":
         raise PaperBuildError("paper_claim_boundary_invalid")
@@ -87,15 +118,158 @@ def _resolve_relative_file(raw_path: Any, field: str) -> Path:
     return candidate
 
 
-def _verify_manuscript(contract: dict[str, Any]) -> Path:
-    manuscript = _resolve_relative_file(contract["manuscript"], "manuscript")
-    expected_hash = contract["manuscript_sha256"]
+def _verify_hashed_file(
+    contract: dict[str, Any], path_field: str, hash_field: str
+) -> Path:
+    path = _resolve_relative_file(contract[path_field], path_field)
+    expected_hash = contract[hash_field]
     if not isinstance(expected_hash, str) or re.fullmatch(r"sha256:[0-9a-f]{64}", expected_hash) is None:
-        raise PaperBuildError("paper_manuscript_hash_invalid")
-    observed_hash = "sha256:" + hashlib.sha256(manuscript.read_bytes()).hexdigest()
+        raise PaperBuildError(f"paper_{path_field}_hash_invalid")
+    observed_hash = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
     if observed_hash != expected_hash:
-        raise PaperBuildError("paper_manuscript_hash_mismatch")
-    return manuscript
+        raise PaperBuildError(f"paper_{path_field}_hash_mismatch")
+    return path
+
+
+def _verified_https_url(value: Any, field: str, expected_host: str | None = None) -> str:
+    if not isinstance(value, str):
+        raise PaperBuildError(f"paper_publication_{field}_invalid")
+    parsed = urlsplit(value)
+    if parsed.scheme != "https" or not parsed.netloc or parsed.username or parsed.password:
+        raise PaperBuildError(f"paper_publication_{field}_invalid")
+    if expected_host is not None and parsed.hostname != expected_host:
+        raise PaperBuildError(f"paper_publication_{field}_host_invalid")
+    return value
+
+
+def _load_publication_contract(path: Path) -> dict[str, Any]:
+    try:
+        publication = json.loads(path.read_text(encoding="ascii"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise PaperBuildError(f"paper_publication_contract_invalid: {exc}") from exc
+    if not isinstance(publication, dict) or set(publication) != EXPECTED_PUBLICATION_KEYS:
+        raise PaperBuildError("paper_publication_contract_shape_invalid")
+
+    exact_values = {
+        "schema_version": "arcana.paper_publication.v0.1",
+        "publication_type": "preprint",
+        "publisher": "Zenodo",
+        "license": "CC-BY-4.0",
+        "language": "eng",
+        "review_status": "not_externally_peer_reviewed",
+        "evidence_scope": "deterministic_synthetic_reference_only",
+        "claim_boundary": "research_reference_only_no_production_authority",
+    }
+    for field, expected in exact_values.items():
+        if publication[field] != expected:
+            raise PaperBuildError(f"paper_publication_{field}_invalid")
+
+    if publication["title"] != "ARCANA: Autonomy Risk Calculus for Agentic Network Assurance":
+        raise PaperBuildError("paper_publication_title_invalid")
+    if publication["subtitle"] != "Model-Bounded Autonomy Accounting for Agentic Systems":
+        raise PaperBuildError("paper_publication_subtitle_invalid")
+    if not isinstance(publication["version"], str) or re.fullmatch(
+        r"[0-9]+\.[0-9]+", publication["version"]
+    ) is None:
+        raise PaperBuildError("paper_publication_version_invalid")
+    try:
+        date.fromisoformat(publication["publication_date"])
+    except (TypeError, ValueError) as exc:
+        raise PaperBuildError("paper_publication_date_invalid") from exc
+    if not isinstance(publication["doi"], str) or re.fullmatch(
+        r"10\.5281/zenodo\.[0-9]+", publication["doi"]
+    ) is None:
+        raise PaperBuildError("paper_publication_doi_invalid")
+
+    authors = publication["authors"]
+    if not isinstance(authors, list) or len(authors) != 1:
+        raise PaperBuildError("paper_publication_authors_invalid")
+    author = authors[0]
+    if not isinstance(author, dict) or set(author) != EXPECTED_AUTHOR_KEYS:
+        raise PaperBuildError("paper_publication_author_shape_invalid")
+    for field in sorted(EXPECTED_AUTHOR_KEYS):
+        if not isinstance(author[field], str) or not author[field].strip():
+            raise PaperBuildError(f"paper_publication_author_{field}_invalid")
+    if author["display_name"] != f'{author["given_name"]} {author["family_name"]}':
+        raise PaperBuildError("paper_publication_author_display_name_mismatch")
+    if re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", author["email"]) is None:
+        raise PaperBuildError("paper_publication_author_email_invalid")
+
+    _verified_https_url(publication["website"], "website", "getaxcp.com")
+    _verified_https_url(publication["repository"], "repository", "github.com")
+    _verified_https_url(publication["repository_release"], "repository_release", "github.com")
+
+    related = publication["related_identifiers"]
+    if not isinstance(related, list) or not related:
+        raise PaperBuildError("paper_publication_related_identifiers_invalid")
+    for item in related:
+        if not isinstance(item, dict) or set(item) != {"identifier", "relation", "description"}:
+            raise PaperBuildError("paper_publication_related_identifier_shape_invalid")
+        if item["relation"] != "isRelatedTo":
+            raise PaperBuildError("paper_publication_related_identifier_relation_invalid")
+        if not isinstance(item["identifier"], str) or re.fullmatch(
+            r"10\.5281/zenodo\.[0-9]+", item["identifier"]
+        ) is None:
+            raise PaperBuildError("paper_publication_related_identifier_invalid")
+        if not isinstance(item["description"], str) or not item["description"].strip():
+            raise PaperBuildError("paper_publication_related_identifier_description_invalid")
+    return publication
+
+
+def _verify_publication_bindings(publication: dict[str, Any], manuscript: Path) -> None:
+    author = publication["authors"][0]
+    publication_date = date.fromisoformat(publication["publication_date"])
+    month_names = (
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    )
+    display_date = (
+        f"{publication_date.day} {month_names[publication_date.month - 1]} "
+        f"{publication_date.year}"
+    )
+    metadata_text = METADATA.read_text(encoding="ascii")
+    header_text = HEADER.read_text(encoding="ascii")
+    manuscript_text = manuscript.read_text(encoding="ascii")
+    bindings = {
+        "metadata": (
+            metadata_text,
+            publication["title"],
+            publication["subtitle"],
+            author["display_name"],
+            publication["doi"],
+            f'date: "{display_date}"',
+        ),
+        "header": (
+            header_text,
+            publication["doi"],
+            author["affiliation"],
+            author["email"],
+            publication["website"],
+        ),
+        "manuscript": (
+            manuscript_text,
+            publication["title"],
+            publication["subtitle"],
+            publication["doi"],
+            author["display_name"],
+            author["affiliation"],
+        ),
+    }
+    for binding, values in bindings.items():
+        text, *required = values
+        for value in required:
+            if value not in text:
+                raise PaperBuildError(f"paper_publication_{binding}_binding_missing:{value}")
 
 
 def _prepare_markdown(manuscript: Path) -> str:
@@ -196,6 +370,10 @@ def _format_for_bounded_pages(tex: str) -> str:
         ">{\\raggedright\\arraybackslash}p{0.34\\linewidth}"
         ">{\\raggedright\\arraybackslash}p{0.27\\linewidth}@{}}",
     )
+    tex = tex.replace(
+        "\\section{23. References}",
+        "\\clearpage\n\\section{23. References}",
+    )
 
     simple_texttt = re.compile(r"\\texttt\{((?:[A-Za-z0-9./:+()=-]|\\_)+)\}")
 
@@ -208,7 +386,7 @@ def _format_for_bounded_pages(tex: str) -> str:
     return simple_texttt.sub(replace_long_identifier, tex)
 
 
-def _validate_tex(tex_bytes: bytes) -> None:
+def _validate_tex(tex_bytes: bytes, publication: dict[str, Any]) -> None:
     try:
         tex = tex_bytes.decode("ascii")
     except UnicodeDecodeError as exc:
@@ -219,8 +397,15 @@ def _validate_tex(tex_bytes: bytes) -> None:
         "\\section{1. Paper Rule}",
         "\\section{18. Limitations}",
         "\\section{22. Conclusion}",
+        "\\section{23. References}",
         "research/reference",
         "not a production approval",
+        publication["title"],
+        publication["subtitle"],
+        publication["doi"],
+        publication["authors"][0]["display_name"],
+        publication["authors"][0]["affiliation"],
+        "CC BY 4.0",
     )
     for marker in required:
         if marker not in tex:
@@ -230,7 +415,12 @@ def _validate_tex(tex_bytes: bytes) -> None:
             raise PaperBuildError(f"paper_tex_forbidden_token:{token}")
 
 
-def _generate_tex(manuscript: Path, pandoc: str, env: dict[str, str]) -> bytes:
+def _generate_tex(
+    manuscript: Path,
+    publication: dict[str, Any],
+    pandoc: str,
+    env: dict[str, str],
+) -> bytes:
     with tempfile.TemporaryDirectory(prefix="arcana-paper-") as temp_dir:
         temp_root = Path(temp_dir)
         prepared = temp_root / "manuscript.md"
@@ -259,7 +449,7 @@ def _generate_tex(manuscript: Path, pandoc: str, env: dict[str, str]) -> bytes:
             _transform_abstract(generated.read_text(encoding="ascii"))
         )
         tex_bytes = transformed.encode("ascii")
-    _validate_tex(tex_bytes)
+    _validate_tex(tex_bytes, publication)
     return tex_bytes
 
 
@@ -325,14 +515,26 @@ def main() -> int:
 
     try:
         contract = _load_source_contract()
-        manuscript = _verify_manuscript(contract)
+        manuscript = _verify_hashed_file(
+            contract, "manuscript", "manuscript_sha256"
+        )
+        publication_path = _verify_hashed_file(
+            contract, "publication", "publication_sha256"
+        )
+        publication = _load_publication_contract(publication_path)
+        source_date = datetime.fromtimestamp(
+            contract["source_date_epoch"], tz=UTC
+        ).date()
+        if source_date != date.fromisoformat(publication["publication_date"]):
+            raise PaperBuildError("paper_source_date_publication_date_mismatch")
+        _verify_publication_bindings(publication, manuscript)
         tex_path = (ROOT / contract["paper_tex"]).resolve()
         if tex_path.parent != (ROOT / "paper").resolve():
             raise PaperBuildError("paper_tex_path_invalid")
         env = dict(os.environ)
         env["SOURCE_DATE_EPOCH"] = str(contract["source_date_epoch"])
         pandoc = _verified_tool("pandoc", contract["toolchain"]["pandoc"], env)
-        generated = _generate_tex(manuscript, pandoc, env)
+        generated = _generate_tex(manuscript, publication, pandoc, env)
         if args.check:
             if not tex_path.is_file() or tex_path.read_bytes() != generated:
                 raise PaperBuildError("paper_tex_reproduction_mismatch")

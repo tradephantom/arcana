@@ -23,13 +23,16 @@ Current order:
 17. `ARCANA_Whitepaper_v1.0_Manuscript.md`
 18. `LIMITATIONS_v0.1.md`
 19. `PUBLIC_RELEASE_NOTES_v0.1.md`
-20. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
-21. `../paper/README.md`
-22. `../paper/ARCANA_Whitepaper_v1.0.tex`
+20. `PUBLIC_RELEASE_NOTES_v0.1.1.md`
+21. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
+22. `../CITATION.cff`
+23. `../paper/README.md`
+24. `../paper/PUBLICATION.json`
+25. `../paper/ARCANA_Whitepaper_v1.0.tex`
 
 Next public artifacts:
 
-1. Venue/archive metadata derived from the venue-neutral LaTeX package.
+1. External academic review or venue submission, if separately authorized.
 2. Follow-up release notes after maintainer-approved changes.
 
 Versioned public schemas live in `../schemas/`.
