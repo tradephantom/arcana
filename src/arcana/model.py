@@ -27,6 +27,7 @@ from arcana.errors import (
     ArcanaValidationError,
     CalibrationLevel,
     FastGateMode,
+    IncrementScope,
     PositiveVectorMethod,
     ReasonCode,
     ValidationIssue,
@@ -248,11 +249,14 @@ class AutonomyBudget:
     max_external_requests: int | None = None
     max_memory_writes: int | None = None
     max_output_bytes: int | None = None
+    increment_scope: IncrementScope | None = None
 
     @classmethod
     def from_mapping(cls, value: Any, path: tuple[str | int, ...] = ("autonomy_budget",)) -> "AutonomyBudget":
         data = expect_mapping(value, path, ReasonCode.DENY_BUDGET_EXHAUSTED)
         budget = cls(
+            increment_scope=expect_enum(IncrementScope, data["increment_scope"], (*path, "increment_scope"), ReasonCode.DENY_BUDGET_EXHAUSTED)
+            if "increment_scope" in data else None,
             expires_at=expect_datetime_string(
                 require_value(data, "expires_at", path, ReasonCode.DENY_BUDGET_EXHAUSTED),
                 (*path, "expires_at"),
@@ -271,6 +275,9 @@ class AutonomyBudget:
             if "max_output_bytes" in data
             else None,
         )
+        if budget.increment_scope is not None and budget.max_delta_rho_upper is None:
+            fail("increment_budget_limit_missing", ReasonCode.DENY_BUDGET_EXHAUSTED,
+                 "a scoped increment budget requires max_delta_rho_upper", (*path, "max_delta_rho_upper"))
         if (
             budget.max_delta_rho_upper is None
             and budget.max_external_requests is None
@@ -279,6 +286,16 @@ class AutonomyBudget:
         ):
             fail("autonomy_budget_empty", ReasonCode.DENY_BUDGET_EXHAUSTED, "at least one budget counter is required", path)
         return budget
+
+
+def reject_legacy_scoped_budget(budget: AutonomyBudget) -> None:
+    if not isinstance(budget, AutonomyBudget):
+        fail("autonomy_budget_invalid", ReasonCode.DENY_BUDGET_EXHAUSTED,
+             "autonomy_budget must be AutonomyBudget", ("autonomy_budget",))
+    if budget.increment_scope is not None:
+        fail("legacy_artifact_increment_scope_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID,
+             "context/certificate v0.2 cannot carry scoped increment proof; use the typed increment evaluator",
+             ("autonomy_budget", "increment_scope"))
 
 
 @dataclass(frozen=True)

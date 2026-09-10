@@ -13,7 +13,7 @@ from arcana._validation import expect_number_min, expect_number_range, fail
 from arcana.calibration import validate_calibration_sources_for_level, validate_certification_status_for_level
 from arcana.certificate import BoundedAutonomyCertificate, CertificateType
 from arcana.errors import CalibrationLevel, ReasonCode, Verdict
-from arcana.model import DecisionHorizon, EvidenceReference, LossBounds, RhoInterval, RiskContext
+from arcana.model import DecisionHorizon, EvidenceReference, LossBounds, RhoInterval, RiskContext, reject_legacy_scoped_budget
 
 
 _ALLOW_VERDICTS = frozenset({Verdict.ALLOW_BOUNDED_AUTONOMY, Verdict.ALLOW_WITH_CONTROLS})
@@ -51,6 +51,7 @@ def validate_risk_context_semantics(
 
     if not isinstance(context, RiskContext):
         fail("risk_context_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "context must be RiskContext", ("risk_context",))
+    reject_legacy_scoped_budget(context.autonomy_budget)
     instant = _aware_datetime(now, ("now",))
     _validate_expected_bindings(
         risk_model_version=context.risk_model_version,

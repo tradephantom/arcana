@@ -333,13 +333,21 @@ ARCANA_DENY_FASTGATE_UNCERTAIN
 
 FastGate must validate autonomy budget before returning an allow-like result.
 
-`max_delta_rho_upper` limits the increment between the declared upper-model
+On the legacy unscoped path, `max_delta_rho_upper` limits the increment between the declared upper-model
 matrices. The lower numerical endpoint of `K_before_upper` is NOT a calibrated
 lower baseline for an unknown actual matrix. Consequently the current increment
 must not be used as a bound on every compatible real-model increment. A latent
 increment requires a separately justified lower baseline and joint evidence
-scope, not present in this request type. See
+scope, not present in the original request type. See
 [R3 review P4](R3_TECHNICAL_CLAIM_REVIEW.md#p4-incremental-accounting-has-a-specific-baseline).
+
+R3.1 adds [Increment Contract v1](INCREMENT_CONTRACT_v1.md). The budget explicitly
+requires `upper_model` or `calibration_envelope`; the latter uses the declared
+initial calibration lower matrix or the conservative zero baseline. The actual
+before/after matrices, scope, model/profile/horizon, evidence and validity window
+must bind to the contract. Warm and exact paths retain that scope, including
+fallback. Cache scope and contract digest must match; a legacy cache cannot be
+reused for a scoped request. This does not verify empirical envelope coverage.
 
 Budget checks can include:
 

@@ -38,6 +38,7 @@ from arcana.errors import (
     Verdict,
 )
 from arcana.loss import LossBoundEvaluation, evaluate_loss_bounds
+from arcana.increments import IncrementContract, _metrics_from_verified_bound, required_increment_scope, validate_increment_binding
 from arcana.matrices import MatrixBundle, TolerancePolicy
 from arcana._numerics import NUMERICAL_CONTRACT_VERSION
 from arcana.model import AutonomyBudget, DecisionHorizon, DecisionResult, FastGateContext, LossBounds, RiskContext
@@ -83,12 +84,13 @@ class DecisionEvaluationRequest:
     scope_reduction_required: bool = False
     scope_reduction_available: bool = False
     distillation: DistillationAssessment | None = None
-    delta_rho_upper: float = 0.0
+    delta_rho_upper: float | None = None
     requested_external_requests: int = 0
     requested_memory_writes: int = 0
     requested_output_bytes: int = 0
     tolerance_policy: TolerancePolicy = field(default_factory=TolerancePolicy)
     supported_risk_model_versions: Sequence[str] = DEFAULT_SUPPORTED_RISK_MODEL_VERSIONS
+    increment: IncrementContract | None = None
 
 
 def evaluate_decision(request: DecisionEvaluationRequest) -> DecisionResult:
@@ -139,7 +141,14 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
             "tolerance_policy must be TolerancePolicy",
         )
     rho_threshold = expect_number_range(request.rho_threshold, 0, 1, ("rho_threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
-    delta_rho_upper = expect_number_min(request.delta_rho_upper, 0, ("delta_rho_upper",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+    increment_scope = required_increment_scope(request.autonomy_budget)
+    if increment_scope is not None and request.delta_rho_upper is not None:
+        fail("increment_scalar_override_forbidden", ReasonCode.DENY_MODEL_INPUT_INVALID,
+             "omit delta_rho_upper; scoped budgets recompute it from bound snapshots", ("delta_rho_upper",))
+    delta_rho_upper = expect_number_min(
+        0.0 if request.delta_rho_upper is None else request.delta_rho_upper,
+        0, ("delta_rho_upper",), ReasonCode.DENY_MODEL_INPUT_INVALID,
+    )
 
     if not isinstance(request.decision_horizon, DecisionHorizon):
         return _deny(
@@ -195,10 +204,20 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
         ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
     )
 
+    increment = validate_increment_binding(
+        request.increment, required_scope=increment_scope, risk_model_version=risk_model_version,
+        calibration_profile_id=calibration_profile.profile_id, decision_horizon=decision_horizon,
+        decision_time=decision_time, after_upper=request.matrix_bundle.upper,
+        after_lower=request.matrix_bundle.lower,
+    )
     rho_metrics = _rho_metrics(request.matrix_bundle, rho_threshold, request.tolerance_policy)
+    increment_metrics = {"increment_scope": "legacy_caller_declared", "delta_rho_upper": delta_rho_upper}
+    if increment is not None:
+        increment_metrics = _metrics_from_verified_bound(increment, rho_metrics["rho_upper"])
+        delta_rho_upper = increment_metrics["delta_rho_upper"]
     base_metrics: dict[str, Any] = {
         **rho_metrics,
-        "delta_rho_upper": delta_rho_upper,
+        **increment_metrics,
         "calibration_level": calibration_profile.level.value,
         "required_calibration_level": required_calibration_level.value,
     }
@@ -230,7 +249,7 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
 
     budget_failure = _budget_failure(request.autonomy_budget, decision_time, delta_rho_upper, request)
     if budget_failure is not None:
-        return budget_failure
+        return replace(budget_failure, metrics={**base_metrics, **budget_failure.metrics})
 
     if not request.tolerance_policy.below_threshold_with_margin(base_metrics["rho_upper"], rho_threshold):
         if request.scope_reduction_available:

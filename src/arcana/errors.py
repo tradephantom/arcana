@@ -58,6 +58,11 @@ class FastGateMode(str, Enum):
     OBSERVE_ONLY = "observe_only"
 
 
+class IncrementScope(str, Enum):
+    UPPER_MODEL = "upper_model"
+    CALIBRATION_ENVELOPE = "calibration_envelope"
+
+
 class PositiveVectorMethod(str, Enum):
     IRREDUCIBLE_PERRON_VECTOR = "irreducible_perron_vector"
     SCC_DECOMPOSITION = "scc_decomposition"
@@ -67,6 +72,7 @@ class PositiveVectorMethod(str, Enum):
 
 
 class SchemaVersion(str, Enum):
+    INCREMENT_V1 = "arcana.increment.v1"
     CALIBRATION_PROFILE_V02 = "arcana.calibration_profile.v0.2"
     CONTEXT_V02 = "arcana.context.v0.2"
     CERTIFICATE_V02 = "arcana.certificate.v0.2"
@@ -135,6 +141,7 @@ __all__ = [
     "CalibrationLevel",
     "CertificationStatus",
     "FastGateMode",
+    "IncrementScope",
     "PathPart",
     "PositiveVectorMethod",
     "ReasonCode",

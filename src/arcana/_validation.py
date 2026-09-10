@@ -79,9 +79,15 @@ def expect_int_min(value: Any, minimum: int, path: Sequence[PathPart], reason_co
 
 
 def expect_number_min(value: Any, minimum: float, path: Sequence[PathPart], reason_code: ReasonCode) -> float:
-    if not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(float(value)) or float(value) < minimum:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
         fail("number_invalid", reason_code, f"expected finite number >= {minimum}", path)
-    return float(value)
+    try:
+        number = float(value)
+    except OverflowError:
+        fail("number_unrepresentable", reason_code, "provide a number within binary64 range", path)
+    if not math.isfinite(number) or number < minimum:
+        fail("number_invalid", reason_code, f"expected finite number >= {minimum}", path)
+    return number
 
 
 def expect_number_range(

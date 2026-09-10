@@ -150,9 +150,13 @@ certificates.
 
 FastGate is a conservative declared-model decision path and optimization design.
 The reference has no demonstrated latency or sparse-update speedup advantage.
-Its incremental budget concerns the supplied upper-model matrices, not every
+Its legacy incremental budget concerns the supplied upper-model matrices, not every
 unknown calibrated matrix below them. A separate lower baseline would be needed
-for that stronger increment claim; the current request type does not supply it.
+for that stronger increment claim. R3.1 supplies a versioned conditional
+[calibration-envelope path](INCREMENT_CONTRACT_v1.md), with explicit zero when
+the initial lower matrix is absent. This may overcharge uncertainty and deny
+otherwise acceptable operations. It does not establish that the declared
+joint envelope is empirically correct, authenticated or complete.
 
 Limitations:
 

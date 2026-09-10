@@ -13,8 +13,9 @@ contract; the public roadmap carries the corrective sequence.
 | R1 | Numerical/input correction merged by PR #3 at `aaed2db55d889b43714135bfb9774e7ae46f4e9b`; post-merge checks passed |
 | R2 | PR #4 merged at `be4383c1d5b4cdc9a1b1d3e49627db5ceab8dd17`; post-merge local reproduction and CI passed |
 | Corrective release | v0.1.2 ships R1 and R2; see [Release Notes v0.1.2](PUBLIC_RELEASE_NOTES_v0.1.2.md) |
-| R3 | Internal technical/claim review and corrective manuscript candidate; no independent approval; runtime remains the R2 revision |
-| Next gate | Bind the R3 documentation/test candidate to exact bytes, obtain independent review, then clean-commit/CI and separate release/manuscript approval |
+| R3 | Documentation/test-only review frozen at local `add731e`; its runtime is R2; independent review remains open |
+| R3.1 | Implemented local unreleased conditional increment scope, lower-baseline accounting and evaluator/cache binding; exact source and installed replay are required for acceptance |
+| Next gate | R3.2 temporal/generation contract after the R3.1 bound acceptance record; independent review, CI and release approvals remain distinct |
 | Empirical authority | Synthetic benchmark only; no new empirical A2/A3 evidence |
 | Production authority | Not provided by this repository or by a green test run |
 
@@ -29,6 +30,7 @@ contract; the public roadmap carries the corrective sequence.
 7. [R3 Technical and Claim Review](R3_TECHNICAL_CLAIM_REVIEW.md)
 8. [Corrective Manuscript Review Draft](ARCANA_Corrective_Manuscript_Review_Draft.md)
 9. [Independent Reviewer Record](R3_REVIEWER_RECORD_TEMPLATE.md)
+10. [Increment Contract v1](INCREMENT_CONTRACT_v1.md)
 
 The numerical contract supersedes unchecked spectral-estimate interpretations
 for corrected source. It bounds the represented matrix, not calibration truth

@@ -9,6 +9,11 @@ Only files listed here are part of this public repository tree.
 
 | Path | Status | Notes |
 | --- | --- | --- |
+| `docs/INCREMENT_CONTRACT_v1.md` | unreleased R3.1 | Conditional incremental budget contract and acceptance criteria. |
+| `src/arcana/increments.py` | unreleased R3.1 | Typed snapshot binding and conservative increment evaluation. |
+| `schemas/ARCANA_Increment.schema.v1.json` | unreleased R3.1 | Public conditional increment wire contract. |
+| `tests/test_increment_contract.py` | unreleased R3.1 | Analytical enclosure, binding, compatibility and cache regressions. |
+| `examples/increment_calibration_envelope.synthetic.json` | unreleased R3.1 | Synthetic C02 increment pair; no empirical evidence. |
 | `docs/R3_TECHNICAL_CLAIM_REVIEW.md` | unreleased review candidate | Public mathematical obligations, claim findings and exact counterexamples; not independent approval. |
 | `docs/ARCANA_Corrective_Manuscript_Review_Draft.md` | unreleased review draft | Proposed correction language; historical paper unchanged. |
 | `docs/R3_REVIEWER_RECORD_TEMPLATE.md` | unsigned review template | Reviewer identity, conflicts, source binding and separate decisions. |

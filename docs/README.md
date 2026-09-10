@@ -1,5 +1,8 @@
 # ARCANA Public Docs
 
+R3.1: [Increment Contract v1](INCREMENT_CONTRACT_v1.md), the scoped conditional
+budget implementation following the documentation-only R3 baseline.
+
 This folder contains public documentation for the ARCANA open research/reference repository.
 
 Current authority index: [Project Status](PROJECT_STATUS.md).

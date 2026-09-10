@@ -9,6 +9,21 @@
 
 ## 1. Executive Summary
 
+### Increment Contract Addendum, 2026-09-10
+
+R3.1 requires explicit `upper_model` or `calibration_envelope` budget scope,
+versioned before/after matrix snapshots, content bindings, evidence identity,
+model/profile/horizon and validity-window checks. Scoped requests must recompute
+their increment; caller-supplied scalar overrides and silent scope downgrades
+are prohibited. Missing initial calibration lower matrices use the conservative
+nonnegative zero baseline, with an explicit result label.
+
+This is conditional represented-matrix accounting, not verified empirical
+coverage or a production certificate. Legacy context/certificate v0.2 must
+reject scoped budgets rather than discard their scope. See
+[Increment Contract v1](INCREMENT_CONTRACT_v1.md) for proof obligations,
+compatibility and acceptance criteria.
+
 ARCANA is an open research and reference framework for autonomy accounting in agentic systems.
 
 ARCANA estimates whether a proposed operation, delegation, tool call, memory action, capability grant, or distillation event remains within a bounded risk envelope under:

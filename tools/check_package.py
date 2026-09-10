@@ -35,7 +35,14 @@ for path in sorted(SCHEMA_DIR.glob('*.json')):
     Draft202012Validator.check_schema(load_json(path))
 examples = load_public_examples()
 assert examples
+from arcana.increments import IncrementContract, evaluate_increment
+increments = [item for item in examples if isinstance(item, IncrementContract)]
+assert len(increments) == 1
+increment = evaluate_increment(increments[0], decision_time='2026-09-10T10:00:00Z')
+assert increment['increment_scope'] == 'calibration_envelope'
+assert increment['delta_rho_upper'] >= 0.625
 print(json.dumps({'package': str(package), 'resources': resources, 'examples': len(examples),
+                  'increment': increment,
                   'manifest': [entry.to_mapping() for entry in build_input_manifest()]}, sort_keys=True))
 """
 
@@ -114,6 +121,13 @@ def main() -> int:
                 raise RuntimeError("package_gate_resource_bytes_mismatch")
             if probe["manifest"] != json.loads(expected_report)["input_manifest"]:
                 raise RuntimeError("package_gate_installed_source_manifest_mismatch")
+            # Execute the same self-contained contract tests against the installed library.
+            contract_tests = outside / "test_increment_contract.py"
+            contract_tests.write_bytes((ROOT / "tests/test_increment_contract.py").read_bytes())
+            run([str(python), "-I", "-m", "pip", "install", "--only-binary=:all:",
+                 "--constraint", str(constraints), "pytest"], outside, installed_env)
+            increment_tests = run([str(python), "-I", "-m", "pytest", "-q", "-p", "no:cacheprovider", "-c", os.devnull,
+                                   "--confcutdir", str(outside), str(contract_tests)], outside, installed_env)
             for seed in ("1", "104729"):
                 seeded_env = {**installed_env, "PYTHONHASHSEED": seed}
                 demo = binary / ("arcana-demo.exe" if os.name == "nt" else "arcana-demo")
@@ -133,7 +147,17 @@ def main() -> int:
                                      cwd=outside, env=installed_env, capture_output=True, timeout=30)
             if tampered.returncode != 2 or b"benchmark_report_source_manifest_mismatch" not in tampered.stderr:
                 raise RuntimeError("package_gate_installed_tamper_not_rejected")
+            numerical.write_bytes(wheel_contents(wheel)["arcana/_numerics.py"])
+            increment_module = Path(probe["package"]) / "increments.py"
+            increment_module.write_bytes(increment_module.read_bytes() + b"\n# increment tamper control\n")
+            tampered_increment = subprocess.run([str(bench), "--verify", str(source_report)],
+                                               cwd=outside, env=installed_env, capture_output=True, timeout=30)
+            if tampered_increment.returncode != 2 or b"benchmark_report_source_manifest_mismatch" not in tampered_increment.stderr:
+                raise RuntimeError("package_gate_increment_tamper_not_rejected")
             results.append({"route": label, "status": "PASS", "examples": probe["examples"],
+                            "increment_contract": probe["increment"],
+                            "increment_tests": increment_tests.decode("utf-8").strip(),
+                            "increment_tamper_rejected": True,
                             "installed_tamper_rejected": True,
                             "wheel_sha256": hashlib.sha256(wheel.read_bytes()).hexdigest()})
         wheel_metadata = {name: data.decode("utf-8")

@@ -69,7 +69,7 @@ that an epsilon repairs an arbitrary eigensolver error.
 FastGate certifies positive-vector ratios using the same exact arithmetic.
 Its after-matrix addition rounds each changed entry upward. The incremental
 spectral budget is bounded by `max(0, after_upper - before_lower)`, with upward
-rounding. Here `before_lower` is a lower NUMERICAL endpoint of the supplied
+rounding. On the legacy unscoped path, `before_lower` is a lower NUMERICAL endpoint of the supplied
 `K_before_upper`, not of `K_before_lower` or an unknown real baseline. The budget
 therefore bounds a change in the declared upper-model matrices only. It cannot
 be treated as a conservative increment of every matrix below that baseline.
@@ -82,8 +82,14 @@ full recomputation rather than cached incremental evaluation; it does not mean
 symbolically exact eigenvalues. The reference still computes a baseline bound
 and is not a demonstrated low-latency implementation.
 
-The general decision request's `delta_rho_upper` is supplied by its caller;
-checking its domain and budget does not derive its bound. Neither API verifies
+The unscoped general decision request's `delta_rho_upper` is supplied by its
+caller; checking its domain and budget does not derive its bound. R3.1 adds an
+explicit [increment contract](INCREMENT_CONTRACT_v1.md): scoped requests recompute
+the increment and reject scalar overrides. `calibration_envelope` uses a lower
+numerical endpoint of the initial calibration lower matrix, or explicitly zero
+when that matrix is absent. Its guarantee is conditional on jointly valid
+before/after envelopes; hashes and declarations do not prove empirical coverage.
+Neither API verifies
 a loss distribution, simultaneous calibration coverage, a generation model or
 the temporal stability of separately changing matrices. Those are distinct
 model/evidence contracts, not properties created by numerical accuracy.

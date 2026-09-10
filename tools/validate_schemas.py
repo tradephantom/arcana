@@ -27,6 +27,7 @@ CERT_ID_RE = re.compile(r"^arcana-cert-[A-Za-z0-9_.:-]+$")
 SCENARIO_ID_RE = re.compile(r"^arcana-bench-[A-Za-z0-9_.:-]+$")
 
 SCHEMAS = {
+    "arcana.increment.v1": "ARCANA_Increment.schema.v1.json",
     "arcana.calibration_profile.v0.2": "ARCANA_CalibrationProfile.schema.v0.2.json",
     "arcana.context.v0.2": "ARCANA_Context.schema.v0.2.json",
     "arcana.certificate.v0.2": "ARCANA_Certificate.schema.v0.2.json",
@@ -395,6 +396,15 @@ def validate_example(path: Path, registered: set[str]) -> list[Finding]:
     if not isinstance(obj, dict):
         return [Finding(rel(path), "example_not_object", "top-level JSON must be object")]
     schema_version = obj.get("schema_version")
+    if schema_version == "arcana.increment.v1":
+        from arcana.errors import ArcanaValidationError
+        from arcana.increments import IncrementContract
+
+        try:
+            IncrementContract.from_mapping(obj)
+        except ArcanaValidationError as exc:
+            return [Finding(rel(path), exc.code, exc.primary_issue.message)]
+        return []
     if schema_version == "arcana.calibration_profile.v0.2":
         return validate_calibration_profile(path, obj, registered)
     if schema_version == "arcana.context.v0.2":

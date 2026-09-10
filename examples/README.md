@@ -4,6 +4,8 @@ Examples in this folder are synthetic. They are not production evidence and do n
 
 Current examples:
 
+- `increment_calibration_envelope.synthetic.json`
+
 - `calibration_profile_a0.synthetic.json`
 - `risk_context_allow_with_controls.synthetic.json`
 - `certificate_a0_non_certifiable.synthetic.json`
@@ -26,3 +28,7 @@ The execution suite supplies one complete non-certifiable A0/A1 evaluator
 input per benchmark scenario. `make bench` executes those inputs through the
 public reference evaluator. The resulting report is synthetic evaluator
 evidence only, not empirical system or production evidence.
+
+The increment example reproduces the R3-C02 budget-scope counterexample. Its
+standalone calculation uses `evaluate_increment` at the fixed synthetic time
+`2026-09-10T10:00:00Z`. It is not live evidence or a certificate.
