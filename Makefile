@@ -1,4 +1,4 @@
-.PHONY: check public-audit schema-check test demo bench paper paper-check
+.PHONY: check public-audit schema-check test demo bench paper paper-check package-check
 
 PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 
@@ -26,3 +26,6 @@ paper:
 
 paper-check:
 	$(PYTHON) tools/build_paper.py --check
+
+package-check:
+	$(PYTHON) tools/check_package.py

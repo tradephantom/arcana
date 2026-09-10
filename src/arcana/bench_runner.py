@@ -17,6 +17,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+from arcana._resources import provenance_path
 from arcana._validation import fail, issue
 from arcana.bench import BENCHMARK_SCENARIO_GLOB, BenchmarkSuite, load_public_benchmark_suite
 from arcana.benchmark_input import (
@@ -61,13 +62,20 @@ _STATIC_PROVENANCE_PATHS = (
     "schemas/ARCANA_BenchmarkExecutionSuite.schema.v0.1.json",
     "schemas/ARCANA_BenchmarkRunReport.schema.v0.1.json",
     "schemas/ARCANA_BenchmarkScenario.schema.v0.2.json",
+    "src/arcana/__init__.py",
+    "src/arcana/_numerics.py",
+    "src/arcana/_resources.py",
     "src/arcana/_validation.py",
+    "src/arcana/artifacts.py",
     "src/arcana/bench.py",
     "src/arcana/bench_runner.py",
     "src/arcana/benchmark_input.py",
     "src/arcana/calibration.py",
+    "src/arcana/certificate.py",
     "src/arcana/decision.py",
+    "src/arcana/demo.py",
     "src/arcana/errors.py",
+    "src/arcana/fastgate.py",
     "src/arcana/loss.py",
     "src/arcana/matrices.py",
     "src/arcana/model.py",
@@ -293,13 +301,13 @@ def run_public_benchmark(root: Path = ROOT) -> BenchmarkRunReport:
 
 def build_input_manifest(root: Path = ROOT) -> tuple[InputManifestEntry, ...]:
     scenario_paths = tuple(
-        str(path.relative_to(root))
+        path.relative_to(root).as_posix()
         for path in sorted((root / "examples").glob(BENCHMARK_SCENARIO_GLOB))
     )
     relative_paths = tuple(sorted({*_STATIC_PROVENANCE_PATHS, *scenario_paths}))
     entries: list[InputManifestEntry] = []
     for relative_path in relative_paths:
-        path = root / relative_path
+        path = provenance_path(root, relative_path)
         if path.is_symlink():
             fail(
                 "benchmark_input_manifest_symlink_rejected",

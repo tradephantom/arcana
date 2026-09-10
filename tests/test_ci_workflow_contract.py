@@ -52,6 +52,7 @@ def test_ci_workflow_covers_public_gates_and_determinism() -> None:
         "make check PYTHON=python",
         "make test PYTHON=python",
         "make demo PYTHON=python",
+        "make package-check PYTHON=python",
         "PYTHONHASHSEED=1",
         "PYTHONHASHSEED=104729",
         "cmp build/ci/bench-seed-1.json build/ci/bench-seed-104729.json",
@@ -77,3 +78,7 @@ def test_ci_workflow_binds_release_replay_and_paper_hashes() -> None:
     assert "508386177cf942a45077439508c090f2507af2258b376f64a8a9a62542dbdf4c" in text
     assert "fc5a769a9599c3063f459d479365f88fb5cbd746cad2083b4d30d5906dd5930d" in text
     assert 'if [[ "$REPLAY_TARGET" == "v0.1.0" ]]' in text
+
+
+def test_packaging_gate_does_not_rewrite_historical_replay() -> None:
+    assert "if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.replay_target == 'v0.1.0') }}" in _workflow_text()

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arcana-reference"
-version = "0.1.1"
+version = "0.1.2.dev0"
 description = "Public reference implementation for the Autonomy Risk Calculus for Agentic Network Assurance."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -20,11 +20,11 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=8,<9",
-  "PyYAML>=6.0.2,<7"
+  "PyYAML>=6.0.2,<7",
+  "build>=1.2,<2"
 ]
 
 [project.urls]
-Homepage = "https://getaxcp.com"
 Repository = "https://github.com/tradephantom/arcana"
 Paper = "https://doi.org/10.5281/zenodo.21333463"
 
@@ -42,3 +42,8 @@ addopts = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/arcana"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"schemas" = "arcana/_data/schemas"
+"examples" = "arcana/_data/examples"
+"pyproject.toml" = "arcana/_data/pyproject.toml"

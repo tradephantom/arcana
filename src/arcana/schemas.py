@@ -11,6 +11,7 @@ from typing import Any, Mapping
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import ValidationError
 
+from arcana._resources import RESOURCE_ROOT
 from arcana._validation import issue
 from arcana.benchmark_input import BenchmarkExecutionSuite
 from arcana.calibration import CalibrationProfile
@@ -19,7 +20,7 @@ from arcana.errors import ArcanaValidationError, ReasonCode, SchemaVersion, Vali
 from arcana.model import BenchmarkScenario, RiskContext
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = RESOURCE_ROOT
 SCHEMA_DIR = ROOT / "schemas"
 EXAMPLE_DIR = ROOT / "examples"
 
