@@ -83,6 +83,11 @@ jobs:
           make test PYTHON=python
           make demo PYTHON=python
 
+      - name: Verify installed distributions
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.replay_target == 'v0.1.0') }}
+        shell: bash
+        run: make package-check PYTHON=python
+
       - name: Verify hash-seed and demo determinism
         shell: bash
         run: |

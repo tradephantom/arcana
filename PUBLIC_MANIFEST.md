@@ -9,6 +9,12 @@ Only files listed here are part of this public repository tree.
 
 | Path | Status | Notes |
 | --- | --- | --- |
+| `docs/PROJECT_STATUS.md` | unreleased correction | Current versus archived source authority. |
+| `docs/PACKAGE_PORTABILITY.md` | unreleased correction | Installed distribution contract and acceptance gate. |
+| `docs/CORRECTIVE_REVIEW_PACKET.md` | unreleased correction | Renewed public-safe review scope and checklist. |
+| `src/arcana/_resources.py` | unreleased correction | Source and installed resource binding. |
+| `tools/check_package.py` | unreleased correction | Isolated wheel and sdist replay gate. |
+| `tests/test_package_resources.py` | unreleased correction | Resource portability and provenance regressions. |
 | `README.md` | public release | Public research/reference repository entrypoint. |
 | `CITATION.cff` | public release | Machine-readable software metadata and preferred preprint citation. |
 | `PUBLIC_MANIFEST.md` | public release | Manifest of public repository files. |

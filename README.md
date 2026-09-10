@@ -10,6 +10,11 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 
 ## Current Status
 
+For current source versus archived release identity, start with
+[Project Status](docs/PROJECT_STATUS.md). R1 numerical corrections and R2
+packaging changes are not retroactively part of the archived v0.1.1/preprint.
+The corrected revision requires its own review and release decision.
+
 This public repository is live as an open research/reference release for local evaluation.
 
 The standalone reference implementation through Slice 5, ARCANA-Bench v0.1
@@ -115,11 +120,15 @@ make test
 make demo
 make bench
 make paper-check
+make package-check
 ```
 
 `make check` runs the public-boundary audit, schema/example validation, and the
 deterministic synthetic evaluator benchmark. Unit tests and the standalone demo
 remain explicit `make test` and `make demo` gates.
+
+`make package-check` tests direct-wheel and sdist-wheel installations outside
+the checkout; see [Installed Package Contract](docs/PACKAGE_PORTABILITY.md).
 
 `make paper` compiles the venue-neutral LaTeX package locally with Pandoc and
 Tectonic. Generated PDF and auxiliary files remain under ignored `build/`.

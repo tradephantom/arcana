@@ -11,10 +11,13 @@
 
 ### Corrective Gate, 2026-09-10
 
-Before the next release, complete the numerical/input correction described in
-[Numerical Contract v1](NUMERICAL_CONTRACT_v1.md), adversarial regressions and
-fresh local validation. Then repair installed-package resource portability,
-reconcile the reviewer packet, and obtain review of the exact corrected revision.
+R1 numerical/input correction described in
+[Numerical Contract v1](NUMERICAL_CONTRACT_v1.md) is merged through PR #3.
+R2 adds [installed-package portability](PACKAGE_PORTABILITY.md), complete
+runtime provenance, [current-state navigation](PROJECT_STATUS.md) and the
+[corrective reviewer packet](CORRECTIVE_REVIEW_PACKET.md). These are unreleased
+corrections. Next: clean source freeze, exact-revision CI and independent R3
+review before a separately authorized corrective release and manuscript update.
 Do not reinterpret historical local gates as approval of these new changes.
 Archival publication and production/empirical qualification remain separate.
 
