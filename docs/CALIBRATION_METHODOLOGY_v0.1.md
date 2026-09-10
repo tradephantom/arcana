@@ -8,6 +8,21 @@ This document defines how public ARCANA calibration profiles should derive edge-
 
 ARCANA calibration is not proof of safety. It is a declared method for converting evidence and assumptions into model-bounded uncertainty bounds.
 
+## Corrective Scope Clarification
+
+The implemented checks validate declared fields, compatibility and source-class
+rules. They do not independently derive or prove empirical uncertainty coverage.
+A factor product needs justified conditional/dependence semantics or a separate
+domination argument to be a probabilistic bound. Marginal confidence intervals
+do not automatically give simultaneous coverage over all graph entries,
+generations, before/after states or adaptively selected decisions.
+
+Calibration must specify that joint scope, the generation/transition meaning,
+representation conservatism and temporal validity. Missing evidence must not be
+replaced by a numerical tolerance, hash or source-class label. The numerical
+kernel bounds the supplied represented matrix only. See
+[R3 review P6](R3_TECHNICAL_CLAIM_REVIEW.md#p6-numerical-accuracy-is-not-statistical-coverage).
+
 ## 1. Design Requirements
 
 ARCANA calibration must satisfy these requirements:

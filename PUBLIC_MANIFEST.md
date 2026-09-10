@@ -9,6 +9,10 @@ Only files listed here are part of this public repository tree.
 
 | Path | Status | Notes |
 | --- | --- | --- |
+| `docs/R3_TECHNICAL_CLAIM_REVIEW.md` | unreleased review candidate | Public mathematical obligations, claim findings and exact counterexamples; not independent approval. |
+| `docs/ARCANA_Corrective_Manuscript_Review_Draft.md` | unreleased review draft | Proposed correction language; historical paper unchanged. |
+| `docs/R3_REVIEWER_RECORD_TEMPLATE.md` | unsigned review template | Reviewer identity, conflicts, source binding and separate decisions. |
+| `tests/test_r3_mathematical_scope.py` | synthetic analytical tests | Independent mathematical oracles and claim-scope counterexamples, not external review. |
 | `docs/PROJECT_STATUS.md` | unreleased correction | Current versus archived source authority. |
 | `docs/PACKAGE_PORTABILITY.md` | unreleased correction | Installed distribution contract and acceptance gate. |
 | `docs/CORRECTIVE_REVIEW_PACKET.md` | unreleased correction | Renewed public-safe review scope and checklist. |

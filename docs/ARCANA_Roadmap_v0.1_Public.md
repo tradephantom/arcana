@@ -16,8 +16,20 @@ R1 numerical/input correction described in
 R2 adds [installed-package portability](PACKAGE_PORTABILITY.md), complete
 runtime provenance, [current-state navigation](PROJECT_STATUS.md) and the
 [corrective reviewer packet](CORRECTIVE_REVIEW_PACKET.md). These are unreleased
-corrections. Next: clean source freeze, exact-revision CI and independent R3
-review before a separately authorized corrective release and manuscript update.
+corrections. R2 was merged through PR #4 at `be4383c`; exact-main CI and local
+post-merge replay passed. R3 now adds an internal
+[technical/claim review](R3_TECHNICAL_CLAIM_REVIEW.md), exact-oracle scope tests,
+a [corrective manuscript candidate](ARCANA_Corrective_Manuscript_Review_Draft.md)
+and an unsigned reviewer record. Runtime code is unchanged by this R3 candidate.
+Independent review remains OPEN; an implementation assistant's technical pass
+does not close it. Next: bind the new candidate to exact bytes, obtain an
+accountable independent review and accepted findings, freeze a clean commit,
+rerun affected local/CI gates and request separate release/archive approval.
+
+The current scope explicitly excludes latent-model incremental budget guarantees,
+automatically proved temporal stability or joint calibration coverage, implemented
+loss-distribution estimation and demonstrated FastGate performance improvement.
+These require distinct future design/evidence work, not stronger paper language.
 Do not reinterpret historical local gates as approval of these new changes.
 Archival publication and production/empirical qualification remain separate.
 

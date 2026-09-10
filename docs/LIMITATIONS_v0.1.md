@@ -40,6 +40,12 @@ Limitations:
 
 Unknown compatibility state means risky.
 
+A horizon identifier does not define a propagation generation or validate a
+linear recurrence. Fixed-matrix subcriticality does not establish switching
+stability, and even a zero-radius DAG can have very large transient propagation.
+Initial conditions, finite-horizon amplification and separate impact constraints
+remain necessary. See the [R3 technical review](R3_TECHNICAL_CLAIM_REVIEW.md).
+
 ## 3. Propagation Risk vs Loss
 
 ARCANA separates:
@@ -53,9 +59,18 @@ L = impact or loss
 
 An action can have bounded propagation risk but unacceptable loss bounds. An action can also have low expected loss but unacceptable propagation-risk upper bound.
 
+The reference validates supplied scalar loss metrics and limits; it does not
+estimate a distribution or verify loss units, confidence coverage, evidence or
+horizon metadata absent from `LossBounds`. These are upstream obligations.
+
 ## 4. Calibration Limits
 
 Calibration is an evidence-to-uncertainty contract, not proof of real-world behavior.
+
+Multiplying marginal factor probabilities is not generally a conservative joint
+probability model. Per-entry marginal coverage does not imply the same coverage
+for a whole graph or repeated decisions. Dependence, joint coverage and adaptive
+reuse require explicit evidence; numerical enclosure cannot establish them.
 
 Limitations:
 
@@ -133,7 +148,11 @@ certificates.
 
 ## 7. FastGate Limits
 
-FastGate is a conservative optimization path.
+FastGate is a conservative declared-model decision path and optimization design.
+The reference has no demonstrated latency or sparse-update speedup advantage.
+Its incremental budget concerns the supplied upper-model matrices, not every
+unknown calibrated matrix below them. A separate lower baseline would be needed
+for that stronger increment claim; the current request type does not supply it.
 
 Limitations:
 

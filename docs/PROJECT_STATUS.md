@@ -11,9 +11,10 @@ contract; the public roadmap carries the corrective sequence.
 | Archived software | v0.1.1 at `ca14464a19a9dfaedbb8b3c76bd0d030df6f13b5`, unchanged; superseded by v0.1.2 because it can under-report extreme spectral radii |
 | Archived preprint | Paper v1.0, DOI `10.5281/zenodo.21333463`, unchanged |
 | R1 | Numerical/input correction merged by PR #3 at `aaed2db55d889b43714135bfb9774e7ae46f4e9b`; post-merge checks passed |
-| R2 | Packaging/provenance correction merged by PR #4 at `be4383c` |
+| R2 | PR #4 merged at `be4383c1d5b4cdc9a1b1d3e49627db5ceab8dd17`; post-merge local reproduction and CI passed |
 | Corrective release | v0.1.2 ships R1 and R2; see [Release Notes v0.1.2](PUBLIC_RELEASE_NOTES_v0.1.2.md) |
-| Next gate | Exact-revision independent review and a separately approved manuscript update |
+| R3 | Internal technical/claim review and corrective manuscript candidate; no independent approval; runtime remains the R2 revision |
+| Next gate | Bind the R3 documentation/test candidate to exact bytes, obtain independent review, then clean-commit/CI and separate release/manuscript approval |
 | Empirical authority | Synthetic benchmark only; no new empirical A2/A3 evidence |
 | Production authority | Not provided by this repository or by a green test run |
 
@@ -25,6 +26,9 @@ contract; the public roadmap carries the corrective sequence.
 4. [Installed Package Contract](PACKAGE_PORTABILITY.md)
 5. [Corrective Review Packet](CORRECTIVE_REVIEW_PACKET.md)
 6. [Limitations](LIMITATIONS_v0.1.md)
+7. [R3 Technical and Claim Review](R3_TECHNICAL_CLAIM_REVIEW.md)
+8. [Corrective Manuscript Review Draft](ARCANA_Corrective_Manuscript_Review_Draft.md)
+9. [Independent Reviewer Record](R3_REVIEWER_RECORD_TEMPLATE.md)
 
 The numerical contract supersedes unchecked spectral-estimate interpretations
 for corrected source. It bounds the represented matrix, not calibration truth

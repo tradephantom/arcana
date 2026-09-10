@@ -15,6 +15,14 @@ versions, local test transcript and installed-package receipt. Before approval
 or release, bind these bytes to a clean immutable commit and rerun the gates.
 The current local packet is preparation evidence, not external review approval.
 
+R2 is merged at `be4383c1d5b4cdc9a1b1d3e49627db5ceab8dd17` with verified
+post-merge CI and local replay. R3 reviews that runtime and adds documentation
+and tests. Its new manifest, not the R2 revision alone, identifies the handoff.
+Read [R3 Technical and Claim Review](R3_TECHNICAL_CLAIM_REVIEW.md), the
+[corrective manuscript candidate](ARCANA_Corrective_Manuscript_Review_Draft.md),
+and complete an attributable copy of the
+[reviewer record](R3_REVIEWER_RECORD_TEMPLATE.md).
+
 ## Reading and Reproduction
 
 1. Read `PROJECT_STATUS.md`, the public PRD, roadmap and limitations.
@@ -36,6 +44,15 @@ The current local packet is preparation evidence, not external review approval.
       convergence failure and threshold equality are treated conservatively.
 - [ ] FastGate uses a lower before bound for incremental upper accounting;
       rounding, graph updates and fallback decisions do not understate risk.
+- [ ] Increment accounting is scoped to declared upper-model matrices, not
+      mistaken for a latent-model increment; the same-delta counterexample is reviewed.
+- [ ] Fixed-operator, transient-growth, switching and generation/horizon premises
+      are distinguished from per-request numerical validation.
+- [ ] Dependence and joint/time-scope coverage are not inferred from factor
+      domains or marginal calibration intervals.
+- [ ] Supplied loss metrics are not described as an implemented loss estimator
+      or as independently verified loss-horizon evidence; atoms/ties are defined.
+- [ ] FastGate performance objectives are not presented as measured speedups.
 - [ ] Direct typed construction cannot bypass input validation or immutability.
 - [ ] The distinction between model validity and calibration validity is explicit.
 - [ ] Clean installed wheels reproduce source results and reject provenance tamper.

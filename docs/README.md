@@ -8,6 +8,11 @@ Current corrective gate: [Numerical Contract v1](NUMERICAL_CONTRACT_v1.md).
 This unreleased correction takes precedence for working-tree numerical behavior;
 archived paper and release artifacts remain historical, immutable records.
 
+R3 candidate: [Technical and Claim Review](R3_TECHNICAL_CLAIM_REVIEW.md),
+[Corrective Manuscript Draft](ARCANA_Corrective_Manuscript_Review_Draft.md) and
+[Unsigned Reviewer Record](R3_REVIEWER_RECORD_TEMPLATE.md). These are review
+materials, not independent approval or a replacement for the archived paper.
+
 Current order:
 
 1. `../LICENSE.md`

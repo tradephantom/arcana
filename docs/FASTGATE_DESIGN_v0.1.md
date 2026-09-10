@@ -4,7 +4,9 @@
 > Scope: low-latency admission design for public ARCANA reference work
 > Implementation status: implemented and regression-tested in `src/arcana/fastgate.py`; reference-only, not production enforcement
 
-This document defines the public ARCANA-FastGate design for conservative admission of sparse graph changes without a full spectral recompute on every action.
+This document defines the public ARCANA-FastGate sparse-update decision design.
+Avoiding full spectral recomputation on every action is a design objective,
+not an achieved performance claim for the present reference implementation.
 
 FastGate is an optimization path. It must preserve the same upper-bound decision semantics as the exact ARCANA evaluator.
 
@@ -58,7 +60,7 @@ FastGate has three public modes.
 
 | Mode | Purpose | Allow-like result permitted |
 | --- | --- | --- |
-| `exact_recompute` | Full recompute of `rho(K_after_upper)`. | Yes, if all exact decision constraints pass. |
+| `exact_recompute` | Full verified enclosure for `K_after_upper`, not symbolic exact eigenvalues. | Yes, if all decision constraints pass with margin. |
 | `perron_collatz_bound` | Conservative sparse update bound. | Yes, if the bound proves admission with margin. |
 | `observe_only` | Evaluate or explain without admission authority. | No. |
 
@@ -331,6 +333,14 @@ ARCANA_DENY_FASTGATE_UNCERTAIN
 
 FastGate must validate autonomy budget before returning an allow-like result.
 
+`max_delta_rho_upper` limits the increment between the declared upper-model
+matrices. The lower numerical endpoint of `K_before_upper` is NOT a calibrated
+lower baseline for an unknown actual matrix. Consequently the current increment
+must not be used as a bound on every compatible real-model increment. A latent
+increment requires a separately justified lower baseline and joint evidence
+scope, not present in this request type. See
+[R3 review P4](R3_TECHNICAL_CLAIM_REVIEW.md#p4-incremental-accounting-has-a-specific-baseline).
+
 Budget checks can include:
 
 - `max_delta_rho_upper`;
@@ -359,6 +369,10 @@ AES_99_upper
 ```
 
 If loss is in scope, a FastGate allow-like propagation result is insufficient by itself. ARCANA must also validate loss upper bounds.
+
+Here validation covers supplied numeric values and limits only. The caller must
+establish loss units, horizon, source and statistical interpretation; current
+`LossBounds` does not contain those fields or estimate a loss distribution.
 
 Loss model failures return:
 
