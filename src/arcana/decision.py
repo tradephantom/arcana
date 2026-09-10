@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from typing import Any, Mapping
 
@@ -39,6 +39,7 @@ from arcana.errors import (
 )
 from arcana.loss import LossBoundEvaluation, evaluate_loss_bounds
 from arcana.matrices import MatrixBundle, TolerancePolicy
+from arcana._numerics import NUMERICAL_CONTRACT_VERSION
 from arcana.model import AutonomyBudget, DecisionHorizon, DecisionResult, FastGateContext, LossBounds, RiskContext
 
 
@@ -123,7 +124,7 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
             "matrix_bundle_invalid",
             "matrix_bundle must be MatrixBundle",
         )
-    request.matrix_bundle.validate_interval_order()
+    request = replace(request, matrix_bundle=request.matrix_bundle.validated_snapshot())
     if not request.matrix_bundle.upper.node_order:
         return _deny(
             ReasonCode.DENY_MODEL_INPUT_INVALID,
@@ -585,12 +586,13 @@ def _budget_failure(
     return None
 
 
-def _rho_metrics(bundle: MatrixBundle, threshold: float, tolerance_policy: TolerancePolicy) -> dict[str, float]:
+def _rho_metrics(bundle: MatrixBundle, threshold: float, tolerance_policy: TolerancePolicy) -> dict[str, Any]:
     interval = bundle.spectral_radii(threshold)
     if not interval.lower <= interval.mean <= interval.upper:
         fail("rho_interval_order_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID, "expected rho_lower <= rho_mean <= rho_upper", ("rho_interval",))
     margin = tolerance_policy.margin(threshold)
     return {
+        "numerical_contract_version": NUMERICAL_CONTRACT_VERSION,
         "rho_lower": interval.lower,
         "rho_mean": interval.mean,
         "rho_upper": interval.upper,

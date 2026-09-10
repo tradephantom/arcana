@@ -2,6 +2,10 @@
 
 This folder contains public documentation for the ARCANA open research/reference repository.
 
+Current corrective gate: [Numerical Contract v1](NUMERICAL_CONTRACT_v1.md).
+This unreleased correction takes precedence for working-tree numerical behavior;
+archived paper and release artifacts remain historical, immutable records.
+
 Current order:
 
 1. `../LICENSE.md`

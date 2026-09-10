@@ -1,0 +1,146 @@
+{
+  "contract_version": "arcana.numerical.v1",
+  "semantics": "strict verified upper plus default margin below threshold; binary64 inputs",
+  "threshold_cases": [
+    {
+      "id": "clear_below",
+      "upper": 0.5,
+      "threshold": 0.8,
+      "allowed": true
+    },
+    {
+      "id": "equality",
+      "upper": 0.8,
+      "threshold": 0.8,
+      "allowed": false
+    },
+    {
+      "id": "critical",
+      "upper": 1,
+      "threshold": 1,
+      "allowed": false
+    },
+    {
+      "id": "one_ulp_below",
+      "upper": 0.7999999999999999,
+      "threshold": 0.8,
+      "allowed": false
+    },
+    {
+      "id": "inside_margin",
+      "upper": 0.7999999999995,
+      "threshold": 0.8,
+      "allowed": false
+    },
+    {
+      "id": "outside_margin",
+      "upper": 0.799999999998,
+      "threshold": 0.8,
+      "allowed": true
+    },
+    {
+      "id": "zero_threshold",
+      "upper": 0,
+      "threshold": 0,
+      "allowed": false
+    }
+  ],
+  "matrix_cases": [
+    {
+      "id": "zero",
+      "matrix": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "rho": 0,
+      "threshold": 0.8,
+      "allowed": true
+    },
+    {
+      "id": "subcritical",
+      "matrix": [
+        [
+          0.125,
+          0.125
+        ],
+        [
+          0.125,
+          0.125
+        ]
+      ],
+      "rho": 0.25,
+      "threshold": 0.8,
+      "allowed": true
+    },
+    {
+      "id": "critical_identity",
+      "matrix": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "rho": 1,
+      "threshold": 1,
+      "allowed": false
+    },
+    {
+      "id": "critical_cycle",
+      "matrix": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "rho": 1,
+      "threshold": 0.8,
+      "allowed": false
+    },
+    {
+      "id": "extreme_cycle",
+      "matrix": [
+        [
+          0,
+          1e+250
+        ],
+        [
+          1e-250,
+          0
+        ]
+      ],
+      "rho": 1,
+      "threshold": 0.8,
+      "allowed": false
+    },
+    {
+      "id": "overflow_intermediates",
+      "matrix": [
+        [
+          1.7976931348623157e+308,
+          1.7976931348623157e+308
+        ],
+        [
+          1.7976931348623157e+308,
+          1.7976931348623157e+308
+        ]
+      ],
+      "rho": null,
+      "threshold": 0.8,
+      "allowed": false
+    }
+  ]
+}
