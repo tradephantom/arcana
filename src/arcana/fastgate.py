@@ -5,10 +5,10 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
-import math
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
+from fractions import Fraction
 from typing import Any, Mapping
 
 import numpy as np
@@ -27,7 +27,8 @@ from arcana._validation import (
 )
 from arcana.errors import ArcanaValidationError, CalibrationLevel, FastGateMode, PositiveVectorMethod, ReasonCode, Verdict
 from arcana.loss import evaluate_loss_bounds
-from arcana.matrices import PropagationMatrix, TolerancePolicy, spectral_radius
+from arcana.matrices import PropagationMatrix, SpectralBounds, TolerancePolicy, spectral_bounds, spectral_radius
+from arcana._numerics import NUMERICAL_CONTRACT_VERSION, nonnegative_difference_upper, outward_float, verified_collatz_bounds
 from arcana.model import AutonomyBudget, DecisionHorizon, DecisionResult, FastGateContext, LossBounds
 
 
@@ -257,21 +258,35 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
     if loss_precondition_failure is not None:
         return _evaluation(loss_precondition_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
 
-    after_values = before_upper.values + delta_matrix
+    after_values = before_upper.values.copy()
+    for row, column in zip(*np.nonzero(delta_matrix), strict=True):
+        try:
+            after_values[row, column] = outward_float(
+                Fraction(float(before_upper.values[row, column])) + Fraction(float(delta_matrix[row, column])),
+                upper=True,
+            )
+        except ArcanaValidationError as exc:
+            if exc.code == "spectral_bound_unrepresentable":
+                fail("fastgate_after_entry_unrepresentable", ReasonCode.DENY_MODEL_INPUT_INVALID,
+                     "outward-rounded matrix update exceeds binary64 range; reduce the delta or deny admission",
+                     ("K_after_upper", int(row), int(column)))
+            raise
     after_upper = PropagationMatrix.from_values(
         after_values,
         node_order=before_upper.node_order,
         graph_hash=graph_hash,
         path=("K_after_upper",),
     )
-    rho_before = spectral_radius(before_upper)
+    before_bounds = spectral_bounds(before_upper)
+    rho_before = before_bounds.upper
 
     if mode is FastGateMode.OBSERVE_ONLY:
         return _evaluation(
             _result(
                 Verdict.OBSERVE_ONLY,
                 (ReasonCode.REQUIRE_OBSERVE_ONLY,),
-                metrics={"issue_code": "fastgate_observe_only", "rho_before_upper": rho_before},
+                metrics={"issue_code": "fastgate_observe_only", "rho_before_upper": rho_before,
+                         "numerical_contract_version": NUMERICAL_CONTRACT_VERSION},
                 caveats=("FastGate observe_only mode does not support admission.",),
             ),
             FastGateContext(mode=FastGateMode.OBSERVE_ONLY),
@@ -285,6 +300,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                 (ReasonCode.REQUIRE_OBSERVE_ONLY, ReasonCode.INFO_A0_NON_CERTIFIABLE),
                 metrics={
                     "issue_code": "fastgate_a0_observe_only",
+                    "numerical_contract_version": NUMERICAL_CONTRACT_VERSION,
                     "calibration_level": calibration_level.value,
                     "rho_before_upper": rho_before,
                 },
@@ -310,7 +326,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         )
 
     if mode is FastGateMode.EXACT_RECOMPUTE:
-        return _exact_recompute_evaluation(request, after_upper, rho_before, threshold, tolerance_policy, decision_time)
+        return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time)
 
     if mode is FastGateMode.PERRON_COLLATZ_BOUND:
         vector_failure = _positive_vector_failure(request.positive_vector, after_upper, graph_hash, request.reducible_graph_declared)
@@ -329,7 +345,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                     FastGateContext(mode=FastGateMode.OBSERVE_ONLY),
                     after_upper,
                 )
-            return _exact_recompute_evaluation(request, after_upper, rho_before, threshold, tolerance_policy, decision_time)
+            return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time)
         bound = _collatz_bound(after_upper, positive_vector)
         fastgate_context = FastGateContext(
             mode=FastGateMode.PERRON_COLLATZ_BOUND,
@@ -337,18 +353,20 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
             upper_bound=bound,
         )
         metrics = {
+            "numerical_contract_version": NUMERICAL_CONTRACT_VERSION,
             "rho_before_upper": rho_before,
+            "rho_before_lower": before_bounds.lower,
             "fastgate_upper_bound": bound,
             "rho_threshold": threshold,
             "rho_margin": tolerance_policy.margin(threshold),
-            "delta_rho_upper_bound": max(0.0, bound - rho_before),
+            "delta_rho_upper_bound": nonnegative_difference_upper(bound, before_bounds.lower),
         }
         budget_failure = _budget_failure(request.autonomy_budget, decision_time, metrics["delta_rho_upper_bound"], request)
         if budget_failure is not None:
             return _evaluation(budget_failure, fastgate_context, after_upper)
         if not tolerance_policy.below_threshold_with_margin(bound, threshold):
             if request.exact_recompute_available and request.exact_recompute_on_uncertain:
-                return _exact_recompute_evaluation(request, after_upper, rho_before, threshold, tolerance_policy, decision_time)
+                return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time)
             return _evaluation(
                 _deny(
                     ReasonCode.DENY_FASTGATE_UNCERTAIN,
@@ -382,7 +400,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
 def _exact_recompute_evaluation(
     request: FastGateRequest,
     after_upper: PropagationMatrix,
-    rho_before: float,
+    before_bounds: SpectralBounds,
     threshold: float,
     tolerance_policy: TolerancePolicy,
     decision_time: datetime,
@@ -399,11 +417,13 @@ def _exact_recompute_evaluation(
         )
     rho_after = spectral_radius(after_upper)
     metrics = {
-        "rho_before_upper": rho_before,
+        "numerical_contract_version": NUMERICAL_CONTRACT_VERSION,
+        "rho_before_upper": before_bounds.upper,
+        "rho_before_lower": before_bounds.lower,
         "rho_after_upper": rho_after,
         "rho_threshold": threshold,
         "rho_margin": tolerance_policy.margin(threshold),
-        "delta_rho_upper": max(0.0, rho_after - rho_before),
+        "delta_rho_upper": nonnegative_difference_upper(rho_after, before_bounds.lower),
     }
     fastgate_context = FastGateContext(mode=FastGateMode.EXACT_RECOMPUTE)
     budget_failure = _budget_failure(request.autonomy_budget, decision_time, metrics["delta_rho_upper"], request)
@@ -706,28 +726,13 @@ def _collatz_bound(matrix: PropagationMatrix, vector: PositiveVector) -> float:
         values = np.maximum(values, vector.epsilon)
     if np.any(values <= 0):
         fail("fastgate_positive_vector_entry_nonpositive", ReasonCode.DENY_FASTGATE_VECTOR_INVALID, "positive vector entries must be > 0", ("positive_vector", "values"))
-    ratios: list[float] = []
-    for row_index, row in enumerate(matrix.values):
-        terms: list[float] = []
-        for coefficient, vector_value in zip(row, values, strict=True):
-            product = float(coefficient) * float(vector_value)
-            if coefficient > 0 and vector_value > 0:
-                product = math.nextafter(product, math.inf)
-            terms.append(product)
-        try:
-            numerator = math.fsum(terms)
-        except OverflowError:
-            fail("fastgate_collatz_bound_nonfinite", ReasonCode.DENY_FASTGATE_UNCERTAIN, "Collatz numerator must be finite", ("fastgate", "upper_bound", row_index))
-        if numerator > 0:
-            numerator = math.nextafter(numerator, math.inf)
-        ratio = numerator / float(values[row_index])
-        if ratio > 0:
-            ratio = math.nextafter(ratio, math.inf)
-        ratios.append(ratio)
-    bound = max(ratios)
-    if not np.isfinite(bound):
-        fail("fastgate_collatz_bound_nonfinite", ReasonCode.DENY_FASTGATE_UNCERTAIN, "Collatz bound must be finite", ("fastgate", "upper_bound"))
-    return bound
+    try:
+        return verified_collatz_bounds(matrix.values, values).upper
+    except ArcanaValidationError as exc:
+        if exc.code == "spectral_bound_unrepresentable":
+            fail("fastgate_collatz_bound_nonfinite", ReasonCode.DENY_FASTGATE_UNCERTAIN,
+                 "verified Collatz bound exceeds binary64 range; deny or recompute", ("fastgate", "upper_bound"))
+        raise
 
 
 def _validate_optional_hash(value: str | None, path: tuple[str | int, ...]) -> str | None:

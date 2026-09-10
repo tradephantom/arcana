@@ -8,6 +8,11 @@ This document defines the public ARCANA model contract for graph state, propagat
 
 ARCANA is model-bounded autonomy accounting. This document does not assert universal safety, production readiness, or enforcement authority.
 
+Working-tree numerical correction: [Numerical Contract v1](NUMERICAL_CONTRACT_v1.md)
+specifies verified enclosures, outward rounding and strict admission. References
+below to computed spectral radii must be interpreted using that contract for
+the corrected implementation, not as claims of exact floating-point eigenvalues.
+
 ## 1. Design Requirements
 
 The formal model must satisfy these requirements:

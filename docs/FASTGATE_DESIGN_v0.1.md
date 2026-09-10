@@ -8,6 +8,11 @@ This document defines the public ARCANA-FastGate design for conservative admissi
 
 FastGate is an optimization path. It must preserve the same upper-bound decision semantics as the exact ARCANA evaluator.
 
+Working-tree numerical correction: [Numerical Contract v1](NUMERICAL_CONTRACT_v1.md)
+governs verified bounds, outward-rounded matrix updates and incremental budgets.
+The reference currently recomputes the baseline bound; low-latency incremental
+operation remains a design objective, not a measured implementation claim.
+
 ## 1. Design Requirements
 
 FastGate must satisfy these requirements:

@@ -43,6 +43,7 @@ Only files listed here are part of this public repository tree.
 | `docs/GLOSSARY.md` | public-safe release artifact | Public ARCANA vocabulary. |
 | `docs/REASON_CODES.md` | public-safe release artifact | Public ARCANA reason-code registry. |
 | `docs/FORMAL_MODEL_v0.2.md` | public-safe release artifact | Implemented public ARCANA formal model contract. |
+| `docs/NUMERICAL_CONTRACT_v1.md` | public-safe unreleased correction | Verified numerical bounds, represented-input boundary and corrective gate. |
 | `docs/CALIBRATION_METHODOLOGY_v0.1.md` | public-safe release artifact | Implemented public ARCANA calibration methodology contract. |
 | `docs/FASTGATE_DESIGN_v0.1.md` | public-safe release artifact | Implemented public ARCANA FastGate reference design. |
 | `docs/PUBLIC_DEMO_REFERENCE_IMPLEMENTATION_PLAN_v0.1.md` | public-safe release artifact | Public demo and reference implementation plan. |
@@ -72,6 +73,7 @@ Only files listed here are part of this public repository tree.
 | `schemas/ARCANA_Context.schema.v0.2.json` | public-safe release artifact | Public risk context schema. |
 | `src/arcana/__init__.py` | public release | ARCANA package entrypoint. |
 | `src/arcana/_validation.py` | public release | Internal validation helpers for typed public contracts. |
+| `src/arcana/_numerics.py` | public-safe unreleased correction | Exact rational bound verification and numerical candidate generation. |
 | `src/arcana/artifacts.py` | public release | Semantic admission validation for typed public artifacts. |
 | `src/arcana/bench.py` | public release | ARCANA-Bench suite loader and coverage validator. |
 | `src/arcana/benchmark_input.py` | public release | Typed benchmark evaluator inputs and deterministic matrix construction. |
@@ -94,6 +96,9 @@ Only files listed here are part of this public repository tree.
 | `tests/test_decision_reason_codes.py` | public release | Slice 3 decision evaluator and reason-code tests. |
 | `tests/test_fastgate.py` | public release | Slice 5 FastGate reference-contract tests. |
 | `tests/test_matrix_validation.py` | public release | Slice 2 matrix and spectral calculator tests. |
+| `tests/test_numerical_contract.py` | public-safe unreleased correction | Adversarial numerical and input invariant regressions. |
+| `tests/test_fastgate_numerics.py` | public-safe unreleased correction | Verified incremental budget and matrix addition regressions. |
+| `tests/fixtures/numerical_contract_v1.json` | public-safe synthetic fixture | Portable default-threshold and matrix-admission conformance corpus. |
 | `tests/test_project_scaffold.py` | public release | Slice 0 scaffold verification tests. |
 | `tests/test_public_audit_security.py` | public release | Public audit secret-material regression tests. |
 | `tests/test_public_integration_contract.py` | public release | Public integration contract boundary and example tests. |
