@@ -63,6 +63,7 @@ _STATIC_PROVENANCE_PATHS = (
     "schemas/ARCANA_BenchmarkRunReport.schema.v0.1.json",
     "schemas/ARCANA_BenchmarkScenario.schema.v0.2.json",
     "schemas/ARCANA_Increment.schema.v1.json",
+    "schemas/ARCANA_Temporal.schema.v1.json",
     "src/arcana/__init__.py",
     "src/arcana/_numerics.py",
     "src/arcana/_resources.py",
@@ -82,6 +83,7 @@ _STATIC_PROVENANCE_PATHS = (
     "src/arcana/matrices.py",
     "src/arcana/model.py",
     "src/arcana/schemas.py",
+    "src/arcana/temporal.py",
 )
 
 

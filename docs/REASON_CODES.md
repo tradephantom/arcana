@@ -10,6 +10,24 @@ Reason codes are part of the public contract surface. Do not reuse a code for a 
 
 ## Naming Rules
 
+The temporal v1 evaluator uses the existing public reason-code families with
+granular `issue_code` details, matching the typed evaluator convention:
+
+| Issue | Reason family | Required handling |
+| --- | --- | --- |
+| `temporal_contract_missing` / `temporal_contract_invalid` | `ARCANA_DENY_MODEL_INPUT_INVALID` | Supply the required typed contract; do not substitute snapshot-only evaluation. |
+| `temporal_policy_missing` / `temporal_policy_invalid` | `ARCANA_DENY_BUDGET_EXHAUSTED` | Supply the authorized temporal policy. |
+| `temporal_mode_mismatch` / `temporal_generations_mismatch` | `ARCANA_DENY_BUDGET_EXHAUSTED` | Match required scope and depth; no downgrade. |
+| `temporal_operator_outside_envelope` | `ARCANA_DENY_MODEL_INPUT_INVALID` | Rebuild and justify an envelope covering all family members. |
+| `temporal_envelope_not_subcritical` | `ARCANA_DENY_RHO_UPPER_BOUND` | Reduce common propagation; individual snapshot radii are insufficient. |
+| `temporal_peak_budget_exceeded` / `temporal_cumulative_budget_exceeded` | `ARCANA_DENY_BUDGET_EXHAUSTED` | Reduce the respective activation bound or obtain a justified policy revision. |
+| `temporal_evidence_horizon_not_covered` | `ARCANA_DENY_CONTEXT_STALE` | Supply evidence valid through the entire decision horizon. |
+| `temporal_state_bound_unrepresentable` / `temporal_total_bound_unrepresentable` / `temporal_cumulative_bound_unrepresentable` | `ARCANA_DENY_MODEL_INPUT_INVALID` | Deny rather than clip or replace an unrepresentable bound. |
+| `legacy_artifact_temporal_policy_unsupported` | `ARCANA_DENY_MODEL_INPUT_INVALID` | Do not serialize temporal proof into context/certificate v0.2. |
+
+Typed validation adds specific paths for malformed field types, matrix and graph
+bindings, unsupported semantics, resource limits and stale cache identity.
+
 Public ARCANA reason codes use:
 
 ```text

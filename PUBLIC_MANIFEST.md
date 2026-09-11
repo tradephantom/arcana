@@ -9,6 +9,11 @@ Only files listed here are part of this public repository tree.
 
 | Path | Status | Notes |
 | --- | --- | --- |
+| `docs/TEMPORAL_CONTRACT_v1.md` | unreleased R3.2 | Conditional temporal model, finite activation bounds and acceptance gates. |
+| `src/arcana/temporal.py` | unreleased R3.2 | Typed temporal binding and verified finite-generation propagation. |
+| `schemas/ARCANA_Temporal.schema.v1.json` | unreleased R3.2 | Public conditional temporal input contract. |
+| `tests/test_temporal_contract.py` | unreleased R3.2 | Exact rational recurrence, switching, transient and binding regressions. |
+| `examples/temporal_common_envelope.synthetic.json` | unreleased R3.2 | Synthetic common-envelope generation contract; no empirical evidence. |
 | `docs/INCREMENT_CONTRACT_v1.md` | unreleased R3.1 | Conditional incremental budget contract and acceptance criteria. |
 | `src/arcana/increments.py` | unreleased R3.1 | Typed snapshot binding and conservative increment evaluation. |
 | `schemas/ARCANA_Increment.schema.v1.json` | unreleased R3.1 | Public conditional increment wire contract. |

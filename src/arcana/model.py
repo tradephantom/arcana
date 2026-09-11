@@ -28,6 +28,7 @@ from arcana.errors import (
     CalibrationLevel,
     FastGateMode,
     IncrementScope,
+    TemporalMode,
     PositiveVectorMethod,
     ReasonCode,
     ValidationIssue,
@@ -242,6 +243,40 @@ class FastGateContext:
         return cls(mode=mode, positive_vector_method=method, upper_bound=upper_bound)
 
 
+MAX_TEMPORAL_GENERATIONS = 256
+
+
+@dataclass(frozen=True)
+class TemporalPolicy:
+    mode: TemporalMode
+    generations: int
+    max_peak_activations_upper: float
+    max_cumulative_activations_upper: float
+
+    def __post_init__(self) -> None:
+        reason = ReasonCode.DENY_BUDGET_EXHAUSTED
+        object.__setattr__(self, "mode", expect_enum(TemporalMode, self.mode, ("temporal_policy", "mode"), reason))
+        expect_int_min(self.generations, 1, ("temporal_policy", "generations"), reason)
+        if self.generations > MAX_TEMPORAL_GENERATIONS:
+            fail("temporal_generation_limit_exceeded", reason,
+                 "use a separately reviewed implementation for more than 256 generations", ("temporal_policy", "generations"))
+        for name in ("max_peak_activations_upper", "max_cumulative_activations_upper"):
+            object.__setattr__(self, name, expect_number_min(getattr(self, name), 0, ("temporal_policy", name), reason))
+
+    @classmethod
+    def from_mapping(cls, value: Any, path: tuple = ("temporal_policy",)) -> "TemporalPolicy":
+        data = expect_mapping(value, path, ReasonCode.DENY_BUDGET_EXHAUSTED)
+        fields = {"mode", "generations", "max_peak_activations_upper", "max_cumulative_activations_upper"}
+        for name in sorted(fields):
+            if name not in data:
+                fail(f"temporal_policy_{name}_missing", ReasonCode.DENY_BUDGET_EXHAUSTED,
+                     f"provide the required temporal policy {name}", (*path, name))
+        if set(data) - fields:
+            fail("temporal_policy_field_unknown", ReasonCode.DENY_BUDGET_EXHAUSTED,
+                 "remove unsupported temporal policy fields", path)
+        return cls(**data)
+
+
 @dataclass(frozen=True)
 class AutonomyBudget:
     expires_at: str
@@ -250,11 +285,14 @@ class AutonomyBudget:
     max_memory_writes: int | None = None
     max_output_bytes: int | None = None
     increment_scope: IncrementScope | None = None
+    temporal_policy: TemporalPolicy | None = None
 
     @classmethod
     def from_mapping(cls, value: Any, path: tuple[str | int, ...] = ("autonomy_budget",)) -> "AutonomyBudget":
         data = expect_mapping(value, path, ReasonCode.DENY_BUDGET_EXHAUSTED)
         budget = cls(
+            temporal_policy=TemporalPolicy.from_mapping(data["temporal_policy"], (*path, "temporal_policy"))
+            if "temporal_policy" in data else None,
             increment_scope=expect_enum(IncrementScope, data["increment_scope"], (*path, "increment_scope"), ReasonCode.DENY_BUDGET_EXHAUSTED)
             if "increment_scope" in data else None,
             expires_at=expect_datetime_string(
@@ -283,6 +321,7 @@ class AutonomyBudget:
             and budget.max_external_requests is None
             and budget.max_memory_writes is None
             and budget.max_output_bytes is None
+            and budget.temporal_policy is None
         ):
             fail("autonomy_budget_empty", ReasonCode.DENY_BUDGET_EXHAUSTED, "at least one budget counter is required", path)
         return budget
@@ -296,6 +335,10 @@ def reject_legacy_scoped_budget(budget: AutonomyBudget) -> None:
         fail("legacy_artifact_increment_scope_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID,
              "context/certificate v0.2 cannot carry scoped increment proof; use the typed increment evaluator",
              ("autonomy_budget", "increment_scope"))
+    if budget.temporal_policy is not None:
+        fail("legacy_artifact_temporal_policy_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID,
+             "context/certificate v0.2 cannot carry temporal proof; use the typed temporal evaluator",
+             ("autonomy_budget", "temporal_policy"))
 
 
 @dataclass(frozen=True)
@@ -558,6 +601,7 @@ __all__ = [
     "ReasonCode",
     "RhoInterval",
     "RiskContext",
+    "TemporalPolicy",
     "ValidationIssue",
     "Verdict",
 ]

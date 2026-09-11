@@ -27,6 +27,7 @@ from arcana._validation import (
 )
 from arcana.errors import ArcanaValidationError, CalibrationLevel, FastGateMode, IncrementScope, PositiveVectorMethod, ReasonCode, Verdict
 from arcana.increments import IncrementContract, _metrics_from_verified_bound, required_increment_scope, validate_increment_binding
+from arcana.temporal import TemporalContract, evaluate_temporal, temporal_policy_hash, validate_temporal_binding
 from arcana.loss import evaluate_loss_bounds
 from arcana.matrices import PropagationMatrix, SpectralBounds, TolerancePolicy, spectral_bounds, spectral_radius
 from arcana._numerics import NUMERICAL_CONTRACT_VERSION, nonnegative_difference_upper, outward_float, verified_collatz_bounds
@@ -90,6 +91,8 @@ class FastGateCacheBinding:
     evidence_source_id: str | None = None
     increment_scope: IncrementScope | None = None
     increment_binding_hash: str | None = None
+    temporal_binding_hash: str | None = None
+    temporal_policy_hash: str | None = None
 
 
 @dataclass(frozen=True)
@@ -122,6 +125,7 @@ class FastGateRequest:
     max_changed_entries: int = DEFAULT_MAX_CHANGED_ENTRIES
     max_delta_density: float = DEFAULT_MAX_DELTA_DENSITY
     increment: IncrementContract | None = None
+    temporal: TemporalContract | None = None
 
 
 @dataclass(frozen=True)
@@ -271,6 +275,12 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         decision_time=decision_time, before_upper=before_upper, after_upper=after_upper,
         evidence_hash=evidence_hash, evidence_source_id=evidence_source_id,
     )
+    temporal = validate_temporal_binding(
+        request.temporal, request.autonomy_budget.temporal_policy, risk_model_version=risk_model_version,
+        calibration_profile_id=calibration_profile_id, decision_horizon=decision_horizon,
+        decision_time=decision_time, current_upper=after_upper,
+        evidence_hash=evidence_hash, evidence_source_id=evidence_source_id,
+    )
     if request.positive_vector is not None and not isinstance(request.positive_vector, PositiveVector):
         fail("fastgate_positive_vector_invalid", ReasonCode.DENY_FASTGATE_VECTOR_INVALID,
              "positive_vector must be PositiveVector", ("positive_vector",))
@@ -278,7 +288,8 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         request.cache_binding, decision_time, risk_model_version, calibration_profile_id,
         decision_horizon, graph_hash, request.delta_upper.delta_hash, threshold,
         request.positive_vector.method if request.positive_vector is not None else None,
-        tolerance_policy, evidence_hash, evidence_source_id, increment,
+        tolerance_policy, evidence_hash, evidence_source_id, increment, temporal,
+        None if temporal is None else temporal_policy_hash(request.autonomy_budget.temporal_policy),
     )
     if cache_failure is not None:
         return _evaluation(cache_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
@@ -330,8 +341,19 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
             after_upper,
         )
 
+    temporal_metrics = {"temporal_scope": "not_evaluated"}
+    if temporal is not None:
+        temporal_result = evaluate_temporal(temporal, request.autonomy_budget.temporal_policy,
+                                            decision_time=request.decision_time, rho_threshold=threshold,
+                                            tolerance_policy=tolerance_policy)
+        temporal_metrics = dict(temporal_result.metrics)
+        if not temporal_result.passed:
+            return _evaluation(_deny(temporal_result.reason_code, temporal_result.issue_code,
+                                     temporal_result.guidance, temporal_metrics),
+                               FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
+
     if mode is FastGateMode.EXACT_RECOMPUTE:
-        return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment)
+        return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics)
 
     if mode is FastGateMode.PERRON_COLLATZ_BOUND:
         vector_failure = _positive_vector_failure(request.positive_vector, after_upper, graph_hash, request.reducible_graph_declared)
@@ -350,7 +372,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                     FastGateContext(mode=FastGateMode.OBSERVE_ONLY),
                     after_upper,
                 )
-            return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment)
+            return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics)
         bound = _collatz_bound(after_upper, positive_vector)
         fastgate_context = FastGateContext(
             mode=FastGateMode.PERRON_COLLATZ_BOUND,
@@ -365,6 +387,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
             "rho_threshold": threshold,
             "rho_margin": tolerance_policy.margin(threshold),
             **_increment_metrics(increment, bound, before_bounds),
+            **temporal_metrics,
         }
         metrics["delta_rho_upper_bound"] = metrics["delta_rho_upper"]
         budget_failure = _budget_failure(request.autonomy_budget, decision_time, metrics["delta_rho_upper_bound"], request)
@@ -372,7 +395,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
             return _evaluation(replace(budget_failure, metrics={**metrics, **budget_failure.metrics}), fastgate_context, after_upper)
         if not tolerance_policy.below_threshold_with_margin(bound, threshold):
             if request.exact_recompute_available and request.exact_recompute_on_uncertain:
-                return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment)
+                return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics)
             return _evaluation(
                 _deny(
                     ReasonCode.DENY_FASTGATE_UNCERTAIN,
@@ -418,6 +441,7 @@ def _exact_recompute_evaluation(
     tolerance_policy: TolerancePolicy,
     decision_time: datetime,
     increment: IncrementContract | None,
+    temporal_metrics: Mapping[str, Any],
 ) -> FastGateEvaluation:
     if not request.exact_recompute_available:
         return _evaluation(
@@ -438,6 +462,7 @@ def _exact_recompute_evaluation(
         "rho_threshold": threshold,
         "rho_margin": tolerance_policy.margin(threshold),
         **_increment_metrics(increment, rho_after, before_bounds),
+        **temporal_metrics,
     }
     fastgate_context = FastGateContext(mode=FastGateMode.EXACT_RECOMPUTE)
     budget_failure = _budget_failure(request.autonomy_budget, decision_time, metrics["delta_rho_upper"], request)
@@ -588,11 +613,20 @@ def _cache_failure(
     evidence_hash: str | None,
     evidence_source_id: str | None,
     increment: IncrementContract | None,
+    temporal: TemporalContract | None,
+    policy_hash: str | None,
 ) -> DecisionResult | None:
     if cache is None:
         return None
     if not isinstance(cache, FastGateCacheBinding):
         return _deny(ReasonCode.DENY_CONTEXT_STALE, "fastgate_cache_invalid", "cache_binding must be FastGateCacheBinding")
+    for key, expected in (("temporal_binding_hash", None if temporal is None else temporal.binding_hash),
+                           ("temporal_policy_hash", policy_hash)):
+        raw = getattr(cache, key)
+        cached = None if raw is None else expect_sha256(raw, ("cache_binding", key), ReasonCode.DENY_CONTEXT_STALE)
+        if cached != expected:
+            return _deny(ReasonCode.DENY_CONTEXT_STALE, f"fastgate_cache_{key}_mismatch",
+                         f"rebuild the cache for the current {key}")
     cached_scope = None if cache.increment_scope is None else expect_enum(
         IncrementScope, cache.increment_scope, ("cache_binding", "increment_scope"), ReasonCode.DENY_CONTEXT_STALE)
     cached_increment_hash = None if cache.increment_binding_hash is None else expect_sha256(
@@ -804,7 +838,7 @@ def _budget_precondition_failure(
             "autonomy budget has expired",
             {"budget_expires_at": budget.expires_at},
         )
-    counters_declared = budget.max_delta_rho_upper is not None
+    counters_declared = budget.max_delta_rho_upper is not None or budget.temporal_policy is not None
     for budget_field, request_field, allowed, requested in (
         ("max_external_requests", "requested_external_requests", budget.max_external_requests, request.requested_external_requests),
         ("max_memory_writes", "requested_memory_writes", budget.max_memory_writes, request.requested_memory_writes),

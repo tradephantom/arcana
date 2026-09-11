@@ -19,6 +19,7 @@ from arcana.certificate import BoundedAutonomyCertificate
 from arcana.errors import ArcanaValidationError, ReasonCode, SchemaVersion, ValidationIssue
 from arcana.model import BenchmarkScenario, RiskContext
 from arcana.increments import IncrementContract
+from arcana.temporal import TemporalContract
 
 
 ROOT = RESOURCE_ROOT
@@ -26,6 +27,7 @@ SCHEMA_DIR = ROOT / "schemas"
 EXAMPLE_DIR = ROOT / "examples"
 
 SCHEMA_FILES: Mapping[SchemaVersion, str] = {
+    SchemaVersion.TEMPORAL_V1: "ARCANA_Temporal.schema.v1.json",
     SchemaVersion.INCREMENT_V1: "ARCANA_Increment.schema.v1.json",
     SchemaVersion.CALIBRATION_PROFILE_V02: "ARCANA_CalibrationProfile.schema.v0.2.json",
     SchemaVersion.CONTEXT_V02: "ARCANA_Context.schema.v0.2.json",
@@ -34,7 +36,7 @@ SCHEMA_FILES: Mapping[SchemaVersion, str] = {
     SchemaVersion.BENCHMARK_EXECUTION_SUITE_V01: "ARCANA_BenchmarkExecutionSuite.schema.v0.1.json",
 }
 
-TypedDocument = CalibrationProfile | RiskContext | BoundedAutonomyCertificate | BenchmarkScenario | BenchmarkExecutionSuite | IncrementContract
+TypedDocument = CalibrationProfile | RiskContext | BoundedAutonomyCertificate | BenchmarkScenario | BenchmarkExecutionSuite | IncrementContract | TemporalContract
 
 
 @dataclass(frozen=True)
@@ -131,6 +133,8 @@ def load_public_examples() -> tuple[TypedDocument, ...]:
 
 
 def _parse_validated_document(validated: ValidatedDocument) -> TypedDocument:
+    if validated.schema_version is SchemaVersion.TEMPORAL_V1:
+        return TemporalContract.from_mapping(validated.data)
     if validated.schema_version is SchemaVersion.INCREMENT_V1:
         return IncrementContract.from_mapping(validated.data)
     if validated.schema_version is SchemaVersion.CALIBRATION_PROFILE_V02:

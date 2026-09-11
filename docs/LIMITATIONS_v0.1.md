@@ -46,6 +46,14 @@ stability, and even a zero-radius DAG can have very large transient propagation.
 Initial conditions, finite-horizon amplification and separate impact constraints
 remain necessary. See the [R3 technical review](R3_TECHNICAL_CLAIM_REVIEW.md).
 
+R3.2 implements a [conditional temporal contract](TEMPORAL_CONTRACT_v1.md) for
+fixed coordinates, bounded causal generations, an explicit initial upper state
+and no later exogenous arrivals. It checks a common entrywise envelope and
+finite peak/cumulative activation limits. It does not prove the declared
+generation calibration, maximum depth or actual envelope coverage; it is not
+a continuous-time engine, an unrestricted switching solver or a loss estimator.
+Unknown family members and unsupported premises fail closed in scoped requests.
+
 ## 3. Propagation Risk vs Loss
 
 ARCANA separates:

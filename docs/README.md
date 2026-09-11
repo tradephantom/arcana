@@ -1,5 +1,8 @@
 # ARCANA Public Docs
 
+R3.2: [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md), common-envelope and finite
+generation accounting with explicit policy requirements and conditional premises.
+
 R3.1: [Increment Contract v1](INCREMENT_CONTRACT_v1.md), the scoped conditional
 budget implementation following the documentation-only R3 baseline.
 

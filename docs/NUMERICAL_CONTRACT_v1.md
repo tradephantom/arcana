@@ -89,10 +89,13 @@ the increment and reject scalar overrides. `calibration_envelope` uses a lower
 numerical endpoint of the initial calibration lower matrix, or explicitly zero
 when that matrix is absent. Its guarantee is conditional on jointly valid
 before/after envelopes; hashes and declarations do not prove empirical coverage.
-Neither API verifies
-a loss distribution, simultaneous calibration coverage, a generation model or
-the temporal stability of separately changing matrices. Those are distinct
-model/evidence contracts, not properties created by numerical accuracy.
+R3.2 adds [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md): source-row generation
+operators use a column-state transpose recurrence, a common subcritical envelope
+and outward finite peak/cumulative activation bounds. The entire horizon,
+generation count, initial state and no-arrivals semantics must be declared.
+Neither API empirically establishes these premises, a loss distribution or
+simultaneous calibration coverage. Those are distinct evidence obligations,
+not properties created by numerical accuracy.
 
 ## Verification and Compatibility
 

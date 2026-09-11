@@ -9,6 +9,18 @@
 
 ## 1. Executive Summary
 
+### Temporal Contract Addendum, 2026-09-11
+
+R3.2 requires explicit per-generation propagation semantics, a bounded initial
+state, fixed coordinates, no post-initial exogenous arrivals and either one
+fixed operator or a verified common envelope for the declared family. Scoped
+admission must check that envelope and finite peak/cumulative activation limits,
+not infer temporal stability from individual snapshot radii. The policy fixes
+mode and generation count. Evidence validity must cover the complete horizon.
+See [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md) for the supported recurrence,
+proof, compatibility and acceptance criteria. This adds no loss or empirical
+coverage guarantee and no production certificate format.
+
 ### Increment Contract Addendum, 2026-09-10
 
 R3.1 requires explicit `upper_model` or `calibration_envelope` budget scope,

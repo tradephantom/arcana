@@ -39,6 +39,7 @@ from arcana.errors import (
 )
 from arcana.loss import LossBoundEvaluation, evaluate_loss_bounds
 from arcana.increments import IncrementContract, _metrics_from_verified_bound, required_increment_scope, validate_increment_binding
+from arcana.temporal import TemporalContract, evaluate_temporal, validate_temporal_binding
 from arcana.matrices import MatrixBundle, TolerancePolicy
 from arcana._numerics import NUMERICAL_CONTRACT_VERSION
 from arcana.model import AutonomyBudget, DecisionHorizon, DecisionResult, FastGateContext, LossBounds, RiskContext
@@ -91,6 +92,7 @@ class DecisionEvaluationRequest:
     tolerance_policy: TolerancePolicy = field(default_factory=TolerancePolicy)
     supported_risk_model_versions: Sequence[str] = DEFAULT_SUPPORTED_RISK_MODEL_VERSIONS
     increment: IncrementContract | None = None
+    temporal: TemporalContract | None = None
 
 
 def evaluate_decision(request: DecisionEvaluationRequest) -> DecisionResult:
@@ -210,6 +212,11 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
         decision_time=decision_time, after_upper=request.matrix_bundle.upper,
         after_lower=request.matrix_bundle.lower,
     )
+    temporal = validate_temporal_binding(
+        request.temporal, request.autonomy_budget.temporal_policy, risk_model_version=risk_model_version,
+        calibration_profile_id=calibration_profile.profile_id, decision_horizon=decision_horizon,
+        decision_time=decision_time, current_upper=request.matrix_bundle.upper,
+    )
     rho_metrics = _rho_metrics(request.matrix_bundle, rho_threshold, request.tolerance_policy)
     increment_metrics = {"increment_scope": "legacy_caller_declared", "delta_rho_upper": delta_rho_upper}
     if increment is not None:
@@ -218,6 +225,7 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
     base_metrics: dict[str, Any] = {
         **rho_metrics,
         **increment_metrics,
+        "temporal_scope": "not_evaluated",
         "calibration_level": calibration_profile.level.value,
         "required_calibration_level": required_calibration_level.value,
     }
@@ -238,6 +246,14 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
             "calibration level is weaker than required",
             base_metrics,
         )
+
+    if temporal is not None:
+        temporal_result = evaluate_temporal(temporal, request.autonomy_budget.temporal_policy,
+                                            decision_time=request.decision_time, rho_threshold=rho_threshold,
+                                            tolerance_policy=request.tolerance_policy)
+        base_metrics.update(temporal_result.metrics)
+        if not temporal_result.passed:
+            return _deny(temporal_result.reason_code, temporal_result.issue_code, temporal_result.guidance, base_metrics)
 
     distillation_failure = _distillation_failure(request.distillation, calibration_profile.level, base_metrics)
     if distillation_failure is not None:
@@ -560,7 +576,7 @@ def _budget_failure(
             "autonomy budget has expired",
             {"decision_time": request.decision_time, "budget_expires_at": budget.expires_at},
         )
-    counters_declared = False
+    counters_declared = budget.temporal_policy is not None
     if budget.max_delta_rho_upper is not None:
         counters_declared = True
         max_delta = expect_number_min(budget.max_delta_rho_upper, 0, ("autonomy_budget", "max_delta_rho_upper"), ReasonCode.DENY_BUDGET_EXHAUSTED)

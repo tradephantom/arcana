@@ -27,7 +27,7 @@ sequence is:
 | Step | Finding | Deliverable and gate |
 | --- | --- | --- |
 | R3.1 | C02 | Implemented versioned calibration-envelope incremental budget, evaluator/FastGate/cache binding and analytical regression tests; acceptance requires exact source and installed replay. |
-| R3.2 | C03 | Explicit supported temporal/generation model, common-envelope conditions and transient counterexamples. |
+| R3.2 | C03 | Implemented [temporal contract v1](TEMPORAL_CONTRACT_v1.md), common-envelope verification, outward finite-generation bounds and policy/cache binding; acceptance requires exact source and installed replay. |
 | R3.3 | C04 | Joint coverage and dependence evidence contract; empirical validation remains a separate gate. |
 | R3.4 | C05 | Typed loss units, horizon, method and evidence contract; supported estimator and independent oracles. |
 | R3.5 | C06 | Reproducible performance measurements before optimization; no speed claim without measurements. |
@@ -42,7 +42,7 @@ rerun affected local/CI gates and request separate release/archive approval.
 
 R3.1 targets a conditional calibration-envelope increment bound, not an
 unconditional latent-model guarantee. The current scope still excludes
-automatically proved temporal stability or joint calibration coverage, implemented
+empirically established temporal premises or joint calibration coverage, implemented
 loss-distribution estimation and demonstrated FastGate performance improvement.
 These require distinct design/evidence work, not stronger paper language.
 Do not reinterpret historical local gates as approval of these new changes.

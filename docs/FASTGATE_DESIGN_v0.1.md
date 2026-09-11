@@ -349,6 +349,14 @@ must bind to the contract. Warm and exact paths retain that scope, including
 fallback. Cache scope and contract digest must match; a legacy cache cannot be
 reused for a scoped request. This does not verify empirical envelope coverage.
 
+R3.2 adds [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md). A required temporal
+policy fixes mode, generations and both activation limits. The actual after
+operator must be in the bound family; the shared envelope is checked separately
+from that operator's radius. Peak and cumulative activation bounds are checked
+before admission and cannot be bypassed by exact fallback. Cache identity binds
+both temporal contract and policy hashes. This additional verification work is
+not a performance optimization or a loss/empirical guarantee.
+
 Budget checks can include:
 
 - `max_delta_rho_upper`;

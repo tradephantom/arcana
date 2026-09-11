@@ -15,7 +15,8 @@ contract; the public roadmap carries the corrective sequence.
 | Corrective release | v0.1.2 ships R1 and R2; see [Release Notes v0.1.2](PUBLIC_RELEASE_NOTES_v0.1.2.md) |
 | R3 | Documentation/test-only review frozen at local `add731e`; its runtime is R2; independent review remains open |
 | R3.1 | Implemented local unreleased conditional increment scope, lower-baseline accounting and evaluator/cache binding; exact source and installed replay are required for acceptance |
-| Next gate | R3.2 temporal/generation contract after the R3.1 bound acceptance record; independent review, CI and release approvals remain distinct |
+| R3.2 | Implemented local conditional generation model, common-envelope and finite activation gates; exact source and installed replay are required for acceptance |
+| Next gate | R3.3 joint coverage/dependence evidence contract after R3.2 acceptance; independent review, CI and release approvals remain distinct |
 | Empirical authority | Synthetic benchmark only; no new empirical A2/A3 evidence |
 | Production authority | Not provided by this repository or by a green test run |
 
@@ -31,6 +32,7 @@ contract; the public roadmap carries the corrective sequence.
 8. [Corrective Manuscript Review Draft](ARCANA_Corrective_Manuscript_Review_Draft.md)
 9. [Independent Reviewer Record](R3_REVIEWER_RECORD_TEMPLATE.md)
 10. [Increment Contract v1](INCREMENT_CONTRACT_v1.md)
+11. [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md)
 
 The numerical contract supersedes unchecked spectral-estimate interpretations
 for corrected source. It bounds the represented matrix, not calibration truth
