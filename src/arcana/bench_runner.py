@@ -84,6 +84,7 @@ _STATIC_PROVENANCE_PATHS = (
     "src/arcana/model.py",
     "src/arcana/schemas.py",
     "src/arcana/temporal.py",
+    "src/arcana/coverage.py",
 )
 
 

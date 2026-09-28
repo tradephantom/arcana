@@ -40,6 +40,7 @@ from arcana.errors import (
 from arcana.loss import LossBoundEvaluation, evaluate_loss_bounds
 from arcana.increments import IncrementContract, _metrics_from_verified_bound, required_increment_scope, validate_increment_binding
 from arcana.temporal import TemporalContract, evaluate_temporal, validate_temporal_binding
+from arcana.coverage import CoverageContract, _coverage_metrics, validate_coverage_binding
 from arcana.matrices import MatrixBundle, TolerancePolicy
 from arcana._numerics import NUMERICAL_CONTRACT_VERSION
 from arcana.model import AutonomyBudget, DecisionHorizon, DecisionResult, FastGateContext, LossBounds, RiskContext
@@ -93,6 +94,7 @@ class DecisionEvaluationRequest:
     supported_risk_model_versions: Sequence[str] = DEFAULT_SUPPORTED_RISK_MODEL_VERSIONS
     increment: IncrementContract | None = None
     temporal: TemporalContract | None = None
+    coverage: CoverageContract | None = None
 
 
 def evaluate_decision(request: DecisionEvaluationRequest) -> DecisionResult:
@@ -217,6 +219,14 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
         calibration_profile_id=calibration_profile.profile_id, decision_horizon=decision_horizon,
         decision_time=decision_time, current_upper=request.matrix_bundle.upper,
     )
+    coverage = validate_coverage_binding(
+        request.coverage, request.autonomy_budget.coverage_policy, risk_model_version=risk_model_version,
+        calibration_profile_id=calibration_profile.profile_id, decision_horizon=decision_horizon,
+        decision_time=decision_time, current_upper=request.matrix_bundle.upper, increment=increment, temporal=temporal,
+    )
+    coverage_metrics = {"coverage_scope": "not_evaluated", "coverage_empirical_qualification": "not_established"}
+    if coverage is not None:
+        coverage_metrics = _coverage_metrics(coverage, request.autonomy_budget.coverage_policy)
     rho_metrics = _rho_metrics(request.matrix_bundle, rho_threshold, request.tolerance_policy)
     increment_metrics = {"increment_scope": "legacy_caller_declared", "delta_rho_upper": delta_rho_upper}
     if increment is not None:
@@ -225,6 +235,7 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
     base_metrics: dict[str, Any] = {
         **rho_metrics,
         **increment_metrics,
+        **coverage_metrics,
         "temporal_scope": "not_evaluated",
         "calibration_level": calibration_profile.level.value,
         "required_calibration_level": required_calibration_level.value,

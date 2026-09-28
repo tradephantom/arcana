@@ -73,6 +73,15 @@ horizon metadata absent from `LossBounds`. These are upstream obligations.
 
 ## 4. Calibration Limits
 
+R3.3 [joint coverage](COVERAGE_CONTRACT_v1.md) composes explicitly declared
+failure bounds for a complete fixed family under arbitrary dependence. It does
+not estimate or validate those probabilities, verify preregistration or bind
+external evidence bytes by ingestion. Its hash and scope checks do not prove
+calibration truth. Synthetic and external unverified declarations cannot satisfy
+the empirical-qualification gate. Coverage excludes loss, operational control
+health and cross-request/adaptive guarantees; legacy profile confidence does not
+become joint confidence. Real evidence qualification remains open.
+
 Calibration is an evidence-to-uncertainty contract, not proof of real-world behavior.
 
 Multiplying marginal factor probabilities is not generally a conservative joint

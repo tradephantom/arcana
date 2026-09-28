@@ -28,6 +28,7 @@ from arcana._validation import (
 from arcana.errors import ArcanaValidationError, CalibrationLevel, FastGateMode, IncrementScope, PositiveVectorMethod, ReasonCode, Verdict
 from arcana.increments import IncrementContract, _metrics_from_verified_bound, required_increment_scope, validate_increment_binding
 from arcana.temporal import TemporalContract, evaluate_temporal, temporal_policy_hash, validate_temporal_binding
+from arcana.coverage import CoverageContract, _coverage_metrics, coverage_policy_hash, validate_coverage_binding
 from arcana.loss import evaluate_loss_bounds
 from arcana.matrices import PropagationMatrix, SpectralBounds, TolerancePolicy, spectral_bounds, spectral_radius
 from arcana._numerics import NUMERICAL_CONTRACT_VERSION, nonnegative_difference_upper, outward_float, verified_collatz_bounds
@@ -93,6 +94,8 @@ class FastGateCacheBinding:
     increment_binding_hash: str | None = None
     temporal_binding_hash: str | None = None
     temporal_policy_hash: str | None = None
+    coverage_binding_hash: str | None = None
+    coverage_policy_hash: str | None = None
 
 
 @dataclass(frozen=True)
@@ -126,6 +129,7 @@ class FastGateRequest:
     max_delta_density: float = DEFAULT_MAX_DELTA_DENSITY
     increment: IncrementContract | None = None
     temporal: TemporalContract | None = None
+    coverage: CoverageContract | None = None
 
 
 @dataclass(frozen=True)
@@ -281,6 +285,15 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         decision_time=decision_time, current_upper=after_upper,
         evidence_hash=evidence_hash, evidence_source_id=evidence_source_id,
     )
+    coverage = validate_coverage_binding(
+        request.coverage, request.autonomy_budget.coverage_policy, risk_model_version=risk_model_version,
+        calibration_profile_id=calibration_profile_id, decision_horizon=decision_horizon,
+        decision_time=decision_time, current_upper=after_upper, increment=increment, temporal=temporal,
+        evidence_hash=evidence_hash, evidence_source_id=evidence_source_id,
+    )
+    coverage_metrics = {"coverage_scope": "not_evaluated", "coverage_empirical_qualification": "not_established"}
+    if coverage is not None:
+        coverage_metrics = _coverage_metrics(coverage, request.autonomy_budget.coverage_policy)
     if request.positive_vector is not None and not isinstance(request.positive_vector, PositiveVector):
         fail("fastgate_positive_vector_invalid", ReasonCode.DENY_FASTGATE_VECTOR_INVALID,
              "positive_vector must be PositiveVector", ("positive_vector",))
@@ -290,6 +303,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         request.positive_vector.method if request.positive_vector is not None else None,
         tolerance_policy, evidence_hash, evidence_source_id, increment, temporal,
         None if temporal is None else temporal_policy_hash(request.autonomy_budget.temporal_policy),
+        coverage, None if coverage is None else coverage_policy_hash(request.autonomy_budget.coverage_policy),
     )
     if cache_failure is not None:
         return _evaluation(cache_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
@@ -302,6 +316,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                 Verdict.OBSERVE_ONLY,
                 (ReasonCode.REQUIRE_OBSERVE_ONLY,),
                 metrics={"issue_code": "fastgate_observe_only", "rho_before_upper": rho_before,
+                         **coverage_metrics,
                          "numerical_contract_version": NUMERICAL_CONTRACT_VERSION},
                 caveats=("FastGate observe_only mode does not support admission.",),
             ),
@@ -319,6 +334,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                     "numerical_contract_version": NUMERICAL_CONTRACT_VERSION,
                     "calibration_level": calibration_level.value,
                     "rho_before_upper": rho_before,
+                    **coverage_metrics,
                 },
                 caveats=("A0 calibration cannot support FastGate admission.",),
             ),
@@ -341,12 +357,12 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
             after_upper,
         )
 
-    temporal_metrics = {"temporal_scope": "not_evaluated"}
+    temporal_metrics = {"temporal_scope": "not_evaluated", **coverage_metrics}
     if temporal is not None:
         temporal_result = evaluate_temporal(temporal, request.autonomy_budget.temporal_policy,
                                             decision_time=request.decision_time, rho_threshold=threshold,
                                             tolerance_policy=tolerance_policy)
-        temporal_metrics = dict(temporal_result.metrics)
+        temporal_metrics = {**temporal_result.metrics, **coverage_metrics}
         if not temporal_result.passed:
             return _evaluation(_deny(temporal_result.reason_code, temporal_result.issue_code,
                                      temporal_result.guidance, temporal_metrics),
@@ -615,13 +631,17 @@ def _cache_failure(
     increment: IncrementContract | None,
     temporal: TemporalContract | None,
     policy_hash: str | None,
+    coverage: CoverageContract | None,
+    joint_policy_hash: str | None,
 ) -> DecisionResult | None:
     if cache is None:
         return None
     if not isinstance(cache, FastGateCacheBinding):
         return _deny(ReasonCode.DENY_CONTEXT_STALE, "fastgate_cache_invalid", "cache_binding must be FastGateCacheBinding")
     for key, expected in (("temporal_binding_hash", None if temporal is None else temporal.binding_hash),
-                           ("temporal_policy_hash", policy_hash)):
+                           ("temporal_policy_hash", policy_hash),
+                           ("coverage_binding_hash", None if coverage is None else coverage.binding_hash),
+                           ("coverage_policy_hash", joint_policy_hash)):
         raw = getattr(cache, key)
         cached = None if raw is None else expect_sha256(raw, ("cache_binding", key), ReasonCode.DENY_CONTEXT_STALE)
         if cached != expected:

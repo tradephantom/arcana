@@ -28,13 +28,15 @@ sequence is:
 | --- | --- | --- |
 | R3.1 | C02 | Implemented versioned calibration-envelope incremental budget, evaluator/FastGate/cache binding and analytical regression tests; acceptance requires exact source and installed replay. |
 | R3.2 | C03 | Implemented [temporal contract v1](TEMPORAL_CONTRACT_v1.md), common-envelope verification, outward finite-generation bounds and policy/cache binding; acceptance requires exact source and installed replay. |
-| R3.3 | C04 | Joint coverage and dependence evidence contract; empirical validation remains a separate gate. |
+| R3.3 | C04 | Implemented [coverage contract v1](COVERAGE_CONTRACT_v1.md): complete fixed claim family, exact union/joint composition under arbitrary dependence, evidence/horizon/policy/cache binding and fail-closed empirical requirement; acceptance requires exact source and installed replay. Empirical qualification remains open. |
 | R3.4 | C05 | Typed loss units, horizon, method and evidence contract; supported estimator and independent oracles. |
 | R3.5 | C06 | Reproducible performance measurements before optimization; no speed claim without measurements. |
 | R3.6 | C01/all | Reconciled manuscript, independent review and clean source/installed replay before separate release approval. |
 
 Each step needs its own acceptance evidence; these rows are not completion
 claims. [Increment Contract v1](INCREMENT_CONTRACT_v1.md) defines R3.1.
+After local R3.3 acceptance, the next implementation is R3.4; neither a
+conditional coverage calculation nor a hash opens real empirical qualification.
 Independent review remains OPEN; an implementation assistant's technical pass
 does not close it. Next: bind the new candidate to exact bytes, obtain an
 accountable independent review and accepted findings, freeze a clean commit,

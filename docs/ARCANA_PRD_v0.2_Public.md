@@ -9,6 +9,18 @@
 
 ## 1. Executive Summary
 
+### Joint Coverage Addendum, 2026-09-28
+
+R3.3 requires a versioned fixed-family joint-coverage contract, independent
+coverage policy, full input/horizon binding and exact conservative composition.
+Every operator coordinate, any used calibrated lower baseline and all requested
+temporal premises must be covered. No marginal-product independence shortcut,
+adaptive-selection guarantee or self-declared empirical approval is supported.
+Synthetic and external unverified evidence remain explicitly conditional;
+requests requiring empirical qualification fail closed. Legacy requests report
+coverage as not evaluated. Context/certificate v0.2 must not silently drop the
+new scoped policy. See [Joint Coverage Contract v1](COVERAGE_CONTRACT_v1.md).
+
 ### Temporal Contract Addendum, 2026-09-11
 
 R3.2 requires explicit per-generation propagation semantics, a bounded initial

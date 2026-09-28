@@ -1,5 +1,8 @@
 # ARCANA Public Docs
 
+R3.3: [Joint Coverage Contract v1](COVERAGE_CONTRACT_v1.md), conditional
+fixed-family composition and a separate, closed empirical qualification gate.
+
 R3.2: [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md), common-envelope and finite
 generation accounting with explicit policy requirements and conditional premises.
 

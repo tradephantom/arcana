@@ -4,6 +4,7 @@ Examples in this folder are synthetic. They are not production evidence and do n
 
 Current examples:
 
+- `coverage_union_bound.synthetic.json`
 - `temporal_common_envelope.synthetic.json`
 
 - `increment_calibration_envelope.synthetic.json`
@@ -34,6 +35,12 @@ evidence only, not empirical system or production evidence.
 The increment example reproduces the R3-C02 budget-scope counterexample. Its
 standalone calculation uses `evaluate_increment` at the fixed synthetic time
 `2026-09-10T10:00:00Z`. It is not live evidence or a certificate.
+
+The coverage example declares four synthetic direct-operator failure bounds.
+At `2026-09-28T10:00:00Z`, `evaluate_coverage` with a 0.125 failure policy
+composes them to a conditional coverage lower bound of 31/32. This does not
+establish empirical coverage; requesting empirical qualification is denied.
+See [the coverage contract](../docs/COVERAGE_CONTRACT_v1.md) for the full example.
 
 The temporal example declares two generation operators under one common
 envelope. At `2026-09-11T10:00:00Z`, a `TemporalPolicy` requiring three

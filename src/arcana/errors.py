@@ -68,6 +68,16 @@ class TemporalMode(str, Enum):
     COMMON_ENVELOPE = "common_envelope"
 
 
+class CoverageMethod(str, Enum):
+    UNION_BOUND = "union_bound"
+    JOINT_BOUND = "joint_bound"
+
+
+class CoverageSource(str, Enum):
+    SYNTHETIC_FIXTURE = "synthetic_fixture"
+    EXTERNAL_UNVERIFIED = "external_unverified"
+
+
 class PositiveVectorMethod(str, Enum):
     IRREDUCIBLE_PERRON_VECTOR = "irreducible_perron_vector"
     SCC_DECOMPOSITION = "scc_decomposition"
@@ -77,6 +87,7 @@ class PositiveVectorMethod(str, Enum):
 
 
 class SchemaVersion(str, Enum):
+    COVERAGE_V1 = "arcana.coverage.v1"
     TEMPORAL_V1 = "arcana.temporal.v1"
     INCREMENT_V1 = "arcana.increment.v1"
     CALIBRATION_PROFILE_V02 = "arcana.calibration_profile.v0.2"
@@ -149,6 +160,8 @@ __all__ = [
     "FastGateMode",
     "IncrementScope",
     "TemporalMode",
+    "CoverageMethod",
+    "CoverageSource",
     "PathPart",
     "PositiveVectorMethod",
     "ReasonCode",

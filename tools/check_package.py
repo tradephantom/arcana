@@ -50,7 +50,19 @@ temporal = evaluate_temporal(temporals[0], TemporalPolicy(temporals[0].mode, 3, 
                             decision_time='2026-09-11T10:00:00Z', rho_threshold=0.9)
 assert temporal.passed
 assert temporal.metrics['temporal_cumulative_activations_upper'] == 1.6875
+from arcana.coverage import CoverageContract, evaluate_coverage
+from arcana.model import CoveragePolicy
+coverages = [item for item in examples if isinstance(item, CoverageContract)]
+assert len(coverages) == 1
+contract = coverages[0]
+policy = CoveragePolicy(.125, contract.population_id, contract.design_hash,
+                        contract.evidence_hash, contract.evidence_source_id, False)
+coverage = evaluate_coverage(contract, policy, decision_time='2026-09-28T10:00:00Z',
+                             current_upper=contract.current_upper)
+assert coverage['coverage_probability_lower'] == 31 / 32
+assert coverage['coverage_empirical_qualification'] == 'not_established'
 print(json.dumps({'package': str(package), 'resources': resources, 'examples': len(examples),
+                  'coverage': coverage,
                   'temporal': temporal.metrics,
                   'increment': increment,
                   'manifest': [entry.to_mapping() for entry in build_input_manifest()]}, sort_keys=True))
@@ -155,6 +167,12 @@ def main() -> int:
             temporal_tests = run([str(python), "-I", "-m", "pytest", "-q", "-p", "no:cacheprovider", "-c", os.devnull,
                                   "--junitxml=" + str(temporal_junit),
                                   "--confcutdir", str(outside), str(temporal_contract_tests)], outside, installed_env)
+            coverage_contract_tests = outside / "test_coverage_contract.py"
+            coverage_contract_tests.write_bytes((ROOT / "tests/test_coverage_contract.py").read_bytes())
+            coverage_junit = outside / f"{label}-coverage.xml"
+            coverage_tests = run([str(python), "-I", "-m", "pytest", "-q", "-p", "no:cacheprovider", "-c", os.devnull,
+                                  "--junitxml=" + str(coverage_junit),
+                                  "--confcutdir", str(outside), str(coverage_contract_tests)], outside, installed_env)
             for seed in ("1", "104729"):
                 seeded_env = {**installed_env, "PYTHONHASHSEED": seed}
                 demo = binary / ("arcana-demo.exe" if os.name == "nt" else "arcana-demo")
@@ -188,7 +206,18 @@ def main() -> int:
                                               cwd=outside, env=installed_env, capture_output=True, timeout=30)
             if tampered_temporal.returncode != 2 or b"benchmark_report_source_manifest_mismatch" not in tampered_temporal.stderr:
                 raise RuntimeError("package_gate_temporal_tamper_not_rejected")
+            temporal_module.write_bytes(wheel_contents(wheel)["arcana/temporal.py"])
+            coverage_module = Path(probe["package"]) / "coverage.py"
+            coverage_module.write_bytes(coverage_module.read_bytes() + b"\n# coverage tamper control\n")
+            tampered_coverage = subprocess.run([str(bench), "--verify", str(source_report)],
+                                              cwd=outside, env=installed_env, capture_output=True, timeout=30)
+            if tampered_coverage.returncode != 2 or b"benchmark_report_source_manifest_mismatch" not in tampered_coverage.stderr:
+                raise RuntimeError("package_gate_coverage_tamper_not_rejected")
             results.append({"route": label, "status": "PASS", "examples": probe["examples"],
+                            "coverage_contract": probe["coverage"],
+                            "coverage_tests": coverage_tests.decode("utf-8").strip(),
+                            "coverage_test_counts": passed_test_counts(coverage_junit),
+                            "coverage_tamper_rejected": True,
                             "temporal_contract": probe["temporal"],
                             "temporal_tests": temporal_tests.decode("utf-8").strip(),
                             "temporal_test_counts": passed_test_counts(temporal_junit),

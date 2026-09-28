@@ -278,6 +278,43 @@ class TemporalPolicy:
 
 
 @dataclass(frozen=True)
+class CoveragePolicy:
+    max_failure_probability: float
+    population_id: str
+    design_hash: str
+    evidence_hash: str
+    evidence_source_id: str
+    require_empirical_qualification: bool
+
+    def __post_init__(self) -> None:
+        reason = ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+        value = expect_number_range(self.max_failure_probability, 0, 1, ("coverage_policy", "max_failure_probability"), reason)
+        if value == 1:
+            fail("coverage_policy_vacuous", reason, "require a failure probability strictly below one", ("coverage_policy",))
+        object.__setattr__(self, "max_failure_probability", value)
+        for name in ("population_id", "evidence_source_id"):
+            value = expect_non_empty_string(getattr(self, name), ("coverage_policy", name), reason)
+            if not value.strip():
+                fail(f"coverage_policy_{name}_blank", reason, f"identify the required {name}", ("coverage_policy", name))
+        for name in ("design_hash", "evidence_hash"):
+            expect_sha256(getattr(self, name), ("coverage_policy", name), reason)
+        expect_bool(self.require_empirical_qualification, ("coverage_policy", "require_empirical_qualification"), reason)
+
+    @classmethod
+    def from_mapping(cls, value: Any, path: tuple = ("coverage_policy",)) -> "CoveragePolicy":
+        reason = ReasonCode.DENY_CALIBRATION_INSUFFICIENT
+        data = expect_mapping(value, path, reason)
+        fields = {"max_failure_probability", "population_id", "design_hash", "evidence_hash",
+                  "evidence_source_id", "require_empirical_qualification"}
+        for name in sorted(fields):
+            if name not in data:
+                fail(f"coverage_policy_{name}_missing", reason, f"provide the required {name}", (*path, name))
+        if set(data) - fields:
+            fail("coverage_policy_field_unknown", reason, "remove unsupported coverage policy fields", path)
+        return cls(**data)
+
+
+@dataclass(frozen=True)
 class AutonomyBudget:
     expires_at: str
     max_delta_rho_upper: float | None = None
@@ -286,11 +323,14 @@ class AutonomyBudget:
     max_output_bytes: int | None = None
     increment_scope: IncrementScope | None = None
     temporal_policy: TemporalPolicy | None = None
+    coverage_policy: CoveragePolicy | None = None
 
     @classmethod
     def from_mapping(cls, value: Any, path: tuple[str | int, ...] = ("autonomy_budget",)) -> "AutonomyBudget":
         data = expect_mapping(value, path, ReasonCode.DENY_BUDGET_EXHAUSTED)
         budget = cls(
+            coverage_policy=CoveragePolicy.from_mapping(data["coverage_policy"], (*path, "coverage_policy"))
+            if "coverage_policy" in data else None,
             temporal_policy=TemporalPolicy.from_mapping(data["temporal_policy"], (*path, "temporal_policy"))
             if "temporal_policy" in data else None,
             increment_scope=expect_enum(IncrementScope, data["increment_scope"], (*path, "increment_scope"), ReasonCode.DENY_BUDGET_EXHAUSTED)
@@ -331,6 +371,10 @@ def reject_legacy_scoped_budget(budget: AutonomyBudget) -> None:
     if not isinstance(budget, AutonomyBudget):
         fail("autonomy_budget_invalid", ReasonCode.DENY_BUDGET_EXHAUSTED,
              "autonomy_budget must be AutonomyBudget", ("autonomy_budget",))
+    if budget.coverage_policy is not None:
+        fail("legacy_artifact_coverage_policy_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID,
+             "context/certificate v0.2 cannot carry joint coverage; use the typed coverage evaluator",
+             ("autonomy_budget", "coverage_policy"))
     if budget.increment_scope is not None:
         fail("legacy_artifact_increment_scope_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID,
              "context/certificate v0.2 cannot carry scoped increment proof; use the typed increment evaluator",
@@ -588,6 +632,7 @@ __all__ = [
     "AutonomyBudget",
     "BenchmarkGraphFixture",
     "BenchmarkScenario",
+    "CoveragePolicy",
     "DecisionHorizon",
     "DecisionResult",
     "EvidenceReference",

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcana.tradephantom.com/schemas/ARCANA_Coverage.schema.v1.json",
+  "title": "ARCANA Conditional Joint Coverage v1",
+  "description": "Fixed-family direct operator bounds. Content binding is not empirical qualification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "risk_model_version", "calibration_profile_id", "decision_horizon", "current_upper", "method", "bounds", "population_id", "design_hash", "evidence_hash", "evidence_source_id", "source_kind", "valid_from", "expires_at", "selection_protocol", "factor_semantics", "dependence", "increment_binding_hash", "before_lower_required", "temporal_binding_hash", "binding_hash"],
+  "properties": {
+    "schema_version": {"const": "arcana.coverage.v1"},
+    "risk_model_version": {"type": "string", "pattern": "^arcana\\.risk\\.v[0-9]+\\.[0-9]+(\\.[0-9]+)?$"},
+    "calibration_profile_id": {"type": "string", "pattern": "^arcana\\.cal\\.[A-Za-z0-9_.:-]+$"},
+    "decision_horizon": {"$ref": "#/$defs/horizon"},
+    "current_upper": {"$ref": "#/$defs/matrix"},
+    "method": {"enum": ["union_bound", "joint_bound"]},
+    "bounds": {
+      "type": "array", "minItems": 1, "maxItems": 8193,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["claim_id", "failure_probability_upper"],
+        "properties": {
+          "claim_id": {"type": "string", "pattern": "^(current_upper:[0-9]+:[0-9]+|before_lower:[0-9]+:[0-9]+|temporal_joint_premises|complete_family)$"},
+          "failure_probability_upper": {"type": "number", "minimum": 0, "maximum": 1}
+        }
+      }
+    },
+    "population_id": {"$ref": "#/$defs/nonblank"},
+    "design_hash": {"$ref": "#/$defs/hash"},
+    "evidence_hash": {"$ref": "#/$defs/hash"},
+    "evidence_source_id": {"$ref": "#/$defs/nonblank"},
+    "source_kind": {"enum": ["synthetic_fixture", "external_unverified"]},
+    "valid_from": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "selection_protocol": {"const": "fixed_prespecified_family"},
+    "factor_semantics": {"const": "direct_operator_bounds"},
+    "dependence": {"const": "arbitrary"},
+    "increment_binding_hash": {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]},
+    "before_lower_required": {"type": "boolean"},
+    "temporal_binding_hash": {"anyOf": [{"$ref": "#/$defs/hash"}, {"type": "null"}]},
+    "binding_hash": {"$ref": "#/$defs/hash"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$"},
+    "nonblank": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "horizon": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "duration_seconds", "context"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "duration_seconds": {"type": "integer", "minimum": 1},
+        "context": {"type": "string", "minLength": 1}
+      }
+    },
+    "matrix": {
+      "type": "object", "additionalProperties": false,
+      "required": ["values", "node_order", "graph_hash"],
+      "properties": {
+        "values": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "number", "minimum": 0}}},
+        "node_order": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "graph_hash": {"$ref": "#/$defs/hash"}
+      }
+    }
+  }
+}
