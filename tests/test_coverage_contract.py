@@ -373,7 +373,8 @@ def _cache(r):
                                 GRAPH, r.delta_upper.delta_hash, r.threshold, r.positive_vector.method, EXPIRY,
                                 evidence_hash=EVIDENCE, evidence_source_id="synthetic-coverage-oracle",
                                 coverage_binding_hash=r.coverage.binding_hash,
-                                coverage_policy_hash=coverage_policy_hash(r.autonomy_budget.coverage_policy))
+                                coverage_policy_hash=coverage_policy_hash(r.autonomy_budget.coverage_policy),
+                                calibration_profile_evidence_hash=r.calibration_profile.evidence_hash)
 
 
 @pytest.mark.parametrize("api", ["exact", "collatz", "fallback", "uncertain_fallback"])

@@ -134,6 +134,10 @@ def validate_certificate_semantics(
             fail("demo_certificate_verdict_invalid", ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "demo certificate must be observe_only", ("certificate", "verdict"))
     elif certificate.verdict not in _ALLOW_VERDICTS:
         fail("certificate_verdict_not_admissible", ReasonCode.DENY_MODEL_INPUT_INVALID, "non-demo certificate-like artifacts require an allow-like verdict", ("certificate", "verdict"))
+    elif certificate.calibration_profile.evidence_hash is None:
+        fail("certificate_profile_evidence_hash_missing", ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+             "allow-like certificates require the hash-bound calibration profile that admission required",
+             ("certificate", "calibration_profile", "evidence_hash"))
 
     issued_at = _parse_datetime(certificate.issued_at, ("certificate", "issued_at"))
     if issued_at > instant:

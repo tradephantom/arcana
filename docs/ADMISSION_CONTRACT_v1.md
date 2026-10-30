@@ -104,6 +104,7 @@ fallback) apply the same order once risk, loss, budget and temporal checks pass:
 | --- | --- |
 | `supported_risk_model_versions` | Enforced. An unsupported version denies with `ARCANA_DENY_RISK_MODEL_UNSUPPORTED` (`fastgate_risk_model_version_unsupported`). |
 | `min_calibration_confidence` | Same floor and validation as the main evaluator. |
+| `cache_binding` | Also binds `calibration_profile_evidence_hash`, `min_calibration_confidence`, `loss_binding_hash` and `loss_policy_hash`; any change gives a `fastgate_cache_*_mismatch` deny. |
 | `calibration_profile` | Optional; absence only blocks admission. Mismatches deny with `fastgate_calibration_profile_id_mismatch`, `fastgate_calibration_level_mismatch`, `fastgate_calibration_risk_model_mismatch` or `fastgate_calibration_horizon_mismatch`; stale evidence uses the main evaluator issue codes. |
 | `required_controls`, `available_controls`, `human_gate_required`, `scope_reduction_required` | Same semantics as the main evaluator. |
 
@@ -124,6 +125,9 @@ fallback) apply the same order once risk, loss, budget and temporal checks pass:
 - The coverage contract remains optional.
 - The profile `evidence_hash` names evidence; ARCANA does not fetch or verify
   that evidence, and the confidence value remains a declared premise.
+- Certificates carry the profile `evidence_hash` (`calibration_profile.evidence_hash`
+  in the certificate v0.2 schema); allow-like certificates without it fail
+  semantic validation (`certificate_profile_evidence_hash_missing`).
 - The public reason-code registry is unchanged; only issue codes are added.
 
 ## Compatibility
