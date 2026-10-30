@@ -1,5 +1,8 @@
 # ARCANA Public Docs
 
+Ledger v1: [Ledger Contract v1](LEDGER_CONTRACT_v1.md), linearizable admission
+against one committed, versioned graph state.
+
 Admission v1: [Admission Contract v1](ADMISSION_CONTRACT_v1.md), allow-like verdicts
 only with bound increment and temporal contracts; FastGate shares the main decision tail.
 

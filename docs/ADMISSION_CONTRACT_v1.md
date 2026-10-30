@@ -73,12 +73,13 @@ fallback) apply the same order once risk, loss, budget and temporal checks pass:
 - Contracts bind declared premises; they do not prove them. The operator
   family and initial state must come from the integrator's calibrated graph,
   not from the agent under evaluation.
-- Budgets remain per request. Composition across concurrent requests evaluated
-  against the same baseline needs a committed graph version in the integration.
-- On the main evaluator the increment `before` snapshot is not bound to any
-  committed state: only an integration that evaluates against its committed
-  graph (see the planned ledger contract) prevents a caller from declaring
-  `before` equal to `after`.
+- Budgets remain per request. Composition across requests evaluated against
+  the same baseline is handled by the committed graph state of
+  [Ledger Contract v1](LEDGER_CONTRACT_v1.md).
+- On the main evaluator the increment `before` snapshot is bound only when the
+  request goes through the ledger, which requires it to equal the committed
+  graph; a direct `evaluate_decision` call cannot prevent a caller from
+  declaring `before` equal to `after`.
 - Increment evidence must now cover the whole decision horizon
   (`increment_evidence_horizon_not_covered`), as temporal evidence already did.
 - The coverage contract remains optional.
