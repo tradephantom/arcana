@@ -123,7 +123,11 @@ Required cache keys:
 - threshold;
 - numerical tolerance profile;
 - evidence hash, plus evidence source ID when one is declared;
-- context expiry.
+- context expiry;
+- increment scope and binding hash, temporal and coverage contract and policy
+  hashes, when those contracts are used;
+- calibration profile evidence hash and the minimum calibration confidence;
+- loss contract binding hash and loss policy hash, when loss is in scope.
 
 If any cache key mismatches, cache reuse fails with a specific reason code. A
 caller may construct a fresh warm- or cold-path request, but the stale cache is

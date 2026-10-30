@@ -104,6 +104,7 @@ fallback) apply the same order once risk, loss, budget and temporal checks pass:
 | --- | --- |
 | `supported_risk_model_versions` | Enforced. An unsupported version denies with `ARCANA_DENY_RISK_MODEL_UNSUPPORTED` (`fastgate_risk_model_version_unsupported`). |
 | `min_calibration_confidence` | Same floor and validation as the main evaluator. |
+| `cache_binding` | Also binds `calibration_profile_evidence_hash`, `min_calibration_confidence`, `loss_binding_hash` and `loss_policy_hash`; any change gives a `fastgate_cache_*_mismatch` deny. |
 | `calibration_profile` | Optional; absence only blocks admission. Mismatches deny with `fastgate_calibration_profile_id_mismatch`, `fastgate_calibration_level_mismatch`, `fastgate_calibration_risk_model_mismatch` or `fastgate_calibration_horizon_mismatch`; stale evidence uses the main evaluator issue codes. |
 | `required_controls`, `available_controls`, `human_gate_required`, `scope_reduction_required` | Same semantics as the main evaluator. |
 
@@ -124,6 +125,9 @@ fallback) apply the same order once risk, loss, budget and temporal checks pass:
 - The coverage contract remains optional.
 - The profile `evidence_hash` names evidence; ARCANA does not fetch or verify
   that evidence, and the confidence value remains a declared premise.
+- Certificates carry the profile `evidence_hash` (`calibration_profile.evidence_hash`
+  in the certificate v0.2 schema); allow-like certificates without it fail
+  semantic validation (`certificate_profile_evidence_hash_missing`).
 - The public reason-code registry is unchanged; only issue codes are added.
 
 ## Compatibility
@@ -132,7 +136,11 @@ Legacy requests whose checks all pass now return `observe_only` instead of an
 allow-like verdict. Profiles without `evidence_hash` now also stay
 `observe_only`; profiles below the confidence floor or whose rho interval the
 verified `rho_upper` exceeds now deny, and loss bounds with `AES_99_upper <
-AaR_99_upper` deny as an invalid loss model. `human_gate_required` and `scope_reduction_required` must be
+AaR_99_upper` deny as an invalid loss model. Allow-like certificates must now
+carry `calibration_profile.evidence_hash`; certificates issued without it fail
+semantic validation and must be reissued from a hash-bound profile. Consumers can
+pass `expected_calibration_profile_evidence_hash` to compare it with their
+profile. Risk contexts v0.2 have no profile object and do not carry the hash. `human_gate_required` and `scope_reduction_required` must be
 booleans; other truthy values are rejected as invalid input. Other deny and
 require outcomes are unchanged. Package version
 `0.2.0.dev0` identifies this unreleased development line.

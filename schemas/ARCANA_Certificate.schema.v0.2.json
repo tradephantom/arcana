@@ -77,6 +77,10 @@
         "certification_status": {
           "type": "string",
           "enum": ["non_certifiable", "certifiable_under_profile"]
+        },
+        "evidence_hash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Fa-f0-9]{64}$"
         }
       },
       "allOf": [

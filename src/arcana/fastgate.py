@@ -31,7 +31,7 @@ from arcana.increments import IncrementContract, _metrics_from_verified_bound, r
 from arcana.temporal import TemporalContract, evaluate_temporal, temporal_policy_hash, validate_temporal_binding
 from arcana.coverage import CoverageContract, _coverage_metrics, coverage_policy_hash, validate_coverage_binding
 from arcana.loss import evaluate_loss_bounds
-from arcana.loss_contract import LossContract, evaluate_loss_contract, validate_loss_binding
+from arcana.loss_contract import LossContract, evaluate_loss_contract, loss_policy_hash, validate_loss_binding
 from arcana.admission import AdmissionTail, admission_contract_gaps, finalize_admission
 from arcana.calibration import DEFAULT_MIN_CALIBRATION_CONFIDENCE, CalibrationProfile
 from arcana.decision import (
@@ -112,6 +112,10 @@ class FastGateCacheBinding:
     temporal_policy_hash: str | None = None
     coverage_binding_hash: str | None = None
     coverage_policy_hash: str | None = None
+    calibration_profile_evidence_hash: str | None = None
+    min_calibration_confidence: float = DEFAULT_MIN_CALIBRATION_CONFIDENCE
+    loss_binding_hash: str | None = None
+    loss_policy_hash: str | None = None
 
 
 @dataclass(frozen=True)
@@ -350,6 +354,8 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         tolerance_policy, evidence_hash, evidence_source_id, increment, temporal,
         None if temporal is None else temporal_policy_hash(request.autonomy_budget.temporal_policy),
         coverage, None if coverage is None else coverage_policy_hash(request.autonomy_budget.coverage_policy),
+        None if request.calibration_profile is None else request.calibration_profile.evidence_hash, min_confidence,
+        loss, None if loss is None else loss_policy_hash(request.autonomy_budget.loss_policy),
     )
     if cache_failure is not None:
         return _evaluation(cache_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
@@ -730,6 +736,10 @@ def _cache_failure(
     policy_hash: str | None,
     coverage: CoverageContract | None,
     joint_policy_hash: str | None,
+    profile_evidence_hash: str | None,
+    min_confidence: float,
+    loss: LossContract | None,
+    loss_policy_digest: str | None,
 ) -> DecisionResult | None:
     if cache is None:
         return None
@@ -738,7 +748,10 @@ def _cache_failure(
     for key, expected in (("temporal_binding_hash", None if temporal is None else temporal.binding_hash),
                            ("temporal_policy_hash", policy_hash),
                            ("coverage_binding_hash", None if coverage is None else coverage.binding_hash),
-                           ("coverage_policy_hash", joint_policy_hash)):
+                           ("coverage_policy_hash", joint_policy_hash),
+                           ("calibration_profile_evidence_hash", profile_evidence_hash),
+                           ("loss_binding_hash", None if loss is None else loss.binding_hash),
+                           ("loss_policy_hash", loss_policy_digest)):
         raw = getattr(cache, key)
         cached = None if raw is None else expect_sha256(raw, ("cache_binding", key), ReasonCode.DENY_CONTEXT_STALE)
         if cached != expected:
@@ -778,6 +791,7 @@ def _cache_failure(
         ("positive_vector_method", cache.positive_vector_method, positive_vector_method, ReasonCode.DENY_FASTGATE_VECTOR_INVALID),
         ("abs_tolerance", cache.abs_tolerance, tolerance_policy.abs_tolerance, ReasonCode.DENY_CONTEXT_STALE),
         ("rel_tolerance", cache.rel_tolerance, tolerance_policy.rel_tolerance, ReasonCode.DENY_CONTEXT_STALE),
+        ("min_calibration_confidence", cache.min_calibration_confidence, min_confidence, ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
     )
     for key, cached, current, reason_code in checks:
         if cached != current:

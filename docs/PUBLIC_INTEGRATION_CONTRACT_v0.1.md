@@ -235,7 +235,7 @@ Public fields are fields that may appear in ARCANA public artifacts:
 | Public field class | Examples |
 | --- | --- |
 | Versioning | `schema_version`, `risk_model_version` |
-| Calibration | `calibration_profile_id`, `calibration_level` |
+| Calibration | `calibration_profile_id`, `calibration_level`; certificates also carry the profile `evidence_hash` |
 | Horizon | `decision_horizon.id`, `duration_seconds`, `context` |
 | Graph binding | `graph_hash` |
 | Risk metrics | `rho_interval`, `loss_bounds`, `fastgate` |

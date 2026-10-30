@@ -38,6 +38,7 @@ class CertificateCalibrationProfile:
     source: tuple[str, ...]
     confidence: float
     certification_status: CertificationStatus
+    evidence_hash: str | None = None
 
     @classmethod
     def from_mapping(cls, value: Any, path: tuple[str | int, ...] = ("calibration_profile",)) -> "CertificateCalibrationProfile":
@@ -60,6 +61,8 @@ class CertificateCalibrationProfile:
             source=source,
             confidence=expect_number_range(require_value(data, "confidence", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), 0, 1, (*path, "confidence"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
             certification_status=status,
+            evidence_hash=expect_sha256(data["evidence_hash"], (*path, "evidence_hash"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
+            if "evidence_hash" in data else None,
         )
 
 
@@ -318,6 +321,7 @@ def build_demo_non_certifiable_certificate(
             source=calibration_profile.source,
             confidence=calibration_profile.confidence,
             certification_status=calibration_profile.certification_status,
+            evidence_hash=calibration_profile.evidence_hash,
         ),
         decision_horizon=context.decision_horizon,
         graph_hash=context.graph_hash,
@@ -404,6 +408,7 @@ def _certificate_calibration_profile_to_mapping(profile: CertificateCalibrationP
         "source": list(profile.source),
         "confidence": profile.confidence,
         "certification_status": profile.certification_status.value,
+        **({} if profile.evidence_hash is None else {"evidence_hash": profile.evidence_hash}),
     }
 
 

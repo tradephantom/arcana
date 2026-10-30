@@ -99,7 +99,8 @@ certificate v0.2 artifacts cannot carry a loss policy
   calibration failure probabilities.
 - Reversibility and other consequence modifiers belong to the loss law that
   produced the sample or the declared bounds (Edge Weight Contract v1).
-- FastGate cache bindings do not bind the loss contract yet.
+- FastGate cache bindings carry `loss_binding_hash` and `loss_policy_hash`; a
+  changed contract or policy makes the cache stale.
 - `loss_in_scope` must be a boolean; truthy non-boolean values are now rejected
   as invalid input, as for the other request flags.
 
