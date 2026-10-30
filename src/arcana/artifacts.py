@@ -92,6 +92,7 @@ def validate_certificate_semantics(
     expected_calibration_profile_id: str | None = None,
     expected_graph_hash: str | None = None,
     expected_decision_horizon: DecisionHorizon | None = None,
+    expected_calibration_profile_evidence_hash: str | None = None,
 ) -> BoundedAutonomyCertificate:
     """Validate a structurally parsed certificate-like artifact for use at ``now``."""
 
@@ -137,6 +138,11 @@ def validate_certificate_semantics(
     elif certificate.calibration_profile.evidence_hash is None:
         fail("certificate_profile_evidence_hash_missing", ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
              "allow-like certificates require the hash-bound calibration profile that admission required",
+             ("certificate", "calibration_profile", "evidence_hash"))
+    if (expected_calibration_profile_evidence_hash is not None
+            and certificate.calibration_profile.evidence_hash != expected_calibration_profile_evidence_hash):
+        fail("artifact_calibration_profile_evidence_mismatch", ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+             "certificate calibration profile evidence does not match the admission context",
              ("certificate", "calibration_profile", "evidence_hash"))
 
     issued_at = _parse_datetime(certificate.issued_at, ("certificate", "issued_at"))

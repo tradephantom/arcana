@@ -126,9 +126,18 @@ def test_allow_like_certificate_requires_the_profile_evidence_hash() -> None:
     assert error.value.primary_issue.reason_code is ReasonCode.DENY_CALIBRATION_INSUFFICIENT
 
 
-def test_malformed_certificate_profile_hash_is_rejected() -> None:
+def test_certificate_profile_hash_is_compared_with_the_expected_profile() -> None:
+    certificate = _certificate(PROFILE_HASH)
+    assert validate_certificate_semantics(certificate, now=NOW, expected_calibration_profile_evidence_hash=PROFILE_HASH)
+    with pytest.raises(ArcanaValidationError) as error:
+        validate_certificate_semantics(certificate, now=NOW, expected_calibration_profile_evidence_hash="sha256:" + "9" * 64)
+    assert error.value.code == "artifact_calibration_profile_evidence_mismatch"
+
+
+@pytest.mark.parametrize("value", ["sha256:short", None])
+def test_malformed_certificate_profile_hash_is_rejected(value) -> None:
     mapping = certificate_to_mapping(_certificate(PROFILE_HASH))
-    mapping["calibration_profile"]["evidence_hash"] = "sha256:short"
+    mapping["calibration_profile"]["evidence_hash"] = value
     with pytest.raises(ArcanaValidationError):
         validate_document(mapping, SchemaVersion.CERTIFICATE_V02)
     with pytest.raises(ArcanaValidationError) as error:

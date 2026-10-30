@@ -62,7 +62,7 @@ class CertificateCalibrationProfile:
             confidence=expect_number_range(require_value(data, "confidence", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), 0, 1, (*path, "confidence"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
             certification_status=status,
             evidence_hash=expect_sha256(data["evidence_hash"], (*path, "evidence_hash"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
-            if data.get("evidence_hash") is not None else None,
+            if "evidence_hash" in data else None,
         )
 
 

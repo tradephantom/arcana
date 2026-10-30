@@ -136,7 +136,11 @@ Legacy requests whose checks all pass now return `observe_only` instead of an
 allow-like verdict. Profiles without `evidence_hash` now also stay
 `observe_only`; profiles below the confidence floor or whose rho interval the
 verified `rho_upper` exceeds now deny, and loss bounds with `AES_99_upper <
-AaR_99_upper` deny as an invalid loss model. `human_gate_required` and `scope_reduction_required` must be
+AaR_99_upper` deny as an invalid loss model. Allow-like certificates must now
+carry `calibration_profile.evidence_hash`; certificates issued without it fail
+semantic validation and must be reissued from a hash-bound profile. Consumers can
+pass `expected_calibration_profile_evidence_hash` to compare it with their
+profile. Risk contexts v0.2 have no profile object and do not carry the hash. `human_gate_required` and `scope_reduction_required` must be
 booleans; other truthy values are rejected as invalid input. Other deny and
 require outcomes are unchanged. Package version
 `0.2.0.dev0` identifies this unreleased development line.
