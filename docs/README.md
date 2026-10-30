@@ -30,11 +30,12 @@ Current order:
 18. `LIMITATIONS_v0.1.md`
 19. `PUBLIC_RELEASE_NOTES_v0.1.md`
 20. `PUBLIC_RELEASE_NOTES_v0.1.1.md`
-21. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
-22. `../CITATION.cff`
-23. `../paper/README.md`
-24. `../paper/PUBLICATION.json`
-25. `../paper/ARCANA_Whitepaper_v1.0.tex`
+21. `PUBLIC_RELEASE_NOTES_v0.1.2.md`
+22. `PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
+23. `../CITATION.cff`
+24. `../paper/README.md`
+25. `../paper/PUBLICATION.json`
+26. `../paper/ARCANA_Whitepaper_v1.0.tex`
 
 Next public artifacts:
 

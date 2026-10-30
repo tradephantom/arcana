@@ -62,6 +62,7 @@ Only files listed here are part of this public repository tree.
 | `docs/LIMITATIONS_v0.1.md` | public-safe release artifact | Active public limitations and non-goals contract. |
 | `docs/PUBLIC_RELEASE_NOTES_v0.1.md` | public release | Initial public release note and public claim boundary. |
 | `docs/PUBLIC_RELEASE_NOTES_v0.1.1.md` | public release | DOI-bound archival preprint and attribution release note. |
+| `docs/PUBLIC_RELEASE_NOTES_v0.1.2.md` | public release | Corrective numerical and security release note for R1 and R2. |
 | `docs/RELEASE_POLICY.md` | public release | Local-first release and remote policy. |
 | `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md` | public release | Public remote publication preflight checklist. |
 | `paper/README.md` | public release | Venue-neutral LaTeX package build and claim-boundary instructions. |

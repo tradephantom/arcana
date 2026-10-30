@@ -11,9 +11,11 @@ ARCANA does not prove that an agent or system is safe. It provides model-bounded
 ## Current Status
 
 For current source versus archived release identity, start with
-[Project Status](docs/PROJECT_STATUS.md). R1 numerical corrections and R2
-packaging changes are not retroactively part of the archived v0.1.1/preprint.
-The corrected revision requires its own review and release decision.
+[Project Status](docs/PROJECT_STATUS.md). Release v0.1.2 ships the R1
+numerical corrections and R2 packaging changes; they are not retroactively part
+of the archived v0.1.1/preprint. Upgrade from v0.1.1: see
+[Release Notes v0.1.2](docs/PUBLIC_RELEASE_NOTES_v0.1.2.md). Independent review
+of the corrected revision remains open.
 
 This public repository is live as an open research/reference release for local evaluation.
 
@@ -66,6 +68,7 @@ Security reports should use GitHub Private Vulnerability Reporting, as described
 - `docs/LIMITATIONS_v0.1.md`
 - `docs/PUBLIC_RELEASE_NOTES_v0.1.md`
 - `docs/PUBLIC_RELEASE_NOTES_v0.1.1.md`
+- `docs/PUBLIC_RELEASE_NOTES_v0.1.2.md`
 - `docs/PUBLIC_REMOTE_PREFLIGHT_v0.1.md`
 - `paper/README.md`
 - `paper/PUBLICATION.json`
