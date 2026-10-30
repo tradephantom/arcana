@@ -98,6 +98,10 @@
       "type": "string",
       "format": "date-time"
     },
+    "evidence_hash": {
+      "type": "string",
+      "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+    },
     "uncertainty": {
       "type": "object",
       "required": ["rho_lower", "rho_mean", "rho_upper"],

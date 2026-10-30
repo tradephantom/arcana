@@ -1,6 +1,7 @@
 """Admission contract policy shared by the main evaluator and FastGate.
 
-Allow-like verdicts require verified accounting: a bound increment contract
+Allow-like verdicts require verified accounting: a calibration profile bound to
+its evidence by hash, a bound increment contract
 (no caller-declared spectral increment) and an evaluated temporal contract
 whose initial state seeds every node whose outgoing propagation the increment
 changes (finite-horizon cascade limits, which a spectral radius alone does not
@@ -16,6 +17,7 @@ from typing import Any
 
 import numpy as np
 
+from arcana.calibration import CalibrationProfile
 from arcana.errors import ReasonCode, Verdict
 from arcana.increments import IncrementContract
 from arcana.model import DecisionResult
@@ -38,11 +40,13 @@ def admission_contract_gaps(
     increment: IncrementContract | None,
     temporal: TemporalContract | None,
     *,
-    calibration_profile_bound: bool = True,
+    calibration_profile: CalibrationProfile | None,
 ) -> tuple[str, ...]:
     gaps = []
-    if not calibration_profile_bound:
+    if calibration_profile is None:
         gaps.append("calibration_profile_missing")
+    elif calibration_profile.evidence_hash is None:
+        gaps.append("calibration_evidence_hash_missing")
     if increment is None:
         gaps.append("increment_contract_missing")
     if temporal is None:
@@ -80,8 +84,8 @@ def finalize_admission(tail: AdmissionTail, metrics: Mapping[str, Any]) -> Decis
     if tail.contract_gaps:
         return _result(Verdict.OBSERVE_ONLY, (ReasonCode.REQUIRE_OBSERVE_ONLY, *tail.info_codes),
                        {**metrics, "issue_code": "admission_contracts_missing"}, tail.required_controls,
-                       caveats=("allow-like admission requires bound increment and temporal contracts; "
-                                "legacy caller-declared accounting is observe-only.",))
+                       caveats=("allow-like admission requires a hash-bound calibration profile and bound increment "
+                                "and temporal contracts; legacy caller-declared accounting is observe-only.",))
     if tail.required_controls:
         return _result(Verdict.ALLOW_WITH_CONTROLS, (ReasonCode.ALLOW_WITH_CONTROLS, *tail.info_codes),
                        metrics, tail.required_controls)

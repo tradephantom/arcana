@@ -32,13 +32,16 @@ from arcana.temporal import TemporalContract, evaluate_temporal, temporal_policy
 from arcana.coverage import CoverageContract, _coverage_metrics, coverage_policy_hash, validate_coverage_binding
 from arcana.loss import evaluate_loss_bounds
 from arcana.admission import AdmissionTail, admission_contract_gaps, finalize_admission
-from arcana.calibration import CalibrationProfile
+from arcana.calibration import DEFAULT_MIN_CALIBRATION_CONFIDENCE, CalibrationProfile
 from arcana.decision import (
     DEFAULT_SUPPORTED_RISK_MODEL_VERSIONS,
+    _calibration_coherence_failure,
+    _calibration_confidence_failure,
     _calibration_freshness_failure,
     _same_decision_horizon,
     _synthetic_info_codes,
     _validate_calibration_profile,
+    _validate_min_calibration_confidence,
     _validate_string_sequence,
     _validate_supported_risk_model_versions,
 )
@@ -148,6 +151,7 @@ class FastGateRequest:
     available_controls: Sequence[str] = ()
     human_gate_required: bool = False
     scope_reduction_required: bool = False
+    min_calibration_confidence: float = DEFAULT_MIN_CALIBRATION_CONFIDENCE
 
 
 @dataclass(frozen=True)
@@ -258,6 +262,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         return _evaluation(profile_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
     graph_hash = expect_sha256(request.graph_hash, ("graph_hash",), ReasonCode.DENY_GRAPH_HASH_MISMATCH)
     threshold = expect_number_range(request.threshold, 0, 1, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+    min_confidence = _validate_min_calibration_confidence(request.min_calibration_confidence)
     tolerance_policy = _validate_tolerance_policy(request.tolerance_policy)
     before_upper = _validate_before_matrix(request.before_upper, graph_hash)
     delta_matrix = _validate_sparse_delta(
@@ -390,6 +395,12 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
             FastGateContext(mode=FastGateMode.OBSERVE_ONLY),
             after_upper,
         )
+    if request.calibration_profile is not None:
+        confidence_failure = _calibration_confidence_failure(
+            request.calibration_profile, min_confidence, {"calibration_level": calibration_level.value},
+        )
+        if confidence_failure is not None:
+            return _evaluation(confidence_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
 
     temporal_metrics = {"temporal_scope": "not_evaluated", **coverage_metrics}
     if temporal is not None:
@@ -403,7 +414,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                                FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
 
     tail = AdmissionTail(
-        contract_gaps=admission_contract_gaps(increment, temporal, calibration_profile_bound=request.calibration_profile is not None),
+        contract_gaps=admission_contract_gaps(increment, temporal, calibration_profile=request.calibration_profile),
         required_controls=_validate_string_sequence(request.required_controls, ("required_controls",),
                                                     ReasonCode.DENY_MODEL_INPUT_INVALID, unique=True),
         available_controls=_validate_string_sequence(request.available_controls, ("available_controls",),
@@ -468,10 +479,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                 fastgate_context,
                 after_upper,
             )
-        loss_failure = _loss_failure(request.loss_in_scope, request.loss_bounds, metrics)
-        if loss_failure is not None:
-            return _evaluation(loss_failure, fastgate_context, after_upper)
-        return _evaluation(finalize_admission(tail, metrics), fastgate_context, after_upper)
+        return _admission_evaluation(request, tail, bound, tolerance_policy, metrics, fastgate_context, after_upper)
 
     return _evaluation(
         _deny(ReasonCode.DENY_FASTGATE_VECTOR_INVALID, "fastgate_mode_invalid", "unsupported FastGate mode"),
@@ -534,6 +542,23 @@ def _exact_recompute_evaluation(
             fastgate_context,
             after_upper,
         )
+    return _admission_evaluation(request, tail, rho_after, tolerance_policy, metrics, fastgate_context, after_upper)
+
+
+def _admission_evaluation(
+    request: FastGateRequest,
+    tail: AdmissionTail,
+    rho_after_upper: float,
+    tolerance_policy: TolerancePolicy,
+    metrics: Mapping[str, Any],
+    fastgate_context: FastGateContext,
+    after_upper: PropagationMatrix,
+) -> FastGateEvaluation:
+    """Checks shared by every mode once the after-state clears the threshold."""
+    if request.calibration_profile is not None:
+        coherence_failure = _calibration_coherence_failure(request.calibration_profile, rho_after_upper, tolerance_policy, metrics)
+        if coherence_failure is not None:
+            return _evaluation(coherence_failure, fastgate_context, after_upper)
     loss_failure = _loss_failure(request.loss_in_scope, request.loss_bounds, metrics)
     if loss_failure is not None:
         return _evaluation(loss_failure, fastgate_context, after_upper)

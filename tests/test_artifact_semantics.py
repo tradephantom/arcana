@@ -58,7 +58,8 @@ def test_context_semantics_accepts_empirical_public_benchmark_as_non_synthetic()
     ("mutation", "expected_code"),
     [
         (lambda value: dataclasses.replace(value, rho_interval=dataclasses.replace(value.rho_interval, upper=0.81)), "allow_rho_upper_not_subcritical"),
-        (lambda value: dataclasses.replace(value, loss_bounds=LossBounds(2600, 1800, 2500, 3000)), "allow_aar_upper_exceeded"),
+        (lambda value: dataclasses.replace(value, loss_bounds=LossBounds(2600, 2700, 2500, 3000)), "allow_aar_upper_exceeded"),
+        (lambda value: dataclasses.replace(value, loss_bounds=LossBounds(1200, 1100, 2500, 3000)), "loss_tail_order_invalid"),
         (lambda value: dataclasses.replace(value, reason_codes=(ReasonCode.DENY_RHO_UPPER_BOUND, ReasonCode.INFO_SYNTHETIC_FIXTURE)), "verdict_reason_code_mismatch"),
         (lambda value: dataclasses.replace(value, evidence=dataclasses.replace(value.evidence, synthetic=False)), "synthetic_evidence_flag_mismatch"),
     ],

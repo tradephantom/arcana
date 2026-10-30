@@ -15,6 +15,7 @@ Only files listed here are part of this public repository tree.
 | `docs/ADMISSION_CONTRACT_v1.md` | unreleased Fase 1 | Allow-like verdicts require bound increment and temporal contracts. |
 | `src/arcana/admission.py` | unreleased Fase 1 | Shared admission contract policy and decision tail. |
 | `tests/test_admission_contract.py` | unreleased Fase 1 | Admission policy, FastGate alignment and audit reproducer regressions. |
+| `tests/test_calibration_admission.py` | unreleased Fase 1 | Confidence floor, profile-rho coherence, profile evidence hash and AES >= AaR regressions. |
 | `tests/admission_support.py` | unreleased Fase 1 | Test helpers that complete or check admission contract inputs. |
 | `docs/COVERAGE_CONTRACT_v1.md` | unreleased R3.3 | Conditional finite-family joint coverage and separate empirical gate. |
 | `src/arcana/coverage.py` | unreleased R3.3 | Exact union/joint accounting, context and policy bindings. |

@@ -8,6 +8,7 @@ from admission_support import CONTRACT_GAPS, assert_contract_gated, complete_adm
 import test_decision_reason_codes as main_api
 import test_fastgate as fastgate_api
 from arcana.admission import ADMISSION_CONTRACT_POLICY
+from arcana.calibration import CalibrationUncertainty
 from arcana.decision import evaluate_decision
 from arcana.errors import CalibrationLevel, ReasonCode, TemporalMode, Verdict
 from arcana.fastgate import evaluate_fastgate
@@ -29,6 +30,15 @@ def _dag(weight: float) -> MatrixBundle:
                                     graph_hash=main_api.GRAPH_HASH)
 
 
+LEGACY_GAPS = {"calibration_evidence_hash_missing", "increment_contract_missing", "temporal_contract_missing"}
+
+
+def _with_rho_interval(request, lower: float, upper: float):
+    """Declare a profile rho interval coherent with the operator under test (F6)."""
+    profile = replace(request.calibration_profile, uncertainty=CalibrationUncertainty(lower, lower, upper))
+    return replace(request, calibration_profile=profile)
+
+
 def _tight_temporal(request, cumulative: float = 10.0):
     policy = TemporalPolicy(TemporalMode.FIXED_OPERATOR, request.temporal.generations, 1e12, cumulative)
     return replace(request, autonomy_budget=replace(request.autonomy_budget, temporal_policy=policy))
@@ -36,7 +46,7 @@ def _tight_temporal(request, cumulative: float = 10.0):
 
 def test_legacy_request_that_passes_every_check_is_observe_only() -> None:
     result = evaluate_decision(_main())
-    assert_contract_gated(result, {"increment_contract_missing", "temporal_contract_missing"})
+    assert_contract_gated(result, LEGACY_GAPS)
     assert result.reason_codes == (ReasonCode.REQUIRE_OBSERVE_ONLY,)
     assert result.metrics["admission_contract_policy"] == ADMISSION_CONTRACT_POLICY
     assert result.metrics["rho_upper"] < result.metrics["rho_threshold"]
@@ -62,14 +72,14 @@ def test_each_contract_is_required(missing: str) -> None:
 def test_audit_f5_caller_declared_increment_cannot_reach_admission() -> None:
     bundle = MatrixBundle.from_values([[0, .79], [.79, 0]], [[0, .79], [.79, 0]], [[0, .79], [.79, 0]],
                                       node_order=("agent", "tool"), graph_hash=main_api.GRAPH_HASH)
-    result = evaluate_decision(_main(matrix_bundle=bundle, delta_rho_upper=0.0))
-    assert_contract_gated(result, {"increment_contract_missing", "temporal_contract_missing"})
+    result = evaluate_decision(_with_rho_interval(_main(matrix_bundle=bundle, delta_rho_upper=0.0), 0, .8))
+    assert_contract_gated(result, LEGACY_GAPS)
 
 
 def test_audit_f2_acyclic_high_weight_action_is_not_admitted() -> None:
-    legacy = evaluate_decision(_main(matrix_bundle=_dag(1e6)))
+    legacy = evaluate_decision(_with_rho_interval(_main(matrix_bundle=_dag(1e6)), 0, .3))
     assert legacy.metrics["rho_upper"] == 0.0
-    assert_contract_gated(legacy, {"increment_contract_missing", "temporal_contract_missing"})
+    assert_contract_gated(legacy, LEGACY_GAPS)
     bound = _tight_temporal(complete_admission(_main(matrix_bundle=_dag(1e6))))
     denied = evaluate_decision(bound)
     assert denied.verdict is Verdict.DENY
@@ -151,7 +161,8 @@ def test_fastgate_shares_the_main_evaluator_decision_tail(overrides: dict, verdi
 
 
 def test_contract_gap_names_are_stable() -> None:
-    assert CONTRACT_GAPS == {"calibration_profile_missing", "increment_contract_missing", "temporal_contract_missing"}
+    assert CONTRACT_GAPS == {"calibration_profile_missing", "calibration_evidence_hash_missing",
+                             "increment_contract_missing", "temporal_contract_missing"}
 
 
 def test_seed_on_an_unrelated_node_does_not_charge_the_changed_edge() -> None:

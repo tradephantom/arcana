@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from datetime import datetime
+from fractions import Fraction
 from typing import Any, Mapping
 
 from arcana._validation import (
@@ -21,6 +22,7 @@ from arcana._validation import (
 )
 from arcana.admission import AdmissionTail, admission_contract_gaps, finalize_admission
 from arcana.calibration import (
+    DEFAULT_MIN_CALIBRATION_CONFIDENCE,
     CalibrationProfile,
     CalibrationUncertainty,
     EdgeWeightPolicy,
@@ -38,7 +40,7 @@ from arcana.errors import (
     ValidationIssue,
     Verdict,
 )
-from arcana.loss import LossBoundEvaluation, evaluate_loss_bounds
+from arcana.loss import LossBoundEvaluation, evaluate_loss_bounds, validate_loss_bounds
 from arcana.increments import IncrementContract, _metrics_from_verified_bound, required_increment_scope, validate_increment_binding
 from arcana.temporal import TemporalContract, evaluate_temporal, validate_temporal_binding
 from arcana.coverage import CoverageContract, _coverage_metrics, validate_coverage_binding
@@ -96,6 +98,7 @@ class DecisionEvaluationRequest:
     increment: IncrementContract | None = None
     temporal: TemporalContract | None = None
     coverage: CoverageContract | None = None
+    min_calibration_confidence: float = DEFAULT_MIN_CALIBRATION_CONFIDENCE
 
 
 def evaluate_decision(request: DecisionEvaluationRequest) -> DecisionResult:
@@ -146,6 +149,7 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
             "tolerance_policy must be TolerancePolicy",
         )
     rho_threshold = expect_number_range(request.rho_threshold, 0, 1, ("rho_threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+    min_confidence = _validate_min_calibration_confidence(request.min_calibration_confidence)
     increment_scope = required_increment_scope(request.autonomy_budget)
     if increment_scope is not None and request.delta_rho_upper is not None:
         fail("increment_scalar_override_forbidden", ReasonCode.DENY_MODEL_INPUT_INVALID,
@@ -258,6 +262,9 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
             "calibration level is weaker than required",
             base_metrics,
         )
+    confidence_failure = _calibration_confidence_failure(calibration_profile, min_confidence, base_metrics)
+    if confidence_failure is not None:
+        return confidence_failure
 
     if temporal is not None:
         temporal_result = evaluate_temporal(temporal, request.autonomy_budget.temporal_policy,
@@ -293,6 +300,11 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
             "rho_upper does not clear the threshold with the declared numerical margin",
             base_metrics,
         )
+    coherence_failure = _calibration_coherence_failure(
+        calibration_profile, base_metrics["rho_upper"], request.tolerance_policy, base_metrics,
+    )
+    if coherence_failure is not None:
+        return coherence_failure
 
     loss_evaluation = evaluate_loss_bounds(request.loss_bounds, loss_in_scope=request.loss_in_scope)
     if not loss_evaluation.passed:
@@ -316,7 +328,7 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
         unique=True,
     )
     tail = AdmissionTail(
-        contract_gaps=admission_contract_gaps(increment, temporal),
+        contract_gaps=admission_contract_gaps(increment, temporal, calibration_profile=calibration_profile),
         required_controls=required_controls,
         available_controls=available_controls,
         human_gate_required=expect_bool(request.human_gate_required, ("human_gate_required",), ReasonCode.DENY_MODEL_INPUT_INVALID),
@@ -371,6 +383,57 @@ def _validate_calibration_profile(profile: CalibrationProfile) -> CalibrationPro
         caveats=_validate_string_sequence(profile.caveats, ("calibration_profile", "caveats"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT, min_items=1),
         certification_status=profile.certification_status,
         last_updated_at=profile.last_updated_at,
+        evidence_hash=(expect_sha256(profile.evidence_hash, ("calibration_profile", "evidence_hash"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT)
+                       if profile.evidence_hash is not None else None),
+    )
+
+
+def _validate_min_calibration_confidence(value: float) -> float:
+    minimum = expect_number_range(value, 0, 1, ("min_calibration_confidence",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+    if minimum <= 0:
+        fail("min_calibration_confidence_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID,
+             "min_calibration_confidence must be positive; a zero-confidence profile cannot support admission",
+             ("min_calibration_confidence",))
+    return minimum
+
+
+def _calibration_confidence_failure(
+    profile: CalibrationProfile, min_confidence: float, metrics: Mapping[str, Any],
+) -> DecisionResult | None:
+    """Sparse evidence lowers confidence; below the floor the profile cannot support admission."""
+    if profile.confidence >= min_confidence:
+        return None
+    return _deny(
+        ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+        "calibration_confidence_below_minimum",
+        "calibration profile confidence is below the admission minimum",
+        {**metrics, "calibration_confidence": profile.confidence, "min_calibration_confidence": min_confidence},
+    )
+
+
+def _calibration_coherence_failure(
+    profile: CalibrationProfile, rho_upper: float, tolerance_policy: TolerancePolicy, metrics: Mapping[str, Any],
+) -> DecisionResult | None:
+    """The verified rho_upper must lie inside the rho interval the profile was calibrated for.
+
+    Above it the operator is outside the calibrated regime; below its lower end the matrices claim
+    less propagation than the calibration evidence supports. Either way the profile does not cover
+    the operator being admitted.
+    """
+    declared_lower, declared_upper = Fraction(profile.uncertainty.rho_lower), Fraction(profile.uncertainty.rho_upper)
+    margin = max(Fraction(tolerance_policy.abs_tolerance), Fraction(tolerance_policy.rel_tolerance) * declared_upper)
+    value = Fraction(rho_upper)
+    if value > declared_upper + margin:
+        issue_code = "rho_upper_above_calibration_profile"
+    elif value + margin < declared_lower:
+        issue_code = "rho_upper_below_calibration_profile"
+    else:
+        return None
+    return _deny(
+        ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
+        issue_code,
+        "verified rho_upper lies outside the rho interval declared by the calibration profile",
+        {**metrics, "calibration_rho_lower": profile.uncertainty.rho_lower, "calibration_rho_upper": profile.uncertainty.rho_upper},
     )
 
 
@@ -529,6 +592,7 @@ def _loss_model_failure(loss_in_scope: bool, loss_bounds: LossBounds | None) -> 
             "loss_bounds_missing",
             "loss is in scope but loss_bounds are missing or invalid",
         )
+    validate_loss_bounds(loss_bounds)
     return None
 
 

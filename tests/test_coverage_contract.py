@@ -95,7 +95,8 @@ def _request(api, contract=None, policy=None, increment=None, temporal=None):
     profile = CalibrationProfile(contract.calibration_profile_id, contract.risk_model_version, CalibrationLevel.A1,
                                  HORIZON, ("static_conservative_prior",), EvidenceWindow(START, NOW, 3600), .99,
                                  CalibrationUncertainty(0, .1, .3), EdgeWeightPolicy(True, True, True),
-                                 ("synthetic declared coverage only",), CertificationStatus.NON_CERTIFIABLE)
+                                 ("synthetic declared coverage only",), CertificationStatus.NON_CERTIFIABLE,
+                                 evidence_hash=contract.evidence_hash)
     if api == "main":
         lower = increment.after.lower if increment is not None and increment.after.lower is not None else _matrix()
         return DecisionEvaluationRequest("arcana.risk.v0.2", profile, HORIZON, GRAPH, MatrixBundle(lower, _matrix(), _matrix()),
