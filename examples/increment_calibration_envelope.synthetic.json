@@ -1,0 +1,38 @@
+{
+  "schema_version": "arcana.increment.v1",
+  "scope": "calibration_envelope",
+  "risk_model_version": "arcana.risk.v0.2",
+  "calibration_profile_id": "arcana.cal.increment_a1",
+  "decision_horizon": {
+    "id": "increment_synthetic",
+    "duration_seconds": 300,
+    "context": "synthetic conditional increment"
+  },
+  "before": {
+    "upper": {
+      "values": [[0.0, 0.5], [0.5, 0.0]],
+      "node_order": ["a", "b"],
+      "graph_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "lower": {
+      "values": [[0.0, 0.5], [0.0, 0.0]],
+      "node_order": ["a", "b"],
+      "graph_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "snapshot_hash": "sha256:f952565d7d6e6cb5858d3fe7e15c58d1734a1c17cd60e2e782ad5e09605f263f"
+  },
+  "after": {
+    "upper": {
+      "values": [[0.0, 0.5], [0.78125, 0.0]],
+      "node_order": ["a", "b"],
+      "graph_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "snapshot_hash": "sha256:eeb9807a013e9a5e6df3ccaebbd479e0908aa85e4cfdf86f242c37d2be517cf7"
+  },
+  "evidence_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "evidence_source_id": "synthetic-increment-oracle",
+  "evidence_scope": "joint_before_after_envelope",
+  "valid_from": "2026-09-10T09:00:00Z",
+  "expires_at": "2026-09-10T11:00:00Z",
+  "binding_hash": "sha256:e7d1e7f242525bf4844c89ac0785a56b37d52125dcb8af2c4fbc6c5692b5674f"
+}

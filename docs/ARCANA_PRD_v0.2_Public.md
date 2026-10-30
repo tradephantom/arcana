@@ -9,6 +9,45 @@
 
 ## 1. Executive Summary
 
+### Joint Coverage Addendum, 2026-09-28
+
+R3.3 requires a versioned fixed-family joint-coverage contract, independent
+coverage policy, full input/horizon binding and exact conservative composition.
+Every operator coordinate, any used calibrated lower baseline and all requested
+temporal premises must be covered. No marginal-product independence shortcut,
+adaptive-selection guarantee or self-declared empirical approval is supported.
+Synthetic and external unverified evidence remain explicitly conditional;
+requests requiring empirical qualification fail closed. Legacy requests report
+coverage as not evaluated. Context/certificate v0.2 must not silently drop the
+new scoped policy. See [Joint Coverage Contract v1](COVERAGE_CONTRACT_v1.md).
+
+### Temporal Contract Addendum, 2026-09-11
+
+R3.2 requires explicit per-generation propagation semantics, a bounded initial
+state, fixed coordinates, no post-initial exogenous arrivals and either one
+fixed operator or a verified common envelope for the declared family. Scoped
+admission must check that envelope and finite peak/cumulative activation limits,
+not infer temporal stability from individual snapshot radii. The policy fixes
+mode and generation count. Evidence validity must cover the complete horizon.
+See [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md) for the supported recurrence,
+proof, compatibility and acceptance criteria. This adds no loss or empirical
+coverage guarantee and no production certificate format.
+
+### Increment Contract Addendum, 2026-09-10
+
+R3.1 requires explicit `upper_model` or `calibration_envelope` budget scope,
+versioned before/after matrix snapshots, content bindings, evidence identity,
+model/profile/horizon and validity-window checks. Scoped requests must recompute
+their increment; caller-supplied scalar overrides and silent scope downgrades
+are prohibited. Missing initial calibration lower matrices use the conservative
+nonnegative zero baseline, with an explicit result label.
+
+This is conditional represented-matrix accounting, not verified empirical
+coverage or a production certificate. Legacy context/certificate v0.2 must
+reject scoped budgets rather than discard their scope. See
+[Increment Contract v1](INCREMENT_CONTRACT_v1.md) for proof obligations,
+compatibility and acceptance criteria.
+
 ARCANA is an open research and reference framework for autonomy accounting in agentic systems.
 
 ARCANA estimates whether a proposed operation, delegation, tool call, memory action, capability grant, or distillation event remains within a bounded risk envelope under:

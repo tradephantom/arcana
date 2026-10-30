@@ -22,7 +22,7 @@ from arcana._validation import (
 )
 from arcana.calibration import CalibrationProfile, validate_calibration_sources_for_level, validate_certification_status_for_level
 from arcana.errors import CalibrationLevel, CertificationStatus, ReasonCode, Verdict
-from arcana.model import AutonomyBudget, DecisionHorizon, EvidenceReference, FastGateContext, LossBounds, RhoInterval, RiskContext
+from arcana.model import AutonomyBudget, DecisionHorizon, EvidenceReference, FastGateContext, LossBounds, RhoInterval, RiskContext, reject_legacy_scoped_budget
 
 
 class CertificateType(str, Enum):
@@ -384,6 +384,7 @@ def _evidence_to_mapping(evidence: EvidenceReference) -> dict[str, Any]:
 
 
 def _autonomy_budget_to_mapping(budget: AutonomyBudget) -> dict[str, Any]:
+    reject_legacy_scoped_budget(budget)
     document: dict[str, Any] = {"expires_at": budget.expires_at}
     if budget.max_delta_rho_upper is not None:
         document["max_delta_rho_upper"] = budget.max_delta_rho_upper

@@ -1,5 +1,14 @@
 # ARCANA Public Docs
 
+R3.3: [Joint Coverage Contract v1](COVERAGE_CONTRACT_v1.md), conditional
+fixed-family composition and a separate, closed empirical qualification gate.
+
+R3.2: [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md), common-envelope and finite
+generation accounting with explicit policy requirements and conditional premises.
+
+R3.1: [Increment Contract v1](INCREMENT_CONTRACT_v1.md), the scoped conditional
+budget implementation following the documentation-only R3 baseline.
+
 This folder contains public documentation for the ARCANA open research/reference repository.
 
 Current authority index: [Project Status](PROJECT_STATUS.md).
@@ -7,6 +16,11 @@ Corrective review: [Reviewer Packet](CORRECTIVE_REVIEW_PACKET.md).
 Current corrective gate: [Numerical Contract v1](NUMERICAL_CONTRACT_v1.md).
 This unreleased correction takes precedence for working-tree numerical behavior;
 archived paper and release artifacts remain historical, immutable records.
+
+R3 candidate: [Technical and Claim Review](R3_TECHNICAL_CLAIM_REVIEW.md),
+[Corrective Manuscript Draft](ARCANA_Corrective_Manuscript_Review_Draft.md) and
+[Unsigned Reviewer Record](R3_REVIEWER_RECORD_TEMPLATE.md). These are review
+materials, not independent approval or a replacement for the archived paper.
 
 Current order:
 

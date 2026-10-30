@@ -89,6 +89,12 @@ ARCANA_DENY_DECISION_HORIZON_MISMATCH
 
 Without `H`, `K` is dimensionally ambiguous and cannot be interpreted.
 
+`H` is necessary but not sufficient: a model must also declare a generation or
+transition unit and an applicable fixed/dominating operator before composing
+matrix powers. For source-row `K`, column-state propagation uses `K^T`. A
+cumulative horizon count must not silently become a repeatedly applied one-step
+coefficient. See [R3 proof obligations P5](R3_TECHNICAL_CLAIM_REVIEW.md#p5-fixed-operators-transients-and-switching).
+
 ## 4. Edge Weight Model
 
 For an edge `e` over horizon `H`, ARCANA models unsafe propagation weight as:
@@ -106,6 +112,11 @@ w_e(H) =
 ```
 
 All factors must be declared or derived by a calibration profile.
+
+This factorization defines the declared model, not a general joint-probability
+identity. Multiplying marginal probabilities/control effects requires justified
+conditional semantics, dependence assumptions or conservative domination.
+Numeric factor ranges alone do not establish those premises.
 
 Expected factor domains:
 
@@ -211,7 +222,7 @@ The public subcritical-under-model condition is:
 
 ```text
 0 <= theta_rho <= 1
-rho_upper < theta_rho
+rho_upper + numeric_margin < theta_rho
 ```
 
 where `theta_rho` is the declared public threshold for the decision context.
@@ -242,7 +253,12 @@ then ARCANA enforces:
 rho(K_upper) < theta_rho
 ```
 
-The phrase subcritical under model means only that the declared ARCANA model, calibration profile, horizon, uncertainty bounds, and thresholds are satisfied.
+The phrase subcritical under model is conditional on the declared model and
+calibration premises. Structural input checks do not establish empirical
+validity. A fixed matrix with radius below one has a convergent Neumann series,
+but the radius alone does not bound finite-horizon transient amplification or
+loss. Independently subcritical snapshots do not establish switching stability;
+a common dominating operator or a separate temporal argument is required.
 
 ## 9. Loss Model `L`
 
@@ -263,20 +279,33 @@ Public impact categories can include:
 
 `L` must not be embedded inside `K`.
 
-If loss is in scope and the loss model is missing, malformed, incompatible with the horizon, or unsupported, ARCANA returns:
+The reference consumes supplied scalar `LossBounds`, not a distribution `L`.
+If required values are missing or malformed, its loss validator returns:
 
 ```text
 ARCANA_DENY_LOSS_MODEL_INVALID
 ```
 
+Loss model family, units, horizon, evidence and statistical validity must be
+established upstream. The current four-number input has no such metadata;
+its validator cannot detect a loss-horizon mismatch or derive a distribution.
+Do not describe these integration obligations as implemented scalar checks.
+
 ## 10. Loss Bounds
 
-For confidence level `alpha`, ARCANA defines:
+For probability level `0 < alpha < 1` and an integrable loss variable, the
+intended mathematical quantities are:
 
 ```text
-AaR_alpha = quantile_alpha(L)
-AES_alpha = expected tail loss beyond AaR_alpha
+q_u(L) = inf { z : P(L <= z) >= u }
+AaR_alpha = q_alpha(L)
+AES_alpha = integral from alpha to 1 of q_u(L) du / (1 - alpha)
 ```
+
+The quantile-integral convention handles atoms/ties. A conditional average
+strictly above the quantile is not equivalent in general. These definitions
+describe supplied loss metrics, not an estimator implemented in this repository.
+See [Rockafellar and Uryasev, general loss distributions](https://sites.math.washington.edu/~rtr/papers/rtr187-CVaR2.pdf).
 
 Public v0.2 examples use:
 

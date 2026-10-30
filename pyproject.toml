@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arcana-reference"
-version = "0.1.2"
+version = "0.2.0.dev0"
 description = "Public reference implementation for the Autonomy Risk Calculus for Agentic Network Assurance."
 readme = "README.md"
 requires-python = ">=3.11"

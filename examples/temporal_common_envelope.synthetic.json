@@ -1,0 +1,23 @@
+{
+  "schema_version": "arcana.temporal.v1",
+  "mode": "common_envelope",
+  "risk_model_version": "arcana.risk.v0.2",
+  "calibration_profile_id": "arcana.cal.temporal_a1",
+  "decision_horizon": {"id": "temporal_synthetic", "duration_seconds": 300, "context": "synthetic causal generations"},
+  "generations": 3,
+  "operators": [
+    {"values": [[0.0, 0.5], [0.0, 0.0]], "node_order": ["0", "1"], "graph_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333"},
+    {"values": [[0.0, 0.0], [0.25, 0.0]], "node_order": ["0", "1"], "graph_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333"}
+  ],
+  "envelope_upper": {"values": [[0.0, 0.5], [0.25, 0.0]], "node_order": ["0", "1"], "graph_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333"},
+  "initial_upper": [1.0, 0.0],
+  "operator_semantics": "per_generation_expected_offspring",
+  "state_units": "expected_unsafe_activations",
+  "exogenous_input": "none_after_initial",
+  "evidence_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+  "evidence_source_id": "synthetic-temporal-oracle",
+  "evidence_scope": "joint_generation_envelope",
+  "valid_from": "2026-09-11T09:00:00Z",
+  "expires_at": "2026-09-11T11:00:00Z",
+  "binding_hash": "sha256:36189eabae5cd296cef1f70477c6d3e83058cd9496c32533716ff449a0ecebb3"
+}

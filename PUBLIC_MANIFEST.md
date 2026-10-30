@@ -9,6 +9,25 @@ Only files listed here are part of this public repository tree.
 
 | Path | Status | Notes |
 | --- | --- | --- |
+| `docs/COVERAGE_CONTRACT_v1.md` | unreleased R3.3 | Conditional finite-family joint coverage and separate empirical gate. |
+| `src/arcana/coverage.py` | unreleased R3.3 | Exact union/joint accounting, context and policy bindings. |
+| `schemas/ARCANA_Coverage.schema.v1.json` | unreleased R3.3 | Strict public finite-family coverage contract. |
+| `tests/test_coverage_contract.py` | unreleased R3.3 | Exact event-space oracles, binding and empirical-gate regressions. |
+| `examples/coverage_union_bound.synthetic.json` | unreleased R3.3 | Synthetic four-claim composition; not empirical calibration. |
+| `docs/TEMPORAL_CONTRACT_v1.md` | unreleased R3.2 | Conditional temporal model, finite activation bounds and acceptance gates. |
+| `src/arcana/temporal.py` | unreleased R3.2 | Typed temporal binding and verified finite-generation propagation. |
+| `schemas/ARCANA_Temporal.schema.v1.json` | unreleased R3.2 | Public conditional temporal input contract. |
+| `tests/test_temporal_contract.py` | unreleased R3.2 | Exact rational recurrence, switching, transient and binding regressions. |
+| `examples/temporal_common_envelope.synthetic.json` | unreleased R3.2 | Synthetic common-envelope generation contract; no empirical evidence. |
+| `docs/INCREMENT_CONTRACT_v1.md` | unreleased R3.1 | Conditional incremental budget contract and acceptance criteria. |
+| `src/arcana/increments.py` | unreleased R3.1 | Typed snapshot binding and conservative increment evaluation. |
+| `schemas/ARCANA_Increment.schema.v1.json` | unreleased R3.1 | Public conditional increment wire contract. |
+| `tests/test_increment_contract.py` | unreleased R3.1 | Analytical enclosure, binding, compatibility and cache regressions. |
+| `examples/increment_calibration_envelope.synthetic.json` | unreleased R3.1 | Synthetic C02 increment pair; no empirical evidence. |
+| `docs/R3_TECHNICAL_CLAIM_REVIEW.md` | unreleased review candidate | Public mathematical obligations, claim findings and exact counterexamples; not independent approval. |
+| `docs/ARCANA_Corrective_Manuscript_Review_Draft.md` | unreleased review draft | Proposed correction language; historical paper unchanged. |
+| `docs/R3_REVIEWER_RECORD_TEMPLATE.md` | unsigned review template | Reviewer identity, conflicts, source binding and separate decisions. |
+| `tests/test_r3_mathematical_scope.py` | synthetic analytical tests | Independent mathematical oracles and claim-scope counterexamples, not external review. |
 | `docs/PROJECT_STATUS.md` | unreleased correction | Current versus archived source authority. |
 | `docs/PACKAGE_PORTABILITY.md` | unreleased correction | Installed distribution contract and acceptance gate. |
 | `docs/CORRECTIVE_REVIEW_PACKET.md` | unreleased correction | Renewed public-safe review scope and checklist. |

@@ -40,6 +40,20 @@ Limitations:
 
 Unknown compatibility state means risky.
 
+A horizon identifier does not define a propagation generation or validate a
+linear recurrence. Fixed-matrix subcriticality does not establish switching
+stability, and even a zero-radius DAG can have very large transient propagation.
+Initial conditions, finite-horizon amplification and separate impact constraints
+remain necessary. See the [R3 technical review](R3_TECHNICAL_CLAIM_REVIEW.md).
+
+R3.2 implements a [conditional temporal contract](TEMPORAL_CONTRACT_v1.md) for
+fixed coordinates, bounded causal generations, an explicit initial upper state
+and no later exogenous arrivals. It checks a common entrywise envelope and
+finite peak/cumulative activation limits. It does not prove the declared
+generation calibration, maximum depth or actual envelope coverage; it is not
+a continuous-time engine, an unrestricted switching solver or a loss estimator.
+Unknown family members and unsupported premises fail closed in scoped requests.
+
 ## 3. Propagation Risk vs Loss
 
 ARCANA separates:
@@ -53,9 +67,27 @@ L = impact or loss
 
 An action can have bounded propagation risk but unacceptable loss bounds. An action can also have low expected loss but unacceptable propagation-risk upper bound.
 
+The reference validates supplied scalar loss metrics and limits; it does not
+estimate a distribution or verify loss units, confidence coverage, evidence or
+horizon metadata absent from `LossBounds`. These are upstream obligations.
+
 ## 4. Calibration Limits
 
+R3.3 [joint coverage](COVERAGE_CONTRACT_v1.md) composes explicitly declared
+failure bounds for a complete fixed family under arbitrary dependence. It does
+not estimate or validate those probabilities, verify preregistration or bind
+external evidence bytes by ingestion. Its hash and scope checks do not prove
+calibration truth. Synthetic and external unverified declarations cannot satisfy
+the empirical-qualification gate. Coverage excludes loss, operational control
+health and cross-request/adaptive guarantees; legacy profile confidence does not
+become joint confidence. Real evidence qualification remains open.
+
 Calibration is an evidence-to-uncertainty contract, not proof of real-world behavior.
+
+Multiplying marginal factor probabilities is not generally a conservative joint
+probability model. Per-entry marginal coverage does not imply the same coverage
+for a whole graph or repeated decisions. Dependence, joint coverage and adaptive
+reuse require explicit evidence; numerical enclosure cannot establish them.
 
 Limitations:
 
@@ -133,7 +165,15 @@ certificates.
 
 ## 7. FastGate Limits
 
-FastGate is a conservative optimization path.
+FastGate is a conservative declared-model decision path and optimization design.
+The reference has no demonstrated latency or sparse-update speedup advantage.
+Its legacy incremental budget concerns the supplied upper-model matrices, not every
+unknown calibrated matrix below them. A separate lower baseline would be needed
+for that stronger increment claim. R3.1 supplies a versioned conditional
+[calibration-envelope path](INCREMENT_CONTRACT_v1.md), with explicit zero when
+the initial lower matrix is absent. This may overcharge uncertainty and deny
+otherwise acceptable operations. It does not establish that the declared
+joint envelope is empirically correct, authenticated or complete.
 
 Limitations:
 

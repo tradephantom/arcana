@@ -6,7 +6,31 @@
 
 This document defines how public ARCANA calibration profiles should derive edge-weight factors, uncertainty intervals, evidence quality, calibration levels, temporal validity, and certification status.
 
+R3.3 implements only the conditional composition part through
+[Joint Coverage Contract v1](COVERAGE_CONTRACT_v1.md). It accepts direct
+operator-envelope claims for a complete prespecified family, using exact union
+bounds or an externally declared whole-family bound. It does not multiply
+marginal factor probabilities or derive joint coverage from profile confidence.
+Both synthetic and external unverified sources fail requests requiring empirical
+qualification. The estimation, sampling and review obligations below remain
+methodology requirements, not completed empirical implementation.
+
 ARCANA calibration is not proof of safety. It is a declared method for converting evidence and assumptions into model-bounded uncertainty bounds.
+
+## Corrective Scope Clarification
+
+The implemented checks validate declared fields, compatibility and source-class
+rules. They do not independently derive or prove empirical uncertainty coverage.
+A factor product needs justified conditional/dependence semantics or a separate
+domination argument to be a probabilistic bound. Marginal confidence intervals
+do not automatically give simultaneous coverage over all graph entries,
+generations, before/after states or adaptively selected decisions.
+
+Calibration must specify that joint scope, the generation/transition meaning,
+representation conservatism and temporal validity. Missing evidence must not be
+replaced by a numerical tolerance, hash or source-class label. The numerical
+kernel bounds the supplied represented matrix only. See
+[R3 review P6](R3_TECHNICAL_CLAIM_REVIEW.md#p6-numerical-accuracy-is-not-statistical-coverage).
 
 ## 1. Design Requirements
 

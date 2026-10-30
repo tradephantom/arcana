@@ -69,12 +69,33 @@ that an epsilon repairs an arbitrary eigensolver error.
 FastGate certifies positive-vector ratios using the same exact arithmetic.
 Its after-matrix addition rounds each changed entry upward. The incremental
 spectral budget is bounded by `max(0, after_upper - before_lower)`, with upward
-rounding. Subtracting a before **upper** bound would not establish an upper
+rounding. On the legacy unscoped path, `before_lower` is a lower NUMERICAL endpoint of the supplied
+`K_before_upper`, not of `K_before_lower` or an unknown real baseline. The budget
+therefore bounds a change in the declared upper-model matrices only. It cannot
+be treated as a conservative increment of every matrix below that baseline.
+See [R3 review P4](R3_TECHNICAL_CLAIM_REVIEW.md#p4-incremental-accounting-has-a-specific-baseline)
+for a same-delta counterexample and the separate lower-baseline obligation.
+Subtracting a before **upper** bound would not establish an upper
 bound on the increment. A loose enclosure can therefore require a larger budget
 or deny an otherwise subcritical request. The `exact_recompute` mode name means
 full recomputation rather than cached incremental evaluation; it does not mean
 symbolically exact eigenvalues. The reference still computes a baseline bound
 and is not a demonstrated low-latency implementation.
+
+The unscoped general decision request's `delta_rho_upper` is supplied by its
+caller; checking its domain and budget does not derive its bound. R3.1 adds an
+explicit [increment contract](INCREMENT_CONTRACT_v1.md): scoped requests recompute
+the increment and reject scalar overrides. `calibration_envelope` uses a lower
+numerical endpoint of the initial calibration lower matrix, or explicitly zero
+when that matrix is absent. Its guarantee is conditional on jointly valid
+before/after envelopes; hashes and declarations do not prove empirical coverage.
+R3.2 adds [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md): source-row generation
+operators use a column-state transpose recurrence, a common subcritical envelope
+and outward finite peak/cumulative activation bounds. The entire horizon,
+generation count, initial state and no-arrivals semantics must be declared.
+Neither API empirically establishes these premises, a loss distribution or
+simultaneous calibration coverage. Those are distinct evidence obligations,
+not properties created by numerical accuracy.
 
 ## Verification and Compatibility
 

@@ -1,0 +1,60 @@
+{
+  "schema_version": "arcana.coverage.v1",
+  "risk_model_version": "arcana.risk.v0.2",
+  "calibration_profile_id": "arcana.cal.coverage_a1",
+  "decision_horizon": {
+    "id": "coverage_synthetic",
+    "duration_seconds": 300,
+    "context": "fixed synthetic operator family"
+  },
+  "current_upper": {
+    "values": [
+      [
+        0.25,
+        0.0
+      ],
+      [
+        0.0,
+        0.125
+      ]
+    ],
+    "node_order": [
+      "a",
+      "b"
+    ],
+    "graph_hash": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+  },
+  "method": "union_bound",
+  "bounds": [
+    {
+      "claim_id": "current_upper:0:0",
+      "failure_probability_upper": 0.0078125
+    },
+    {
+      "claim_id": "current_upper:0:1",
+      "failure_probability_upper": 0.0078125
+    },
+    {
+      "claim_id": "current_upper:1:0",
+      "failure_probability_upper": 0.0078125
+    },
+    {
+      "claim_id": "current_upper:1:1",
+      "failure_probability_upper": 0.0078125
+    }
+  ],
+  "population_id": "synthetic-population",
+  "design_hash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+  "evidence_hash": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+  "evidence_source_id": "synthetic-coverage-oracle",
+  "source_kind": "synthetic_fixture",
+  "valid_from": "2026-09-28T09:00:00Z",
+  "expires_at": "2026-09-28T11:00:00Z",
+  "selection_protocol": "fixed_prespecified_family",
+  "factor_semantics": "direct_operator_bounds",
+  "dependence": "arbitrary",
+  "increment_binding_hash": null,
+  "before_lower_required": false,
+  "temporal_binding_hash": null,
+  "binding_hash": "sha256:84eb3834ef80c391577c996601d5677e900982c1087492e81d4fdc4b720407af"
+}
