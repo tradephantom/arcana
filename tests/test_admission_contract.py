@@ -30,7 +30,8 @@ def _dag(weight: float) -> MatrixBundle:
                                     graph_hash=main_api.GRAPH_HASH)
 
 
-LEGACY_GAPS = {"calibration_evidence_hash_missing", "increment_contract_missing", "temporal_contract_missing"}
+LEGACY_GAPS = {"calibration_evidence_hash_missing", "loss_contract_missing", "increment_contract_missing",
+               "temporal_contract_missing"}
 
 
 def _with_rho_interval(request, lower: float, upper: float):
@@ -161,7 +162,7 @@ def test_fastgate_shares_the_main_evaluator_decision_tail(overrides: dict, verdi
 
 
 def test_contract_gap_names_are_stable() -> None:
-    assert CONTRACT_GAPS == {"calibration_profile_missing", "calibration_evidence_hash_missing",
+    assert CONTRACT_GAPS == {"calibration_profile_missing", "calibration_evidence_hash_missing", "loss_contract_missing",
                              "increment_contract_missing", "temporal_contract_missing"}
 
 

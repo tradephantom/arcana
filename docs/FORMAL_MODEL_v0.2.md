@@ -297,9 +297,12 @@ ARCANA_DENY_LOSS_MODEL_INVALID
 ```
 
 Loss model family, units, horizon, evidence and statistical validity must be
-established upstream. The current four-number input has no such metadata;
-its validator cannot detect a loss-horizon mismatch or derive a distribution.
-Do not describe these integration obligations as implemented scalar checks.
+established upstream. The legacy four-number input has no such metadata; its
+validator cannot detect a loss-horizon mismatch or derive a distribution.
+[Loss Contract v1](LOSS_CONTRACT_v1.md) (`arcana.loss.v1`) binds unit, horizon,
+evidence and method, and computes distribution-free upper bounds for one
+declared evidence class (independent bounded losses); admission requires it
+whenever loss is in scope.
 
 ## 10. Loss Bounds
 

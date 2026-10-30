@@ -183,17 +183,23 @@ def test_profile_mapping_carries_a_schema_valid_evidence_hash() -> None:
 # F13: AES >= AaR
 
 
+def _legacy_loss(request, bounds: LossBounds):
+    """Put the request on the legacy caller-declared loss path."""
+    budget = replace(request.autonomy_budget, loss_policy=None)
+    return replace(request, loss=None, loss_in_scope=True, loss_bounds=bounds, autonomy_budget=budget)
+
+
 @pytest.mark.parametrize("build", APIS)
 def test_audit_r7_aes_below_aar_is_an_invalid_loss_model(build) -> None:
     bounds = LossBounds(aar_99_upper=1000, aes_99_upper=1, max_allowed_aar_99=1000, max_allowed_aes_99=10)
-    decision = _decide(replace(build(), loss_in_scope=True, loss_bounds=bounds))
+    decision = _decide(_legacy_loss(build(), bounds))
     _assert_denied(decision, ReasonCode.DENY_LOSS_MODEL_INVALID, "loss_tail_order_invalid")
 
 
 @pytest.mark.parametrize("build", APIS)
 def test_aes_equal_to_aar_is_a_valid_loss_model(build) -> None:
     bounds = LossBounds(aar_99_upper=100, aes_99_upper=100, max_allowed_aar_99=200, max_allowed_aes_99=200)
-    decision = _decide(replace(build(), loss_in_scope=True, loss_bounds=bounds))
+    decision = _decide(complete_admission(_legacy_loss(build(), bounds)))
     assert decision.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
 
 

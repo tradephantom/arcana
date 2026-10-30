@@ -18,9 +18,10 @@ contract; the public roadmap carries the corrective sequence.
 | R3.2 | Implemented local conditional generation model, common-envelope and finite activation gates; exact source and installed replay are required for acceptance |
 | R3.3 | Implemented local conditional finite-family coverage contract, exact arbitrary-dependence composition, scope/policy/cache binding and fail-closed empirical requirement; exact source and installed replay are required for acceptance |
 | Admission v1 | Implemented local unreleased `arcana.admission.v1`: allow-like verdicts require bound increment and temporal contracts and a hash-bound calibration profile; profiles below the confidence floor or whose rho interval the verified rho_upper exceeds deny; loss bounds must satisfy AES >= AaR; FastGate binds a calibration profile and shares the main decision tail; see [Admission Contract v1](ADMISSION_CONTRACT_v1.md) |
+| Loss contract v1 | Implemented local unreleased `arcana.loss.v1` (R3.4, C05): AaR_99/AES_99 bounds bound to unit, horizon, evidence and method; DKW reference estimator for independent bounded losses; admission requires it when loss is in scope; see [Loss Contract v1](LOSS_CONTRACT_v1.md) |
 | Edge weights v1 | Implemented local unreleased `arcana.edge_weight.v1`: one interval formula for K entries, controls as pass-through probabilities composed by declared conditional chain or Frechet bounds, reversibility moved to L; see [Edge Weight Contract v1](EDGE_WEIGHT_CONTRACT_v1.md) |
 | Ledger v1 | Implemented local unreleased `arcana.ledger.v1` reference ledger: evaluate and commit against one versioned graph state with compare-and-swap; see [Ledger Contract v1](LEDGER_CONTRACT_v1.md) |
-| Next technical gate | R3.4 typed loss contract and supported estimator after R3.3 local acceptance; independent review, CI and release approvals remain distinct |
+| Next technical gate | R3.5 measured performance and R3.6 manuscript reconciliation; independent review, CI and release approvals remain distinct |
 | Empirical authority | Synthetic benchmark only; no new empirical A2/A3 evidence |
 | Production authority | Not provided by this repository or by a green test run |
 
@@ -41,6 +42,7 @@ contract; the public roadmap carries the corrective sequence.
 13. [Admission Contract v1](ADMISSION_CONTRACT_v1.md)
 14. [Ledger Contract v1](LEDGER_CONTRACT_v1.md)
 15. [Edge Weight Contract v1](EDGE_WEIGHT_CONTRACT_v1.md)
+16. [Loss Contract v1](LOSS_CONTRACT_v1.md)
 
 The numerical contract supersedes unchecked spectral-estimate interpretations
 for corrected source. It bounds the represented matrix, not calibration truth

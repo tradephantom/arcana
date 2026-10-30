@@ -1,5 +1,8 @@
 # ARCANA Public Docs
 
+Loss v1: [Loss Contract v1](LOSS_CONTRACT_v1.md), AaR/AES bounds bound to unit,
+horizon, evidence and method, with a distribution-free reference estimator.
+
 Edge weights v1: [Edge Weight Contract v1](EDGE_WEIGHT_CONTRACT_v1.md), one interval
 formula for K entries; controls compose without an independence assumption and
 reversibility moves to the loss model.

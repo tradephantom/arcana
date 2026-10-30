@@ -78,6 +78,16 @@ class FactorSemantics(str, Enum):
     UNKNOWN_DEPENDENCE = "unknown_dependence"
 
 
+class LossMethod(str, Enum):
+    DECLARED_UPPER_BOUNDS = "declared_upper_bounds"
+    DKW_EMPIRICAL_UPPER = "dkw_empirical_upper"
+
+
+class LossSource(str, Enum):
+    SYNTHETIC_FIXTURE = "synthetic_fixture"
+    EXTERNAL_UNVERIFIED = "external_unverified"
+
+
 class CoverageSource(str, Enum):
     SYNTHETIC_FIXTURE = "synthetic_fixture"
     EXTERNAL_UNVERIFIED = "external_unverified"
@@ -92,6 +102,7 @@ class PositiveVectorMethod(str, Enum):
 
 
 class SchemaVersion(str, Enum):
+    LOSS_V1 = "arcana.loss.v1"
     COVERAGE_V1 = "arcana.coverage.v1"
     TEMPORAL_V1 = "arcana.temporal.v1"
     INCREMENT_V1 = "arcana.increment.v1"
@@ -168,6 +179,8 @@ __all__ = [
     "CoverageMethod",
     "CoverageSource",
     "FactorSemantics",
+    "LossMethod",
+    "LossSource",
     "PathPart",
     "PositiveVectorMethod",
     "ReasonCode",
