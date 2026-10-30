@@ -119,12 +119,12 @@ def test_publication_identity_is_consistent_across_public_artifacts() -> None:
     assert "https://getaxcp.com" in header
 
 
-def test_python_project_metadata_identifies_unreleased_candidate() -> None:
+def test_python_project_metadata_identifies_corrective_release() -> None:
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="ascii"))[
         "project"
     ]
 
-    assert project["version"] == "0.1.2.dev0"
+    assert project["version"] == "0.1.2"
     assert project["license"] == {"text": "Apache-2.0"}
     assert project["authors"] == [{"name": AUTHOR, "email": EMAIL}]
     assert project["urls"] == {
@@ -135,7 +135,7 @@ def test_python_project_metadata_identifies_unreleased_candidate() -> None:
     package_init = (ROOT / "src" / "arcana" / "__init__.py").read_text(
         encoding="ascii"
     )
-    assert '__version__ = "0.1.2.dev0"' in package_init
+    assert '__version__ = "0.1.2"' in package_init
 
 
 def test_publication_metadata_has_no_unresolved_placeholder() -> None:
