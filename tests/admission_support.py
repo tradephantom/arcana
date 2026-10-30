@@ -88,8 +88,8 @@ def complete_admission(request):
             evidence_hash="sha256:" + "d" * 64, evidence_source_id="synthetic-admission", source_kind=LossSource.SYNTHETIC_FIXTURE,
             valid_from=valid_from, expires_at=expires_at, aar_99_upper=bounds.aar_99_upper, aes_99_upper=bounds.aes_99_upper,
         )
-        budget = replace(budget, loss_policy=LossPolicy("synthetic_loss_units", bounds.max_allowed_aar_99,
-                                                        bounds.max_allowed_aes_99, 0.05, False))
+        budget = replace(budget, loss_policy=LossPolicy("synthetic_loss_units", bounds.max_allowed_aar_99, bounds.max_allowed_aes_99,
+                                                        0.05, "sha256:" + "d" * 64, "synthetic-admission", False))
         changes["loss_bounds"] = None
     if isinstance(request.calibration_profile, CalibrationProfile) and request.calibration_profile.evidence_hash is None:
         changes["calibration_profile"] = replace(request.calibration_profile, evidence_hash=PROFILE_EVIDENCE_HASH)

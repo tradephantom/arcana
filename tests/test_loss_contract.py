@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import random
 
+import numpy as np
 import pytest
 
 from admission_support import assert_contract_gated, complete_admission
@@ -29,6 +30,7 @@ from arcana.schemas import load_typed_fixture, validate_document
 EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "loss_dkw_empirical.synthetic.json"
 ALPHA = Fraction(99, 100)
 UNIT = "synthetic_eur"
+EVIDENCE = "sha256:" + "e" * 64
 
 
 def _iso(value: datetime) -> str:
@@ -63,8 +65,9 @@ def _dkw(sample, support=1.0, delta=0.05, request=None, **overrides) -> LossCont
 
 
 def _policy(**overrides) -> LossPolicy:
-    return LossPolicy(**{**dict(unit=UNIT, max_allowed_aar_99=200.0, max_allowed_aes_99=250.0,
-                                max_failure_probability=0.05, require_empirical_qualification=False), **overrides})
+    return LossPolicy(**{**dict(unit=UNIT, max_allowed_aar_99=200.0, max_allowed_aes_99=250.0, max_failure_probability=0.05,
+                                evidence_hash=EVIDENCE, evidence_source_id="synthetic-loss",
+                                require_empirical_qualification=False), **overrides})
 
 
 def _with_loss(request, contract, policy=None):
@@ -204,6 +207,7 @@ def test_bounds_cover_a_known_law_in_repeated_draws() -> None:
     ({"aar_99_upper": -1.0}, "number_invalid"),
     ({"failure_probability_upper": 1.0}, "loss_failure_probability_vacuous"),
     ({"sample": (1.0,)}, "loss_sample_unexpected"),
+    ({"sample": np.array([1.0, 2.0])}, "loss_sample_unexpected"),
     ({"unit": "  "}, "loss_unit_blank"),
     ({"method": "bootstrap"}, "enum_invalid"),
     ({"expires_at": "2026-06-08T00:00:00Z"}, "loss_window_invalid"),
@@ -244,6 +248,7 @@ def test_public_example_parses_and_validates() -> None:
 def test_policy_validation_and_legacy_artifacts() -> None:
     assert _code(_policy, max_failure_probability=1.0)[0] == "loss_policy_vacuous"
     assert _code(_policy, unit=" ")[0] == "loss_policy_unit_blank"
+    assert _code(_policy, evidence_hash="md5:1")[0] == "sha256_hash_invalid"
     assert _code(LossPolicy.from_mapping, {**vars(_policy()), "extra": 1})[0] == "loss_policy_field_unknown"
     budget = AutonomyBudget(expires_at="2026-06-09T00:30:00Z", max_external_requests=1, loss_policy=_policy())
     assert _code(reject_legacy_scoped_budget, budget)[0] == "legacy_artifact_loss_policy_unsupported"
@@ -296,6 +301,10 @@ def test_legacy_loss_bounds_stay_observe_only(build) -> None:
     (lambda r: replace(r, loss=replace(r.loss, decision_horizon=main_api._horizon(seconds=60))), "loss_horizon_mismatch",
      ReasonCode.DENY_DECISION_HORIZON_MISMATCH),
     (lambda r: replace(r, loss=replace(r.loss, unit="usd")), "loss_unit_mismatch", ReasonCode.DENY_LOSS_MODEL_INVALID),
+    (lambda r: replace(r, loss=replace(r.loss, evidence_hash="sha256:" + "f" * 64)), "loss_evidence_hash_mismatch",
+     ReasonCode.DENY_LOSS_MODEL_INVALID),
+    (lambda r: replace(r, loss=replace(r.loss, evidence_source_id="cherry-picked")), "loss_evidence_source_mismatch",
+     ReasonCode.DENY_LOSS_MODEL_INVALID),
     (lambda r: replace(r, loss=replace(r.loss, failure_probability_upper=0.2)), "loss_failure_budget_exceeded",
      ReasonCode.DENY_LOSS_MODEL_INVALID),
     (lambda r: replace(r, autonomy_budget=replace(r.autonomy_budget, loss_policy=_policy(require_empirical_qualification=True))),

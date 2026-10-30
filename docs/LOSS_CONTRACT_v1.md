@@ -30,16 +30,17 @@ The quantile-integral form handles atoms and ties. The reference supports
 | `unit` | loss unit; must equal the policy unit |
 | `method` | `declared_upper_bounds` or `dkw_empirical_upper` |
 | `failure_probability_upper` | probability that the bounds fail; must not exceed the policy budget |
-| `evidence_hash`, `evidence_source_id`, `source_kind` | evidence binding; `source_kind` is `synthetic_fixture` or `external_unverified` |
+| `evidence_hash`, `evidence_source_id`, `source_kind` | evidence binding; hash and source must equal the policy's; `source_kind` is `synthetic_fixture` or `external_unverified` |
 | `valid_from`, `expires_at` | evidence validity; must cover the whole decision horizon |
 | `aar_99_upper`, `aes_99_upper` | declared method only; `aes >= aar` |
 | `sample`, `support_upper` | estimator only: 1 to 100000 losses in `[0, support_upper]` |
 | `binding_hash` | SHA-256 of the canonical content, binary64 values as hex |
 
 The budget carries a `LossPolicy`: `unit`, `max_allowed_aar_99`,
-`max_allowed_aes_99`, `max_failure_probability` and
-`require_empirical_qualification`. Limits live in the policy, estimates in the
-contract.
+`max_allowed_aes_99`, `max_failure_probability`, `evidence_hash`,
+`evidence_source_id` and `require_empirical_qualification`. Limits and the
+accepted evidence live in the policy, so the request cannot pick its own
+sample; estimates live in the contract.
 
 ## Methods
 
@@ -60,7 +61,9 @@ obtained by moving mass `eps` from the lowest observations to `B` dominates the
 true law stochastically. Its AaR_99 and AES_99 therefore bound the true values
 together, with failure probability at most `delta`. All arithmetic is exact
 over the binary64 inputs; `eps` is inflated by a relative `2^-40` to dominate
-the rounding of `log`, division and `sqrt`; the results are rounded up.
+the rounding of `log`, division and `sqrt`; the results are rounded up. Only
+atoms at or above the 99% level enter the tail sum, and the last four estimates
+are memoized by contract content (about 0.5 s for 100000 losses on a laptop).
 
 The bound is informative only when `eps < 1 - alpha`, that is
 `n > ln(2 / delta) / (2 * 0.01^2)`, about 18,445 losses for `delta = 0.05`.
@@ -75,6 +78,7 @@ uninformative.
 | loss in scope, legacy `loss_bounds` only | legacy checks; admission gap `loss_contract_missing` (`observe_only`) |
 | policy present, loss in scope, no contract | deny `loss_contract_missing` |
 | contract without policy, contract with `loss_in_scope = false`, contract plus `loss_bounds` | deny `loss_policy_missing`, `loss_contract_out_of_scope`, `loss_scalar_override_forbidden` |
+| evidence other than the policy's | deny `loss_evidence_hash_mismatch`, `loss_evidence_source_mismatch` |
 | failure probability above budget, empirical qualification required | deny `loss_failure_budget_exceeded`, `loss_empirical_review_required` |
 | evidence window | deny `loss_not_yet_valid`, `loss_expired`, `loss_horizon_not_covered` (`ARCANA_DENY_CONTEXT_STALE`) |
 
@@ -96,6 +100,8 @@ certificate v0.2 artifacts cannot carry a loss policy
 - Reversibility and other consequence modifiers belong to the loss law that
   produced the sample or the declared bounds (Edge Weight Contract v1).
 - FastGate cache bindings do not bind the loss contract yet.
+- `loss_in_scope` must be a boolean; truthy non-boolean values are now rejected
+  as invalid input, as for the other request flags.
 
 ## Verification
 

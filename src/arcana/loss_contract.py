@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import hmac
 import math
+from functools import lru_cache
 from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
@@ -131,7 +132,7 @@ class LossContract:
         object.__setattr__(self, "binding_hash", _hash(self._identity()))
 
     def _check_declared(self) -> None:
-        if self.sample or self.support_upper is not None:
+        if self.support_upper is not None or not (isinstance(self.sample, (tuple, list)) and len(self.sample) == 0):
             fail("loss_sample_unexpected", _INVALID, "declared bounds carry no sample", ("loss", "sample"))
         bounds = [expect_number_min(getattr(self, name), 0, ("loss", name), _INVALID) for name in ("aar_99_upper", "aes_99_upper")]
         validate_loss_tail_order(*bounds, ("loss", "aes_99_upper"))
@@ -211,7 +212,14 @@ class LossContract:
 
 def loss_estimate(contract: LossContract) -> LossEstimate:
     """Exact upper bounds (and, for the estimator, the plug-in values) of AaR_99 and AES_99."""
-    checked = contract.validated_snapshot()
+    if not isinstance(contract, LossContract):
+        fail("loss_contract_invalid", _INVALID, "provide a typed LossContract", ("loss",))
+    return _estimate(contract.validated_snapshot())
+
+
+@lru_cache(maxsize=4)
+def _estimate(checked: LossContract) -> LossEstimate:
+    """Memoized by content: FastGate evaluates the same contract before and after the matrix update."""
     if checked.method is LossMethod.DECLARED_UPPER_BOUNDS:
         return LossEstimate(Fraction(checked.aar_99_upper), Fraction(checked.aes_99_upper))
     n = len(checked.sample)
@@ -243,10 +251,12 @@ def tail_metrics(atoms: list[tuple[Fraction, Fraction]], alpha: Fraction = _ALPH
     cumulative, quantile, integral = Fraction(0), None, Fraction(0)
     for value, mass in atoms:
         low, high = cumulative, cumulative + mass
-        if quantile is None and high >= alpha:
-            quantile = value
-        integral += value * max(Fraction(0), high - max(low, alpha))
         cumulative = high
+        if high < alpha:  # entirely below the tail
+            continue
+        if quantile is None:
+            quantile = value
+        integral += value * (high - max(low, alpha))
     if quantile is None or cumulative != 1:
         fail("loss_distribution_invalid", _INVALID, "atoms must carry total mass one", ("loss",))
     return quantile, integral / (1 - alpha)
@@ -286,6 +296,8 @@ def validate_loss_binding(
         ("calibration_profile", checked.calibration_profile_id, calibration_profile_id, ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
         ("horizon", checked.decision_horizon, decision_horizon, ReasonCode.DENY_DECISION_HORIZON_MISMATCH),
         ("unit", checked.unit, policy.unit, _INVALID),
+        ("evidence_hash", checked.evidence_hash, policy.evidence_hash, _INVALID),
+        ("evidence_source", checked.evidence_source_id, policy.evidence_source_id, _INVALID),
     ):
         if actual != expected:
             fail(f"loss_{name}_mismatch", reason, f"bind the loss estimate to the current {name}", ("loss", name))

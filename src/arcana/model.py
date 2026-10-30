@@ -334,13 +334,17 @@ class LossPolicy:
     max_allowed_aar_99: float
     max_allowed_aes_99: float
     max_failure_probability: float
+    evidence_hash: str
+    evidence_source_id: str
     require_empirical_qualification: bool
 
     def __post_init__(self) -> None:
         reason = ReasonCode.DENY_LOSS_MODEL_INVALID
-        unit = expect_non_empty_string(self.unit, ("loss_policy", "unit"), reason)
-        if not unit.strip():
-            fail("loss_policy_unit_blank", reason, "name the loss unit", ("loss_policy", "unit"))
+        for name in ("unit", "evidence_source_id"):
+            value = expect_non_empty_string(getattr(self, name), ("loss_policy", name), reason)
+            if not value.strip():
+                fail(f"loss_policy_{name}_blank", reason, f"identify the required {name}", ("loss_policy", name))
+        expect_sha256(self.evidence_hash, ("loss_policy", "evidence_hash"), reason)
         for name in ("max_allowed_aar_99", "max_allowed_aes_99"):
             object.__setattr__(self, name, expect_number_min(getattr(self, name), 0, ("loss_policy", name), reason))
         value = expect_number_range(self.max_failure_probability, 0, 1, ("loss_policy", "max_failure_probability"), reason)
@@ -353,7 +357,8 @@ class LossPolicy:
     def from_mapping(cls, value: Any, path: tuple = ("loss_policy",)) -> "LossPolicy":
         reason = ReasonCode.DENY_LOSS_MODEL_INVALID
         data = expect_mapping(value, path, reason)
-        fields = {"unit", "max_allowed_aar_99", "max_allowed_aes_99", "max_failure_probability", "require_empirical_qualification"}
+        fields = {"unit", "max_allowed_aar_99", "max_allowed_aes_99", "max_failure_probability", "evidence_hash",
+                  "evidence_source_id", "require_empirical_qualification"}
         for name in sorted(fields):
             if name not in data:
                 fail(f"loss_policy_{name}_missing", reason, f"provide the required {name}", (*path, name))
