@@ -97,7 +97,9 @@ coefficient. See [R3 proof obligations P5](R3_TECHNICAL_CLAIM_REVIEW.md#p5-fixed
 
 ## 4. Edge Weight Model
 
-For an edge `e` over horizon `H`, ARCANA models unsafe propagation weight as:
+The implemented edge weight model is
+[Edge Weight Contract v1](EDGE_WEIGHT_CONTRACT_v1.md) (`arcana.edge_weight.v1`).
+For an edge `e` over horizon `H`:
 
 ```text
 w_e(H) =
@@ -106,29 +108,35 @@ w_e(H) =
   * exposure_e(H)
   * capability_e(H)
   * scope_e(H)
-  * (1 - detectability_e(H))
-  * (1 - gate_effectiveness_e(H))
-  * (1 - reversibility_e(H))
+  * pass_1(H) * ... * pass_k(H)
 ```
 
-All factors must be declared or derived by a calibration profile.
+`pass_i(H)` is the probability that an unsafe transition passes declared
+control `i`. It replaces the v0.2 draft factors `(1 - detectability_e(H))` and
+`(1 - gate_effectiveness_e(H))`, which discounted a gate acting only on detected
+transitions twice. The v0.2 draft factor `(1 - reversibility_e(H))` is removed:
+reversibility changes the consequence and belongs to `L`, unless it blocks
+propagation before the target activates, in which case it is a control.
+
+All factors must be declared or derived by a calibration profile, as intervals
+`lower <= mean <= upper`.
 
 This factorization defines the declared model, not a general joint-probability
-identity. Multiplying marginal probabilities/control effects requires justified
-conditional semantics, dependence assumptions or conservative domination.
-Numeric factor ranges alone do not establish those premises.
+identity. The contract makes the premise explicit per edge: under
+`conditional_chain` each factor is conditional on all preceding ones and the
+endpoints multiply; under `unknown_dependence` only the Frechet bounds are used
+(upper: minimum of upper endpoints; lower: `max(0, sum(lowers) - (k - 1))`).
+Numeric factor ranges alone do not establish the conditional premise.
 
 Expected factor domains:
 
 ```text
-activation_e(H)          >= 0
-p_unsafe_e(H)            in [0, 1]
-exposure_e(H)            in [0, 1]
-capability_e(H)          in [0, 1]
-scope_e(H)               in [0, 1]
-detectability_e(H)       in [0, 1]
-gate_effectiveness_e(H)  in [0, 1]
-reversibility_e(H)       in [0, 1]
+activation_e(H)  >= 0
+p_unsafe_e(H)    in [0, 1]
+exposure_e(H)    in [0, 1]
+capability_e(H)  in [0, 1]
+scope_e(H)       in [0, 1]
+pass_i(H)        in [0, 1]
 ```
 
 `activation_e(H)` is normalized to horizon `H`. It can exceed `1` only when the model intentionally represents expected repeated unsafe transition pressure over the horizon. The resulting `w_e(H)` is dimensionless and horizon-bound.
@@ -139,7 +147,7 @@ Unknown factors use conservative defaults:
 
 ```text
 unknown risk factor     -> conservative upper bound
-unknown control factor  -> conservative lower bound
+unknown control factor  -> pass-through 1 (no control credit)
 ```
 
 ## 5. Propagation Matrix `K`
@@ -474,10 +482,8 @@ Allowed in `K`:
 ```text
 unsafe transition probability
 activation pressure over H
-control effectiveness as a propagation dampener
+control pass-through as a propagation dampener
 scope as propagation multiplier
-detectability as propagation dampener
-reversibility as propagation dampener
 ```
 
 Not allowed in `K`:
@@ -489,6 +495,7 @@ legal severity
 reputation impact
 tail-loss estimates
 customer-specific impact values
+reversibility of the consequence
 ```
 
 Those values belong in `L` and loss-bound metrics.

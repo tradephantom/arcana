@@ -1,5 +1,9 @@
 # ARCANA Public Docs
 
+Edge weights v1: [Edge Weight Contract v1](EDGE_WEIGHT_CONTRACT_v1.md), one interval
+formula for K entries; controls compose without an independence assumption and
+reversibility moves to the loss model.
+
 Ledger v1: [Ledger Contract v1](LEDGER_CONTRACT_v1.md), linearizable admission
 against one committed, versioned graph state.
 

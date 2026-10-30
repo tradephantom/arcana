@@ -1,0 +1,518 @@
+{
+  "contract_version": "arcana.edge_weight.v1",
+  "semantics": "exact rational endpoints, outward rounding to binary64 once per entry; mean is the product of means",
+  "cases": [
+    {
+      "id": "chain_exact",
+      "note": "conditional chain multiplies endpoints",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "conditional_chain",
+        "activation": {
+          "lower": 2,
+          "mean": 2,
+          "upper": 2
+        },
+        "p_unsafe": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "exposure": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "controls": []
+      },
+      "expected": {
+        "exact": {
+          "lower": "1/4",
+          "mean": "1/4",
+          "upper": "1/4"
+        },
+        "binary64_hex": {
+          "lower": "0x1.0000000000000p-2",
+          "mean": "0x1.0000000000000p-2",
+          "upper": "0x1.0000000000000p-2"
+        }
+      }
+    },
+    {
+      "id": "identical_events",
+      "note": "two marginal 1/2 events: Frechet upper 1/2, not the independence value 1/4",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "unknown_dependence",
+        "activation": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "p_unsafe": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "exposure": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "controls": []
+      },
+      "expected": {
+        "exact": {
+          "lower": "0",
+          "mean": "1/4",
+          "upper": "1/2"
+        },
+        "binary64_hex": {
+          "lower": "0x0.0p+0",
+          "mean": "0x1.0000000000000p-2",
+          "upper": "0x1.0000000000000p-1"
+        }
+      }
+    },
+    {
+      "id": "identical_events_chain",
+      "note": "same factors declared conditional: product 1/4",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "conditional_chain",
+        "activation": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "p_unsafe": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "exposure": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "controls": []
+      },
+      "expected": {
+        "exact": {
+          "lower": "1/4",
+          "mean": "1/4",
+          "upper": "1/4"
+        },
+        "binary64_hex": {
+          "lower": "0x1.0000000000000p-2",
+          "mean": "0x1.0000000000000p-2",
+          "upper": "0x1.0000000000000p-2"
+        }
+      }
+    },
+    {
+      "id": "detection_and_gate_marginal",
+      "note": "separate detection and gate pass-throughs under unknown dependence: no double discount",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "unknown_dependence",
+        "activation": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "p_unsafe": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "exposure": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "controls": [
+          {
+            "control_id": "detection",
+            "pass_through": {
+              "lower": 0.5,
+              "mean": 0.5,
+              "upper": 0.5
+            }
+          },
+          {
+            "control_id": "gate",
+            "pass_through": {
+              "lower": 0.5,
+              "mean": 0.5,
+              "upper": 0.5
+            }
+          }
+        ]
+      },
+      "expected": {
+        "exact": {
+          "lower": "0",
+          "mean": "1/4",
+          "upper": "1/2"
+        },
+        "binary64_hex": {
+          "lower": "0x0.0p+0",
+          "mean": "0x1.0000000000000p-2",
+          "upper": "0x1.0000000000000p-1"
+        }
+      }
+    },
+    {
+      "id": "detection_gated_joint",
+      "note": "gate acting on detected transitions declared as one jointly measured control",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "unknown_dependence",
+        "activation": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "p_unsafe": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "exposure": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "controls": [
+          {
+            "control_id": "detect_then_gate",
+            "pass_through": {
+              "lower": 0.75,
+              "mean": 0.75,
+              "upper": 0.75
+            }
+          }
+        ]
+      },
+      "expected": {
+        "exact": {
+          "lower": "3/4",
+          "mean": "3/4",
+          "upper": "3/4"
+        },
+        "binary64_hex": {
+          "lower": "0x1.8000000000000p-1",
+          "mean": "0x1.8000000000000p-1",
+          "upper": "0x1.8000000000000p-1"
+        }
+      }
+    },
+    {
+      "id": "frechet_lower",
+      "note": "Frechet lower max(0, 0.9 + 0.9 + 1 + 1 - 3)",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "unknown_dependence",
+        "activation": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "p_unsafe": {
+          "lower": 0.9,
+          "mean": 0.9,
+          "upper": 0.9
+        },
+        "exposure": {
+          "lower": 0.9,
+          "mean": 0.9,
+          "upper": 0.9
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "controls": []
+      },
+      "expected": {
+        "exact": {
+          "lower": "3602879701896397/4503599627370496",
+          "mean": "65715007115831415416180825873449/81129638414606681695789005144064",
+          "upper": "8106479329266893/9007199254740992"
+        },
+        "binary64_hex": {
+          "lower": "0x1.999999999999ap-1",
+          "mean": "0x1.9eb851eb851ecp-1",
+          "upper": "0x1.ccccccccccccdp-1"
+        }
+      }
+    },
+    {
+      "id": "unknown_factor",
+      "note": "unknown probability factor [0, 1, 1]: no lower support, no credit",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "conditional_chain",
+        "activation": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "p_unsafe": {
+          "lower": 0,
+          "mean": 1,
+          "upper": 1
+        },
+        "exposure": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "controls": []
+      },
+      "expected": {
+        "exact": {
+          "lower": "0",
+          "mean": "1/2",
+          "upper": "1/2"
+        },
+        "binary64_hex": {
+          "lower": "0x0.0p+0",
+          "mean": "0x1.0000000000000p-1",
+          "upper": "0x1.0000000000000p-1"
+        }
+      }
+    },
+    {
+      "id": "outward_rounding",
+      "note": "non-dyadic factors: rounded endpoints bracket the exact product",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "conditional_chain",
+        "activation": {
+          "lower": 3,
+          "mean": 3,
+          "upper": 3
+        },
+        "p_unsafe": {
+          "lower": 0.1,
+          "mean": 0.2,
+          "upper": 0.3
+        },
+        "exposure": {
+          "lower": 0.7,
+          "mean": 0.7,
+          "upper": 0.7
+        },
+        "capability": {
+          "lower": 0.9,
+          "mean": 0.9,
+          "upper": 0.9
+        },
+        "scope": {
+          "lower": 0.6,
+          "mean": 0.8,
+          "upper": 1
+        },
+        "controls": [
+          {
+            "control_id": "review",
+            "pass_through": {
+              "lower": 0.3,
+              "mean": 0.4,
+              "upper": 0.5
+            }
+          }
+        ]
+      },
+      "expected": {
+        "exact": {
+          "lower": "8067577601747961329040964599876226681496799896829689882993354560293376557338025/237142198758023568227473377297792835283496928595231875152809132048206089502588928",
+          "mean": "3585590045221316809707866222966394189934805977033434783718028005433331901287849/29642774844752946028434172162224104410437116074403984394101141506025761187823616",
+          "upper": "414335714183310945913574583622280365758916356735/1461501637330902918203684832716283019655932542976"
+        },
+        "binary64_hex": {
+          "lower": "0x1.16b11c6d1e108p-5",
+          "mean": "0x1.ef73c0c1fc8f4p-4",
+          "upper": "0x1.224dd2f1a9fbfp-2"
+        }
+      }
+    },
+    {
+      "id": "activation_interval",
+      "note": "activation is a rate and may exceed 1",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "semantics": "unknown_dependence",
+        "activation": {
+          "lower": 1.5,
+          "mean": 2,
+          "upper": 4
+        },
+        "p_unsafe": {
+          "lower": 0.2,
+          "mean": 0.25,
+          "upper": 0.3
+        },
+        "exposure": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 0.5,
+          "mean": 0.75,
+          "upper": 1
+        },
+        "controls": []
+      },
+      "expected": {
+        "exact": {
+          "lower": "0",
+          "mean": "3/8",
+          "upper": "5404319552844595/4503599627370496"
+        },
+        "binary64_hex": {
+          "lower": "0x0.0p+0",
+          "mean": "0x1.8000000000000p-2",
+          "upper": "0x1.3333333333333p+0"
+        }
+      }
+    }
+  ]
+}
