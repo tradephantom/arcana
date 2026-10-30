@@ -39,9 +39,11 @@ bind the exact release commit and wheel hash; the version string alone is not a
 source identity. The release tag, package upload and any archive submission
 remain separate maintainer decisions.
 
-`CITATION.cff`, the v1.0 manuscript, `paper/PUBLICATION.json`, `paper/SOURCE.json`
-and LaTeX inputs preserve published attribution and archive provenance.
-Their historical metadata must not be silently rewritten to describe R1/R2.
+The v1.0 manuscript, `paper/PUBLICATION.json`, `paper/SOURCE.json` and LaTeX
+inputs preserve published attribution and archive provenance. Their
+historical metadata must not be silently rewritten to describe R1/R2.
+`CITATION.cff` describes the latest software release (v0.1.2, Zenodo DOI
+`10.5281/zenodo.23804154`) and keeps the v1.0 preprint as preferred citation.
 ARCANA has no dedicated website. The repository is its canonical project URL;
 `https://getaxcp.com` identifies the related AXCP project, not an ARCANA site.
 

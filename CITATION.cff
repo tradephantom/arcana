@@ -2,8 +2,9 @@ cff-version: 1.2.0
 message: "If you use ARCANA, cite the preprint below and identify the software release used."
 title: "ARCANA - Autonomy Risk Calculus for Agentic Network Assurance"
 type: software
-version: 0.1.1
-date-released: "2026-07-13"
+version: 0.1.2
+date-released: "2026-10-30"
+doi: "10.5281/zenodo.23804154"
 license: Apache-2.0
 authors:
   - family-names: "Elizondo Rodriguez"
@@ -25,9 +26,12 @@ keywords:
   - "calibration uncertainty"
   - "FastGate"
 identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23804154"
+    description: "ARCANA reference software v0.1.2 archived on Zenodo."
   - type: url
-    value: "https://github.com/tradephantom/arcana/releases/tag/v0.1.1"
-    description: "ARCANA public reference release v0.1.1."
+    value: "https://github.com/tradephantom/arcana/releases/tag/v0.1.2"
+    description: "ARCANA public reference release v0.1.2."
   - type: doi
     value: "10.5281/zenodo.21333463"
     description: "ARCANA preprint version 1.0."

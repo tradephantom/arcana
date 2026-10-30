@@ -23,7 +23,8 @@ The standalone reference implementation through Slice 5, ARCANA-Bench v0.1
 synthetic evaluator execution, Public Integration Contract v0.1, Whitepaper /
 Paper v1.0 public research manuscript, and release-readiness contracts are
 present. The Zenodo DOI assigned to the preprint is
-`10.5281/zenodo.21333463`. No production implementation is present in this
+`10.5281/zenodo.21333463`; the v0.1.2 reference software is archived as
+`10.5281/zenodo.23804154`. No production implementation is present in this
 public release tree.
 
 Public artifact handling separates structural validation from semantic
@@ -90,6 +91,13 @@ Preferred paper citation:
 Elizondo Rodriguez, Julio. ARCANA: Autonomy Risk Calculus for Agentic Network
 Assurance. Version 1.0. Zenodo, 2026.
 https://doi.org/10.5281/zenodo.21333463
+```
+
+Software citation for the release you use:
+
+```text
+Elizondo Rodriguez, Julio. ARCANA reference implementation (arcana-reference)
+v0.1.2. Zenodo, 2026. https://doi.org/10.5281/zenodo.23804154
 ```
 
 `CITATION.cff` provides machine-readable software and preferred-paper citation
