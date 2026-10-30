@@ -43,11 +43,11 @@ evaluator; corrected reports bind its numerical and resource modules as well.
 
 ## Identity Discipline
 
-Package metadata and the runtime version identify `0.1.2`, the corrective
-release of the R1 and R2 source, not the archived v0.1.1 distribution. Always
-bind the exact release commit and wheel hash; the version string alone is not a
-source identity. The release tag, package upload and any archive submission
-remain separate maintainer decisions.
+Package metadata and the runtime version identify `0.2.0.dev0`, an UNRELEASED
+development candidate that adds the R3 contracts on top of the v0.1.2 release.
+Always bind its exact source snapshot and wheel hash; the development version
+alone is not a source identity. No package upload, release tag or archive
+submission is authorized by this development version increment.
 
 The v1.0 manuscript, `paper/PUBLICATION.json`, `paper/SOURCE.json` and LaTeX
 inputs preserve published attribution and archive provenance. Their
