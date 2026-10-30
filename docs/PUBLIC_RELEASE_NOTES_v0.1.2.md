@@ -1,7 +1,8 @@
 # ARCANA Public Release Notes v0.1.2
 
 > Release class: corrective numerical and security release
-> Release date: set when the maintainer publishes the `v0.1.2` tag
+> Release date: 2026-10-30
+> Software DOI: 10.5281/zenodo.23804154 (Zenodo archive of this release)
 > Paper DOI: 10.5281/zenodo.21333463 (paper v1.0, unchanged)
 > Claim boundary: research/reference only; no production authority
 

@@ -9,6 +9,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 DOI = "10.5281/zenodo.21333463"
+SOFTWARE_DOI = "10.5281/zenodo.23804154"
 AUTHOR = "Julio Elizondo Rodriguez"
 AFFILIATION = "TradePhantom LLC"
 EMAIL = "dev@tradephantom.com"
@@ -69,7 +70,12 @@ def test_citation_file_separates_software_and_preprint_metadata() -> None:
     assert citation["title"] == (
         "ARCANA - Autonomy Risk Calculus for Agentic Network Assurance"
     )
-    assert citation["version"] == "0.1.1"
+    assert citation["version"] == "0.1.2"
+    assert citation["doi"] == SOFTWARE_DOI
+    assert {"type": "doi", "value": SOFTWARE_DOI,
+            "description": "ARCANA reference software v0.1.2 archived on Zenodo."} in citation["identifiers"]
+    assert {"type": "doi", "value": DOI,
+            "description": "ARCANA preprint version 1.0."} in citation["identifiers"]
     assert citation["license"] == "Apache-2.0"
     assert citation["repository-code"] == "https://github.com/tradephantom/arcana"
     assert citation["authors"] == [
