@@ -80,6 +80,7 @@ _STATIC_PROVENANCE_PATHS = (
     "src/arcana/errors.py",
     "src/arcana/fastgate.py",
     "src/arcana/increments.py",
+    "src/arcana/ledger.py",
     "src/arcana/loss.py",
     "src/arcana/matrices.py",
     "src/arcana/model.py",
