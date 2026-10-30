@@ -263,7 +263,7 @@ certification_status: "non_certifiable"
 
 ### A1 - Static Conservative Prior
 
-A1 uses static properties such as capability family, data class, execution mode, scope width, reversibility, detectability, and gate strength.
+A1 uses static properties such as capability family, data class, execution mode, scope width, reversibility, detectability, and gate strength. Under [Edge Weight Contract v1](EDGE_WEIGHT_CONTRACT_v1.md), detectability and gate strength inform control pass-through probabilities and reversibility informs the loss model, not propagation.
 
 A1 must:
 

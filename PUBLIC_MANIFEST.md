@@ -9,6 +9,10 @@ Only files listed here are part of this public repository tree.
 
 | Path | Status | Notes |
 | --- | --- | --- |
+| `docs/EDGE_WEIGHT_CONTRACT_v1.md` | unreleased Fase 1 | One versioned interval formula for propagation entries. |
+| `src/arcana/edge_weights.py` | unreleased Fase 1 | Edge weight model, interval composition and propagation bundle builder. |
+| `tests/test_edge_weights.py` | unreleased Fase 1 | Edge weight conformance, Frechet, rounding and builder regressions. |
+| `tests/fixtures/edge_weight_v1.json` | public-safe synthetic fixture | Portable edge weight conformance corpus with exact rational endpoints. |
 | `docs/LEDGER_CONTRACT_v1.md` | unreleased Fase 1 | Linearizable admission against one committed graph state. |
 | `src/arcana/ledger.py` | unreleased Fase 1 | Reference in-memory committed-graph ledger with compare-and-swap. |
 | `tests/test_ledger_contract.py` | unreleased Fase 1 | Split-cycle, concurrency, stale-state and commit-only-allow regressions. |

@@ -85,7 +85,9 @@ become joint confidence. Real evidence qualification remains open.
 Calibration is an evidence-to-uncertainty contract, not proof of real-world behavior.
 
 Multiplying marginal factor probabilities is not generally a conservative joint
-probability model. Per-entry marginal coverage does not imply the same coverage
+probability model. Edge Weight Contract v1 multiplies factors only within a
+group declared `conditional_chain` and otherwise uses Frechet bounds; the
+declared semantics remains an unverified premise. Per-entry marginal coverage does not imply the same coverage
 for a whole graph or repeated decisions. Dependence, joint coverage and adaptive
 reuse require explicit evidence; numerical enclosure cannot establish them.
 

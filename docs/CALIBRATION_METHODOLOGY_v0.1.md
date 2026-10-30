@@ -163,8 +163,8 @@ Allowed evidence classes:
 - data class;
 - execution mode;
 - scope width;
-- reversibility class;
-- detectability class;
+- reversibility class (loss evidence, not a propagation factor);
+- detection and gate class (one control pass-through per chain);
 - human or policy gate presence;
 - public benchmark prior;
 - documented synthetic assumption.
@@ -289,7 +289,7 @@ Evidence quality is insufficient when the requested action depends on untested o
 
 ## 10. Edge Factor Calibration
 
-The formal model defines:
+The formal model uses [Edge Weight Contract v1](EDGE_WEIGHT_CONTRACT_v1.md):
 
 ```text
 w_e(H) =
@@ -298,12 +298,14 @@ w_e(H) =
   * exposure_e(H)
   * capability_e(H)
   * scope_e(H)
-  * (1 - detectability_e(H))
-  * (1 - gate_effectiveness_e(H))
-  * (1 - reversibility_e(H))
+  * pass_1(H) * ... * pass_k(H)
 ```
 
-Calibration assigns lower, mean, and upper bounds to each factor.
+Calibration assigns lower, mean, and upper bounds to each factor and declares
+the composition semantics of the risk factors and of the controls separately:
+`conditional_chain` only when each factor was estimated conditional on all
+preceding ones in its group, `unknown_dependence` otherwise. Controls measured
+one at a time on unsafe transitions are `unknown_dependence`.
 
 Risk-amplifying factors:
 
@@ -315,17 +317,13 @@ capability
 scope
 ```
 
-Control-like factors:
-
-```text
-detectability
-gate_effectiveness
-reversibility
-```
+Control factors are pass-through probabilities, one per declared control.
+Detection that feeds a gate is one control measured end to end. Reversibility
+evidence informs the loss model, not `K`.
 
 Unknown risk-amplifying factors must use conservative upper bounds.
 
-Unknown control-like factors must use conservative lower bounds.
+Unknown controls must not be declared; an undeclared control earns no credit.
 
 The calibrated edge interval is:
 

@@ -73,6 +73,11 @@ class CoverageMethod(str, Enum):
     JOINT_BOUND = "joint_bound"
 
 
+class FactorSemantics(str, Enum):
+    CONDITIONAL_CHAIN = "conditional_chain"
+    UNKNOWN_DEPENDENCE = "unknown_dependence"
+
+
 class CoverageSource(str, Enum):
     SYNTHETIC_FIXTURE = "synthetic_fixture"
     EXTERNAL_UNVERIFIED = "external_unverified"
@@ -162,6 +167,7 @@ __all__ = [
     "TemporalMode",
     "CoverageMethod",
     "CoverageSource",
+    "FactorSemantics",
     "PathPart",
     "PositiveVectorMethod",
     "ReasonCode",

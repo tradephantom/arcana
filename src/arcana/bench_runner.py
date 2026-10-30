@@ -77,6 +77,7 @@ _STATIC_PROVENANCE_PATHS = (
     "src/arcana/certificate.py",
     "src/arcana/decision.py",
     "src/arcana/demo.py",
+    "src/arcana/edge_weights.py",
     "src/arcana/errors.py",
     "src/arcana/fastgate.py",
     "src/arcana/increments.py",
