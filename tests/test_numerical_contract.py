@@ -16,6 +16,7 @@ from arcana.errors import ArcanaValidationError, ReasonCode, Verdict
 from arcana.matrices import MatrixBundle, PropagationMatrix, TolerancePolicy, spectral_bounds, spectral_radius
 from arcana._numerics import nonnegative_difference_upper, verified_collatz_bounds
 from test_decision_reason_codes import _request
+from admission_support import assert_contract_gated, complete_admission
 
 
 def test_extreme_cycle_cannot_be_admitted_as_zero() -> None:
@@ -209,7 +210,7 @@ def test_shared_matrix_admission_conformance(case) -> None:
     matrix = MatrixBundle.from_values(
         case["matrix"], case["matrix"], case["matrix"], node_order=("agent", "tool"), graph_hash=request.graph_hash,
     )
-    result = evaluate_decision(replace(request, matrix_bundle=matrix, rho_threshold=case["threshold"]))
+    result = evaluate_decision(complete_admission(replace(request, matrix_bundle=matrix, rho_threshold=case["threshold"])))
     assert (result.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY) == case["allowed"]
     if case["rho"] is not None:
         assert result.metrics["rho_lower"] <= case["rho"] <= result.metrics["rho_upper"]

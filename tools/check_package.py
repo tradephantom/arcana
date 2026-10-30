@@ -153,6 +153,7 @@ def main() -> int:
             if probe["manifest"] != json.loads(expected_report)["input_manifest"]:
                 raise RuntimeError("package_gate_installed_source_manifest_mismatch")
             # Execute the same self-contained contract tests against the installed library.
+            (outside / "admission_support.py").write_bytes((ROOT / "tests/admission_support.py").read_bytes())
             contract_tests = outside / "test_increment_contract.py"
             contract_tests.write_bytes((ROOT / "tests/test_increment_contract.py").read_bytes())
             run([str(python), "-I", "-m", "pip", "install", "--only-binary=:all:",

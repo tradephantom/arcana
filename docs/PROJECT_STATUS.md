@@ -17,6 +17,7 @@ contract; the public roadmap carries the corrective sequence.
 | R3.1 | Implemented local unreleased conditional increment scope, lower-baseline accounting and evaluator/cache binding; exact source and installed replay are required for acceptance |
 | R3.2 | Implemented local conditional generation model, common-envelope and finite activation gates; exact source and installed replay are required for acceptance |
 | R3.3 | Implemented local conditional finite-family coverage contract, exact arbitrary-dependence composition, scope/policy/cache binding and fail-closed empirical requirement; exact source and installed replay are required for acceptance |
+| Admission v1 | Implemented local unreleased `arcana.admission.v1`: allow-like verdicts require bound increment and temporal contracts; FastGate binds a calibration profile and shares the main decision tail; see [Admission Contract v1](ADMISSION_CONTRACT_v1.md) |
 | Next technical gate | R3.4 typed loss contract and supported estimator after R3.3 local acceptance; independent review, CI and release approvals remain distinct |
 | Empirical authority | Synthetic benchmark only; no new empirical A2/A3 evidence |
 | Production authority | Not provided by this repository or by a green test run |
@@ -35,6 +36,7 @@ contract; the public roadmap carries the corrective sequence.
 10. [Increment Contract v1](INCREMENT_CONTRACT_v1.md)
 11. [Temporal Contract v1](TEMPORAL_CONTRACT_v1.md)
 12. [Joint Coverage Contract v1](COVERAGE_CONTRACT_v1.md)
+13. [Admission Contract v1](ADMISSION_CONTRACT_v1.md)
 
 The numerical contract supersedes unchecked spectral-estimate interpretations
 for corrected source. It bounds the represented matrix, not calibration truth

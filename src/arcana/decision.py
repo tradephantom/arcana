@@ -19,6 +19,7 @@ from arcana._validation import (
     expect_sha256,
     fail,
 )
+from arcana.admission import AdmissionTail, admission_contract_gaps, finalize_admission
 from arcana.calibration import (
     CalibrationProfile,
     CalibrationUncertainty,
@@ -314,47 +315,15 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
         ReasonCode.DENY_MODEL_INPUT_INVALID,
         unique=True,
     )
-
-    if request.scope_reduction_required:
-        return _result(
-            Verdict.REQUIRE_SCOPE_REDUCTION,
-            (ReasonCode.REQUIRE_SCOPE_REDUCTION, *synthetic_codes),
-            metrics={**base_metrics, "issue_code": "scope_reduction_required"},
-            caveats=("requested capability envelope must be reduced before admission.",),
-        )
-
-    if request.human_gate_required:
-        return _result(
-            Verdict.REQUIRE_HUMAN_GATE,
-            (ReasonCode.REQUIRE_HUMAN_GATE, *synthetic_codes),
-            metrics={**base_metrics, "issue_code": "human_gate_required"},
-            required_controls=required_controls,
-            caveats=("human or policy approval is required before admission.",),
-        )
-
-    missing_controls = tuple(control for control in required_controls if control not in available_controls)
-    if missing_controls:
-        return _result(
-            Verdict.REQUIRE_HUMAN_GATE,
-            (ReasonCode.REQUIRE_HUMAN_GATE, *synthetic_codes),
-            metrics={**base_metrics, "issue_code": "required_controls_unavailable", "missing_controls": missing_controls},
-            required_controls=required_controls,
-            caveats=("required controls are not declared available.",),
-        )
-
-    if required_controls:
-        return _result(
-            Verdict.ALLOW_WITH_CONTROLS,
-            (ReasonCode.ALLOW_WITH_CONTROLS, *synthetic_codes),
-            metrics=base_metrics,
-            required_controls=required_controls,
-        )
-
-    return _result(
-        Verdict.ALLOW_BOUNDED_AUTONOMY,
-        (ReasonCode.ALLOW_BOUNDED_AUTONOMY, *synthetic_codes),
-        metrics=base_metrics,
+    tail = AdmissionTail(
+        contract_gaps=admission_contract_gaps(increment, temporal),
+        required_controls=required_controls,
+        available_controls=available_controls,
+        human_gate_required=expect_bool(request.human_gate_required, ("human_gate_required",), ReasonCode.DENY_MODEL_INPUT_INVALID),
+        scope_reduction_required=expect_bool(request.scope_reduction_required, ("scope_reduction_required",), ReasonCode.DENY_MODEL_INPUT_INVALID),
+        info_codes=synthetic_codes,
     )
+    return finalize_admission(tail, base_metrics)
 
 
 def _validate_supported_risk_model_versions(values: Sequence[str]) -> tuple[str, ...]:

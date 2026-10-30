@@ -8,6 +8,7 @@ from arcana.decision import DecisionEvaluationRequest, DistillationAssessment, e
 from arcana.errors import CalibrationLevel, CertificationStatus, FastGateMode, PositiveVectorMethod, ReasonCode, Verdict
 from arcana.matrices import MatrixBundle
 from arcana.model import AutonomyBudget, DecisionHorizon, FastGateContext, LossBounds
+from admission_support import assert_contract_gated, complete_admission
 
 
 GRAPH_HASH = "sha256:" + "1" * 64
@@ -114,7 +115,7 @@ def _assert_result(result, verdict: Verdict, reason_code: ReasonCode) -> None:
 
 
 def test_exact_path_allows_bounded_autonomy() -> None:
-    result = evaluate_decision(_request())
+    result = evaluate_decision(complete_admission(_request()))
 
     _assert_result(result, Verdict.ALLOW_BOUNDED_AUTONOMY, ReasonCode.ALLOW_BOUNDED_AUTONOMY)
     assert math.isclose(result.metrics["rho_upper"], 0.2, rel_tol=1e-12)
@@ -122,10 +123,10 @@ def test_exact_path_allows_bounded_autonomy() -> None:
 
 def test_required_controls_route_to_allow_with_controls_when_available() -> None:
     result = evaluate_decision(
-        _request(
+        complete_admission(_request(
             required_controls=("read_only_input", "deny_memory_write"),
             available_controls=("read_only_input", "deny_memory_write"),
-        )
+        ))
     )
 
     _assert_result(result, Verdict.ALLOW_WITH_CONTROLS, ReasonCode.ALLOW_WITH_CONTROLS)

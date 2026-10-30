@@ -22,6 +22,7 @@ from arcana.fastgate import (
 )
 from arcana.matrices import PropagationMatrix, spectral_bounds
 from arcana.model import AutonomyBudget, DecisionHorizon
+from admission_support import assert_contract_gated, complete_admission
 
 
 def _rational(values):
@@ -155,7 +156,7 @@ def _budget_scope_request(mode):
 ])
 def test_fastgate_increment_bounds_upper_model_not_unknown_baseline(mode, metric):
     request = _budget_scope_request(mode)
-    result = evaluate_fastgate(request).decision
+    result = evaluate_fastgate(complete_admission(request)).decision
     assert result.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
     reported = Fraction(result.metrics[metric])
 

@@ -24,6 +24,7 @@ from arcana.matrices import MatrixBundle, PropagationMatrix
 from arcana.model import AutonomyBudget, CoveragePolicy, DecisionHorizon, TemporalPolicy, reject_legacy_scoped_budget
 from arcana.schemas import EXAMPLE_DIR, load_typed_fixture, parse_typed_document, validate_document
 from arcana.temporal import TemporalContract
+from admission_support import assert_contract_gated, complete_admission
 
 
 GRAPH = "sha256:" + "5" * 64
@@ -91,11 +92,11 @@ def _request(api, contract=None, policy=None, increment=None, temporal=None):
                             increment_scope=None if increment is None else increment.scope,
                             temporal_policy=None if temporal is None else TemporalPolicy(temporal.mode, temporal.generations, 10, 20))
     common = {"coverage": contract, "increment": increment, "temporal": temporal}
+    profile = CalibrationProfile(contract.calibration_profile_id, contract.risk_model_version, CalibrationLevel.A1,
+                                 HORIZON, ("static_conservative_prior",), EvidenceWindow(START, NOW, 3600), .99,
+                                 CalibrationUncertainty(0, .1, .3), EdgeWeightPolicy(True, True, True),
+                                 ("synthetic declared coverage only",), CertificationStatus.NON_CERTIFIABLE)
     if api == "main":
-        profile = CalibrationProfile(contract.calibration_profile_id, contract.risk_model_version, CalibrationLevel.A1,
-                                     HORIZON, ("static_conservative_prior",), EvidenceWindow(START, NOW, 3600), .99,
-                                     CalibrationUncertainty(0, .1, .3), EdgeWeightPolicy(True, True, True),
-                                     ("synthetic declared coverage only",), CertificationStatus.NON_CERTIFIABLE)
         lower = increment.after.lower if increment is not None and increment.after.lower is not None else _matrix()
         return DecisionEvaluationRequest("arcana.risk.v0.2", profile, HORIZON, GRAPH, MatrixBundle(lower, _matrix(), _matrix()),
                                          .9, budget, NOW, **common)
@@ -108,7 +109,8 @@ def _request(api, contract=None, policy=None, increment=None, temporal=None):
                            "arcana.risk.v0.2", contract.calibration_profile_id, CalibrationLevel.A1, CalibrationLevel.A1,
                            HORIZON, NOW, GRAPH, current, delta, .9, budget,
                            positive_vector=PositiveVector((1., 1.), current.node_order, GRAPH, method, epsilon=.01),
-                           evidence_hash=EVIDENCE, evidence_source_id="synthetic-coverage-oracle", **common)
+                           evidence_hash=EVIDENCE, evidence_source_id="synthetic-coverage-oracle",
+                           calibration_profile=profile, **common)
 
 
 def _decision(request):
@@ -163,7 +165,7 @@ def test_joint_bound_is_one_external_full_family_premise():
 def test_all_evaluator_paths_return_conditional_coverage(api):
     r = _request(api)
     d = _decision(r)
-    assert d.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
+    assert_contract_gated(d)
     assert d.metrics["coverage_probability_lower"] == 31 / 32
     assert d.metrics["coverage_binding_hash"] == r.coverage.binding_hash
     assert d.metrics["coverage_policy_hash"] == coverage_policy_hash(r.autonomy_budget.coverage_policy)
@@ -378,7 +380,7 @@ def _cache(r):
 def test_cache_binds_contract_and_policy_without_fallback(api, change):
     r = _request(api)
     r = replace(r, cache_binding=_cache(r))
-    assert _decision(r).verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
+    assert_contract_gated(_decision(r))
     if change == "contract":
         r = replace(r, coverage=replace(r.coverage, expires_at="2026-09-28T11:01:00Z"))
     elif change == "policy":
@@ -513,7 +515,8 @@ def test_empirical_requirement_is_not_bypassed_by_observe_or_a0(mode):
     if mode == "main_a0":
         r = replace(r, calibration_profile=replace(r.calibration_profile, level=CalibrationLevel.A0, source=("synthetic_demo",)))
     elif mode == "fastgate_a0":
-        r = replace(r, calibration_level=CalibrationLevel.A0)
+        a0 = replace(r.calibration_profile, level=CalibrationLevel.A0, source=("synthetic_demo",))
+        r = replace(r, calibration_level=CalibrationLevel.A0, calibration_profile=a0)
     elif mode == "observe":
         r = replace(r, mode=FastGateMode.OBSERVE_ONLY)
     d = _decision(r)

@@ -24,6 +24,7 @@ from arcana.matrices import MatrixBundle, PropagationMatrix, TolerancePolicy, sp
 from arcana.model import AutonomyBudget, DecisionHorizon, TemporalPolicy
 from arcana.schemas import EXAMPLE_DIR, load_typed_fixture, parse_typed_document, validate_document
 from arcana.temporal import TemporalContract, evaluate_temporal, temporal_policy_hash, validate_temporal_binding
+from admission_support import assert_contract_gated, complete_admission
 
 
 GRAPH = "sha256:" + "3" * 64
@@ -223,7 +224,7 @@ def test_supercritical_finite_recurrence_is_policy_denied_not_called_infinite():
 @pytest.mark.parametrize("api", ["main", "exact", "collatz"])
 def test_supported_temporal_request_passes_without_legacy_counter_requirement(api):
     contract = _contract()
-    result = _decision(_request(api, contract))
+    result = _decision(complete_admission(_request(api, contract)))
     assert result.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
     assert result.metrics["temporal_binding_hash"] == contract.binding_hash
     assert result.metrics["temporal_cumulative_activations_upper"] == 1.6875
@@ -331,7 +332,7 @@ def _cache(request):
 def test_cache_binds_temporal_contract_and_policy():
     request = _request("exact", _contract())
     request = replace(request, cache_binding=_cache(request))
-    assert evaluate_fastgate(request).allowed
+    assert_contract_gated(evaluate_fastgate(request).decision)
     for field in ("temporal_binding_hash", "temporal_policy_hash"):
         result = _decision(replace(request, cache_binding=replace(request.cache_binding, **{field: None})))
         assert result.metrics["issue_code"] == f"fastgate_cache_{field}_mismatch"
@@ -343,7 +344,7 @@ def test_cache_binds_temporal_contract_and_policy():
 
 @pytest.mark.parametrize("fallback", ["explicit", "uncertain"])
 def test_exact_fallback_retains_temporal_metrics_and_gate(fallback):
-    request = _request("collatz", _contract())
+    request = complete_admission(_request("collatz", _contract()))
     vector = replace(request.positive_vector, method=PositiveVectorMethod.FALLBACK_EXACT) if fallback == "explicit" else replace(request.positive_vector, values=(1, 4))
     request = replace(request, positive_vector=vector)
     result = evaluate_fastgate(request)
@@ -525,7 +526,7 @@ def test_legacy_request_never_claims_temporal_evaluation(api):
     request = _request(api, _contract())
     request = replace(request, temporal=None, autonomy_budget=AutonomyBudget(EXPIRES, max_external_requests=0))
     result = _decision(request)
-    assert result.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
+    assert_contract_gated(result)
     assert result.metrics["temporal_scope"] == "not_evaluated"
 
 

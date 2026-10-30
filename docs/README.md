@@ -1,5 +1,8 @@
 # ARCANA Public Docs
 
+Admission v1: [Admission Contract v1](ADMISSION_CONTRACT_v1.md), allow-like verdicts
+only with bound increment and temporal contracts; FastGate shares the main decision tail.
+
 R3.3: [Joint Coverage Contract v1](COVERAGE_CONTRACT_v1.md), conditional
 fixed-family composition and a separate, closed empirical qualification gate.
 

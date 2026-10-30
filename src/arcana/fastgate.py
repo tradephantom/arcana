@@ -14,6 +14,7 @@ from typing import Any, Mapping
 import numpy as np
 
 from arcana._validation import (
+    expect_bool,
     expect_calibration_profile_id,
     expect_datetime_string,
     expect_enum,
@@ -30,6 +31,17 @@ from arcana.increments import IncrementContract, _metrics_from_verified_bound, r
 from arcana.temporal import TemporalContract, evaluate_temporal, temporal_policy_hash, validate_temporal_binding
 from arcana.coverage import CoverageContract, _coverage_metrics, coverage_policy_hash, validate_coverage_binding
 from arcana.loss import evaluate_loss_bounds
+from arcana.admission import AdmissionTail, admission_contract_gaps, finalize_admission
+from arcana.calibration import CalibrationProfile
+from arcana.decision import (
+    DEFAULT_SUPPORTED_RISK_MODEL_VERSIONS,
+    _calibration_freshness_failure,
+    _same_decision_horizon,
+    _synthetic_info_codes,
+    _validate_calibration_profile,
+    _validate_string_sequence,
+    _validate_supported_risk_model_versions,
+)
 from arcana.matrices import PropagationMatrix, SpectralBounds, TolerancePolicy, spectral_bounds, spectral_radius
 from arcana._numerics import NUMERICAL_CONTRACT_VERSION, nonnegative_difference_upper, outward_float, verified_collatz_bounds
 from arcana.model import AutonomyBudget, DecisionHorizon, DecisionResult, FastGateContext, LossBounds
@@ -130,6 +142,12 @@ class FastGateRequest:
     increment: IncrementContract | None = None
     temporal: TemporalContract | None = None
     coverage: CoverageContract | None = None
+    calibration_profile: CalibrationProfile | None = None
+    supported_risk_model_versions: Sequence[str] = DEFAULT_SUPPORTED_RISK_MODEL_VERSIONS
+    required_controls: Sequence[str] = ()
+    available_controls: Sequence[str] = ()
+    human_gate_required: bool = False
+    scope_reduction_required: bool = False
 
 
 @dataclass(frozen=True)
@@ -212,6 +230,17 @@ def evaluate_fastgate(request: FastGateRequest) -> FastGateEvaluation:
 def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
     mode = _validate_mode(request.mode)
     risk_model_version = expect_risk_model_version(request.risk_model_version, ("risk_model_version",))
+    supported_versions = _validate_supported_risk_model_versions(request.supported_risk_model_versions)
+    if risk_model_version not in supported_versions:
+        return _evaluation(
+            _deny(
+                ReasonCode.DENY_RISK_MODEL_UNSUPPORTED,
+                "fastgate_risk_model_version_unsupported",
+                "risk model version is not supported by this evaluator",
+                {"risk_model_version": risk_model_version},
+            ),
+            FastGateContext(mode=FastGateMode.OBSERVE_ONLY),
+        )
     calibration_profile_id = expect_calibration_profile_id(request.calibration_profile_id, ("calibration_profile_id",))
     calibration_level = _validate_calibration_level(request.calibration_level, ("calibration_level",))
     required_calibration_level = _validate_calibration_level(request.required_calibration_level, ("required_calibration_level",))
@@ -222,6 +251,11 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         ("decision_time",),
         ReasonCode.DENY_CONTEXT_STALE,
     )
+    profile_failure = _calibration_profile_failure(
+        request.calibration_profile, calibration_profile_id, calibration_level, risk_model_version, decision_horizon, decision_time,
+    )
+    if profile_failure is not None:
+        return _evaluation(profile_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
     graph_hash = expect_sha256(request.graph_hash, ("graph_hash",), ReasonCode.DENY_GRAPH_HASH_MISMATCH)
     threshold = expect_number_range(request.threshold, 0, 1, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
     tolerance_policy = _validate_tolerance_policy(request.tolerance_policy)
@@ -368,8 +402,20 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                                      temporal_result.guidance, temporal_metrics),
                                FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
 
+    tail = AdmissionTail(
+        contract_gaps=admission_contract_gaps(increment, temporal, calibration_profile_bound=request.calibration_profile is not None),
+        required_controls=_validate_string_sequence(request.required_controls, ("required_controls",),
+                                                    ReasonCode.DENY_MODEL_INPUT_INVALID, unique=True),
+        available_controls=_validate_string_sequence(request.available_controls, ("available_controls",),
+                                                     ReasonCode.DENY_MODEL_INPUT_INVALID, unique=True),
+        human_gate_required=expect_bool(request.human_gate_required, ("human_gate_required",), ReasonCode.DENY_MODEL_INPUT_INVALID),
+        scope_reduction_required=expect_bool(request.scope_reduction_required, ("scope_reduction_required",),
+                                             ReasonCode.DENY_MODEL_INPUT_INVALID),
+        info_codes=() if request.calibration_profile is None else _synthetic_info_codes(request.calibration_profile),
+    )
+
     if mode is FastGateMode.EXACT_RECOMPUTE:
-        return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics)
+        return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics, tail)
 
     if mode is FastGateMode.PERRON_COLLATZ_BOUND:
         vector_failure = _positive_vector_failure(request.positive_vector, after_upper, graph_hash, request.reducible_graph_declared)
@@ -388,7 +434,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                     FastGateContext(mode=FastGateMode.OBSERVE_ONLY),
                     after_upper,
                 )
-            return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics)
+            return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics, tail)
         bound = _collatz_bound(after_upper, positive_vector)
         fastgate_context = FastGateContext(
             mode=FastGateMode.PERRON_COLLATZ_BOUND,
@@ -411,7 +457,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
             return _evaluation(replace(budget_failure, metrics={**metrics, **budget_failure.metrics}), fastgate_context, after_upper)
         if not tolerance_policy.below_threshold_with_margin(bound, threshold):
             if request.exact_recompute_available and request.exact_recompute_on_uncertain:
-                return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics)
+                return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics, tail)
             return _evaluation(
                 _deny(
                     ReasonCode.DENY_FASTGATE_UNCERTAIN,
@@ -425,15 +471,7 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
         loss_failure = _loss_failure(request.loss_in_scope, request.loss_bounds, metrics)
         if loss_failure is not None:
             return _evaluation(loss_failure, fastgate_context, after_upper)
-        return _evaluation(
-            _result(
-                Verdict.ALLOW_BOUNDED_AUTONOMY,
-                (ReasonCode.ALLOW_BOUNDED_AUTONOMY,),
-                metrics=metrics,
-            ),
-            fastgate_context,
-            after_upper,
-        )
+        return _evaluation(finalize_admission(tail, metrics), fastgate_context, after_upper)
 
     return _evaluation(
         _deny(ReasonCode.DENY_FASTGATE_VECTOR_INVALID, "fastgate_mode_invalid", "unsupported FastGate mode"),
@@ -458,6 +496,7 @@ def _exact_recompute_evaluation(
     decision_time: datetime,
     increment: IncrementContract | None,
     temporal_metrics: Mapping[str, Any],
+    tail: AdmissionTail,
 ) -> FastGateEvaluation:
     if not request.exact_recompute_available:
         return _evaluation(
@@ -498,15 +537,36 @@ def _exact_recompute_evaluation(
     loss_failure = _loss_failure(request.loss_in_scope, request.loss_bounds, metrics)
     if loss_failure is not None:
         return _evaluation(loss_failure, fastgate_context, after_upper)
-    return _evaluation(
-        _result(
-            Verdict.ALLOW_BOUNDED_AUTONOMY,
-            (ReasonCode.ALLOW_BOUNDED_AUTONOMY,),
-            metrics=metrics,
-        ),
-        fastgate_context,
-        after_upper,
-    )
+    return _evaluation(finalize_admission(tail, metrics), fastgate_context, after_upper)
+
+
+def _calibration_profile_failure(
+    profile: CalibrationProfile | None,
+    profile_id: str,
+    level: CalibrationLevel,
+    risk_model_version: str,
+    horizon: DecisionHorizon,
+    decision_time: datetime,
+) -> DecisionResult | None:
+    """Bind a supplied profile exactly as the main evaluator does; absence only blocks admission."""
+    if profile is None:
+        return None
+    if not isinstance(profile, CalibrationProfile):
+        return _deny(ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "fastgate_calibration_profile_invalid",
+                     "calibration_profile must be CalibrationProfile")
+    checked = _validate_calibration_profile(profile)
+    for issue_code, actual, expected, reason_code in (
+        ("fastgate_calibration_profile_id_mismatch", checked.profile_id, profile_id, ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
+        ("fastgate_calibration_level_mismatch", checked.level, level, ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
+        ("fastgate_calibration_risk_model_mismatch", checked.risk_model_version, risk_model_version,
+         ReasonCode.DENY_RISK_MODEL_UNSUPPORTED),
+    ):
+        if actual != expected:
+            return _deny(reason_code, issue_code, "calibration profile does not match the FastGate request")
+    if not _same_decision_horizon(horizon, checked.decision_horizon):
+        return _deny(ReasonCode.DENY_DECISION_HORIZON_MISMATCH, "fastgate_calibration_horizon_mismatch",
+                     "calibration profile decision horizon does not match request")
+    return _calibration_freshness_failure(checked, decision_time)
 
 
 def _validate_mode(mode: FastGateMode) -> FastGateMode:
