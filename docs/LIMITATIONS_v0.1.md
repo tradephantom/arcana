@@ -67,9 +67,11 @@ L = impact or loss
 
 An action can have bounded propagation risk but unacceptable loss bounds. An action can also have low expected loss but unacceptable propagation-risk upper bound.
 
-The reference validates supplied scalar loss metrics and limits; it does not
-estimate a distribution or verify loss units, confidence coverage, evidence or
-horizon metadata absent from `LossBounds`. These are upstream obligations.
+The legacy `LossBounds` path validates supplied scalar loss metrics and limits;
+it does not verify units, confidence coverage, evidence or horizon. Loss Contract
+v1 binds those fields and estimates distribution-free bounds only for
+independent losses with a declared support; independence, stationarity and the
+support remain declared premises, and no source kind is empirically qualified.
 
 ## 4. Calibration Limits
 

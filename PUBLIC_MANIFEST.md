@@ -9,6 +9,11 @@ Only files listed here are part of this public repository tree.
 
 | Path | Status | Notes |
 | --- | --- | --- |
+| `docs/LOSS_CONTRACT_v1.md` | unreleased R3.4 | Typed loss contract and DKW reference estimator. |
+| `src/arcana/loss_contract.py` | unreleased R3.4 | Loss contract, bindings, exact tail metrics and DKW upper bounds. |
+| `schemas/ARCANA_Loss.schema.v1.json` | unreleased R3.4 | Loss contract v1 schema. |
+| `examples/loss_dkw_empirical.synthetic.json` | public-safe synthetic fixture | Synthetic DKW loss contract example. |
+| `tests/test_loss_contract.py` | unreleased R3.4 | Exact tail oracles, estimator properties and binding regressions. |
 | `docs/EDGE_WEIGHT_CONTRACT_v1.md` | unreleased Fase 1 | One versioned interval formula for propagation entries. |
 | `src/arcana/edge_weights.py` | unreleased Fase 1 | Edge weight model, interval composition and propagation bundle builder. |
 | `tests/test_edge_weights.py` | unreleased Fase 1 | Edge weight conformance, Frechet, rounding and builder regressions. |

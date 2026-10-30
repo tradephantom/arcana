@@ -83,6 +83,7 @@ _STATIC_PROVENANCE_PATHS = (
     "src/arcana/increments.py",
     "src/arcana/ledger.py",
     "src/arcana/loss.py",
+    "src/arcana/loss_contract.py",
     "src/arcana/matrices.py",
     "src/arcana/model.py",
     "src/arcana/schemas.py",

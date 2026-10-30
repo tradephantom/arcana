@@ -329,6 +329,45 @@ class CoveragePolicy:
 
 
 @dataclass(frozen=True)
+class LossPolicy:
+    unit: str
+    max_allowed_aar_99: float
+    max_allowed_aes_99: float
+    max_failure_probability: float
+    evidence_hash: str
+    evidence_source_id: str
+    require_empirical_qualification: bool
+
+    def __post_init__(self) -> None:
+        reason = ReasonCode.DENY_LOSS_MODEL_INVALID
+        for name in ("unit", "evidence_source_id"):
+            value = expect_non_empty_string(getattr(self, name), ("loss_policy", name), reason)
+            if not value.strip():
+                fail(f"loss_policy_{name}_blank", reason, f"identify the required {name}", ("loss_policy", name))
+        expect_sha256(self.evidence_hash, ("loss_policy", "evidence_hash"), reason)
+        for name in ("max_allowed_aar_99", "max_allowed_aes_99"):
+            object.__setattr__(self, name, expect_number_min(getattr(self, name), 0, ("loss_policy", name), reason))
+        value = expect_number_range(self.max_failure_probability, 0, 1, ("loss_policy", "max_failure_probability"), reason)
+        if value == 1:
+            fail("loss_policy_vacuous", reason, "require a failure probability strictly below one", ("loss_policy",))
+        object.__setattr__(self, "max_failure_probability", value)
+        expect_bool(self.require_empirical_qualification, ("loss_policy", "require_empirical_qualification"), reason)
+
+    @classmethod
+    def from_mapping(cls, value: Any, path: tuple = ("loss_policy",)) -> "LossPolicy":
+        reason = ReasonCode.DENY_LOSS_MODEL_INVALID
+        data = expect_mapping(value, path, reason)
+        fields = {"unit", "max_allowed_aar_99", "max_allowed_aes_99", "max_failure_probability", "evidence_hash",
+                  "evidence_source_id", "require_empirical_qualification"}
+        for name in sorted(fields):
+            if name not in data:
+                fail(f"loss_policy_{name}_missing", reason, f"provide the required {name}", (*path, name))
+        if set(data) - fields:
+            fail("loss_policy_field_unknown", reason, "remove unsupported loss policy fields", path)
+        return cls(**data)
+
+
+@dataclass(frozen=True)
 class AutonomyBudget:
     expires_at: str
     max_delta_rho_upper: float | None = None
@@ -338,11 +377,14 @@ class AutonomyBudget:
     increment_scope: IncrementScope | None = None
     temporal_policy: TemporalPolicy | None = None
     coverage_policy: CoveragePolicy | None = None
+    loss_policy: LossPolicy | None = None
 
     @classmethod
     def from_mapping(cls, value: Any, path: tuple[str | int, ...] = ("autonomy_budget",)) -> "AutonomyBudget":
         data = expect_mapping(value, path, ReasonCode.DENY_BUDGET_EXHAUSTED)
         budget = cls(
+            loss_policy=LossPolicy.from_mapping(data["loss_policy"], (*path, "loss_policy"))
+            if "loss_policy" in data else None,
             coverage_policy=CoveragePolicy.from_mapping(data["coverage_policy"], (*path, "coverage_policy"))
             if "coverage_policy" in data else None,
             temporal_policy=TemporalPolicy.from_mapping(data["temporal_policy"], (*path, "temporal_policy"))
@@ -385,6 +427,10 @@ def reject_legacy_scoped_budget(budget: AutonomyBudget) -> None:
     if not isinstance(budget, AutonomyBudget):
         fail("autonomy_budget_invalid", ReasonCode.DENY_BUDGET_EXHAUSTED,
              "autonomy_budget must be AutonomyBudget", ("autonomy_budget",))
+    if budget.loss_policy is not None:
+        fail("legacy_artifact_loss_policy_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID,
+             "context/certificate v0.2 cannot carry a typed loss policy; use the typed loss evaluator",
+             ("autonomy_budget", "loss_policy"))
     if budget.coverage_policy is not None:
         fail("legacy_artifact_coverage_policy_unsupported", ReasonCode.DENY_MODEL_INPUT_INVALID,
              "context/certificate v0.2 cannot carry joint coverage; use the typed coverage evaluator",
@@ -656,6 +702,7 @@ __all__ = [
     "GraphNode",
     "GraphState",
     "LossBounds",
+    "LossPolicy",
     "NodeClass",
     "ReasonCode",
     "RhoInterval",

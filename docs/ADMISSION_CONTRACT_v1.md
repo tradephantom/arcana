@@ -25,6 +25,8 @@ or `allow_with_controls` only when all of the following hold:
    pass the main evaluator's evidence freshness rule.
 4. The calibration profile is bound to its evidence by `evidence_hash`
    (`sha256:<64 hex>`), on the main evaluator and on FastGate.
+5. When loss is in scope, a typed loss contract (`arcana.loss.v1`,
+   [Loss Contract v1](LOSS_CONTRACT_v1.md)) supplies the loss bounds.
 
 Otherwise the verdict is `observe_only` with `ARCANA_REQUIRE_OBSERVE_ONLY`,
 issue code `admission_contracts_missing`, and the metric
@@ -38,6 +40,7 @@ issue code `admission_contracts_missing`, and the metric
 | `temporal_seed_misses_changed_source` | a node whose outgoing propagation changes has no seed, so its cascade is not charged |
 | `calibration_profile_missing` | FastGate request without a calibration profile |
 | `calibration_evidence_hash_missing` | the calibration profile is not bound to its evidence by hash |
+| `loss_contract_missing` | loss is in scope but only legacy caller-declared `loss_bounds` were supplied |
 
 Every result produced by the shared tail also reports
 `admission_contract_policy = arcana.admission.v1`.

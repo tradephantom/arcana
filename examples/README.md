@@ -4,6 +4,7 @@ Examples in this folder are synthetic. They are not production evidence and do n
 
 Current examples:
 
+- `loss_dkw_empirical.synthetic.json` (64 synthetic losses: the DKW bound falls back to the declared support until n is large)
 - `coverage_union_bound.synthetic.json`
 - `temporal_common_envelope.synthetic.json`
 

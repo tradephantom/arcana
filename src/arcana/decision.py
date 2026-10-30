@@ -40,6 +40,7 @@ from arcana.errors import (
     Verdict,
 )
 from arcana.loss import LossBoundEvaluation, evaluate_loss_bounds, validate_loss_bounds
+from arcana.loss_contract import LossContract, evaluate_loss_contract, validate_loss_binding
 from arcana.increments import IncrementContract, _metrics_from_verified_bound, required_increment_scope, validate_increment_binding
 from arcana.temporal import TemporalContract, evaluate_temporal, validate_temporal_binding
 from arcana.coverage import CoverageContract, _coverage_metrics, validate_coverage_binding
@@ -98,6 +99,7 @@ class DecisionEvaluationRequest:
     temporal: TemporalContract | None = None
     coverage: CoverageContract | None = None
     min_calibration_confidence: float = DEFAULT_MIN_CALIBRATION_CONFIDENCE
+    loss: LossContract | None = None
 
 
 def evaluate_decision(request: DecisionEvaluationRequest) -> DecisionResult:
@@ -228,6 +230,11 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
         calibration_profile_id=calibration_profile.profile_id, decision_horizon=decision_horizon,
         decision_time=decision_time, current_upper=request.matrix_bundle.upper, increment=increment, temporal=temporal,
     )
+    loss = validate_loss_binding(
+        request.loss, request.autonomy_budget.loss_policy, loss_in_scope=request.loss_in_scope,
+        legacy_bounds=request.loss_bounds, risk_model_version=risk_model_version,
+        calibration_profile_id=calibration_profile.profile_id, decision_horizon=decision_horizon, decision_time=decision_time,
+    )
     coverage_metrics = {"coverage_scope": "not_evaluated", "coverage_empirical_qualification": "not_established"}
     if coverage is not None:
         coverage_metrics = _coverage_metrics(coverage, request.autonomy_budget.coverage_policy)
@@ -277,7 +284,7 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
     if distillation_failure is not None:
         return distillation_failure
 
-    loss_model_failure = _loss_model_failure(request.loss_in_scope, request.loss_bounds)
+    loss_model_failure = None if loss is not None else _loss_model_failure(request.loss_in_scope, request.loss_bounds)
     if loss_model_failure is not None:
         return loss_model_failure
 
@@ -305,7 +312,8 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
     if coherence_failure is not None:
         return coherence_failure
 
-    loss_evaluation = evaluate_loss_bounds(request.loss_bounds, loss_in_scope=request.loss_in_scope)
+    loss_evaluation = (evaluate_loss_contract(loss, request.autonomy_budget.loss_policy) if loss is not None
+                       else evaluate_loss_bounds(request.loss_bounds, loss_in_scope=request.loss_in_scope))
     if not loss_evaluation.passed:
         return _loss_bound_result(loss_evaluation, base_metrics)
     base_metrics.update(loss_evaluation.metrics)
@@ -327,7 +335,8 @@ def _evaluate_decision_checked(request: DecisionEvaluationRequest) -> DecisionRe
         unique=True,
     )
     tail = AdmissionTail(
-        contract_gaps=admission_contract_gaps(increment, temporal, calibration_profile=calibration_profile),
+        contract_gaps=admission_contract_gaps(increment, temporal, calibration_profile=calibration_profile,
+                                              loss_in_scope=request.loss_in_scope, loss=loss),
         required_controls=required_controls,
         available_controls=available_controls,
         human_gate_required=expect_bool(request.human_gate_required, ("human_gate_required",), ReasonCode.DENY_MODEL_INPUT_INVALID),

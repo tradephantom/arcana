@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcana.tradephantom.com/schemas/ARCANA_Loss.schema.v1.json",
+  "title": "ARCANA Typed Loss Contract v1",
+  "description": "AaR_99/AES_99 upper bounds bound to unit, horizon, evidence and method. Content binding is not empirical qualification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "risk_model_version", "calibration_profile_id", "decision_horizon", "unit", "method", "failure_probability_upper", "evidence_hash", "evidence_source_id", "source_kind", "valid_from", "expires_at", "alpha", "quantile_convention", "binding_hash"],
+  "properties": {
+    "schema_version": {"const": "arcana.loss.v1"},
+    "risk_model_version": {"type": "string", "pattern": "^arcana\\.risk\\.v[0-9]+\\.[0-9]+(\\.[0-9]+)?$"},
+    "calibration_profile_id": {"type": "string", "pattern": "^arcana\\.cal\\.[A-Za-z0-9_.:-]+$"},
+    "decision_horizon": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "duration_seconds", "context"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "duration_seconds": {"type": "integer", "minimum": 1},
+        "context": {"type": "string", "minLength": 1}
+      }
+    },
+    "unit": {"$ref": "#/$defs/nonblank"},
+    "method": {"enum": ["declared_upper_bounds", "dkw_empirical_upper"]},
+    "failure_probability_upper": {"type": "number", "minimum": 0, "exclusiveMaximum": 1},
+    "evidence_hash": {"$ref": "#/$defs/hash"},
+    "evidence_source_id": {"$ref": "#/$defs/nonblank"},
+    "source_kind": {"enum": ["synthetic_fixture", "external_unverified"]},
+    "valid_from": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "alpha": {"const": 0.99},
+    "quantile_convention": {"const": "lower_quantile_integral"},
+    "aar_99_upper": {"type": "number", "minimum": 0},
+    "aes_99_upper": {"type": "number", "minimum": 0},
+    "sample": {"type": "array", "minItems": 1, "maxItems": 100000, "items": {"type": "number", "minimum": 0}},
+    "support_upper": {"type": "number", "minimum": 0},
+    "binding_hash": {"$ref": "#/$defs/hash"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"method": {"const": "declared_upper_bounds"}}},
+      "then": {"required": ["aar_99_upper", "aes_99_upper"], "not": {"anyOf": [{"required": ["sample"]}, {"required": ["support_upper"]}]}}
+    },
+    {
+      "if": {"properties": {"method": {"const": "dkw_empirical_upper"}}},
+      "then": {
+        "required": ["sample", "support_upper"],
+        "properties": {"failure_probability_upper": {"exclusiveMinimum": 0}},
+        "not": {"anyOf": [{"required": ["aar_99_upper"]}, {"required": ["aes_99_upper"]}]}
+      }
+    }
+  ],
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$"},
+    "nonblank": {"type": "string", "minLength": 1, "pattern": "\\S"}
+  }
+}

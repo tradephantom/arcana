@@ -31,6 +31,7 @@ from arcana.increments import IncrementContract, _metrics_from_verified_bound, r
 from arcana.temporal import TemporalContract, evaluate_temporal, temporal_policy_hash, validate_temporal_binding
 from arcana.coverage import CoverageContract, _coverage_metrics, coverage_policy_hash, validate_coverage_binding
 from arcana.loss import evaluate_loss_bounds
+from arcana.loss_contract import LossContract, evaluate_loss_contract, validate_loss_binding
 from arcana.admission import AdmissionTail, admission_contract_gaps, finalize_admission
 from arcana.calibration import DEFAULT_MIN_CALIBRATION_CONFIDENCE, CalibrationProfile
 from arcana.decision import (
@@ -152,6 +153,7 @@ class FastGateRequest:
     human_gate_required: bool = False
     scope_reduction_required: bool = False
     min_calibration_confidence: float = DEFAULT_MIN_CALIBRATION_CONFIDENCE
+    loss: LossContract | None = None
 
 
 @dataclass(frozen=True)
@@ -288,7 +290,12 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
     if budget_precondition_failure is not None:
         return _evaluation(budget_precondition_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
 
-    loss_precondition_failure = _loss_failure(request.loss_in_scope, request.loss_bounds, {})
+    loss = validate_loss_binding(
+        request.loss, request.autonomy_budget.loss_policy, loss_in_scope=request.loss_in_scope,
+        legacy_bounds=request.loss_bounds, risk_model_version=risk_model_version,
+        calibration_profile_id=calibration_profile_id, decision_horizon=decision_horizon, decision_time=decision_time,
+    )
+    loss_precondition_failure = _loss_failure(request, loss, {})
     if loss_precondition_failure is not None:
         return _evaluation(loss_precondition_failure, FastGateContext(mode=FastGateMode.OBSERVE_ONLY))
 
@@ -414,7 +421,8 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                                FastGateContext(mode=FastGateMode.OBSERVE_ONLY), after_upper)
 
     tail = AdmissionTail(
-        contract_gaps=admission_contract_gaps(increment, temporal, calibration_profile=request.calibration_profile),
+        contract_gaps=admission_contract_gaps(increment, temporal, calibration_profile=request.calibration_profile,
+                                              loss_in_scope=request.loss_in_scope, loss=loss),
         required_controls=_validate_string_sequence(request.required_controls, ("required_controls",),
                                                     ReasonCode.DENY_MODEL_INPUT_INVALID, unique=True),
         available_controls=_validate_string_sequence(request.available_controls, ("available_controls",),
@@ -563,7 +571,7 @@ def _admission_evaluation(
         coherence_failure = _calibration_coherence_failure(request.calibration_profile, rho_after_upper, tolerance_policy, metrics)
         if coherence_failure is not None:
             return _evaluation(coherence_failure, fastgate_context, after_upper)
-    loss_failure = _loss_failure(request.loss_in_scope, request.loss_bounds, metrics)
+    loss_failure = _loss_failure(request, request.loss, metrics)
     if loss_failure is not None:
         return _evaluation(loss_failure, fastgate_context, after_upper)
     return _evaluation(finalize_admission(tail, metrics), fastgate_context, after_upper)
@@ -1002,8 +1010,10 @@ def _budget_failure(
     return None
 
 
-def _loss_failure(loss_in_scope: bool, loss_bounds: LossBounds | None, metrics: Mapping[str, Any]) -> DecisionResult | None:
-    loss_result = evaluate_loss_bounds(loss_bounds, loss_in_scope=loss_in_scope)
+def _loss_failure(request: FastGateRequest, loss: LossContract | None, metrics: Mapping[str, Any]) -> DecisionResult | None:
+    """Loss limits from the bound contract (already validated) or, on the legacy path, from loss_bounds."""
+    loss_result = (evaluate_loss_contract(loss, request.autonomy_budget.loss_policy) if loss is not None
+                   else evaluate_loss_bounds(request.loss_bounds, loss_in_scope=request.loss_in_scope))
     if loss_result.passed:
         return None
     return _deny(
