@@ -17,8 +17,9 @@ or `allow_with_controls` only when all of the following hold:
    increment scope. The spectral increment is recomputed from bound snapshots;
    a caller-supplied `delta_rho_upper` can never reach admission.
 2. A temporal contract (`arcana.temporal.v1`) is bound and evaluated under the
-   budget's temporal policy, and its initial state is nonzero. Finite-horizon
-   peak and cumulative activations are therefore limited.
+   budget's temporal policy. Its initial state is nonzero and seeds every node
+   whose outgoing propagation the bound increment changes, so finite-horizon
+   peak and cumulative activations of the action's own cascade are limited.
 3. On FastGate, a calibration profile is supplied. It must match the declared
    profile id, calibration level, risk model version and decision horizon, and
    pass the main evaluator's evidence freshness rule.
@@ -32,6 +33,7 @@ issue code `admission_contracts_missing`, and the metric
 | `increment_contract_missing` | no bound increment contract |
 | `temporal_contract_missing` | no bound and evaluated temporal contract |
 | `temporal_initial_state_zero` | the temporal contract seeds no activation, so it bounds nothing |
+| `temporal_seed_misses_changed_source` | a node whose outgoing propagation changes has no seed, so its cascade is not charged |
 | `calibration_profile_missing` | FastGate request without a calibration profile |
 
 Every result produced by the shared tail also reports
@@ -73,13 +75,21 @@ fallback) apply the same order once risk, loss, budget and temporal checks pass:
   not from the agent under evaluation.
 - Budgets remain per request. Composition across concurrent requests evaluated
   against the same baseline needs a committed graph version in the integration.
+- On the main evaluator the increment `before` snapshot is not bound to any
+  committed state: only an integration that evaluates against its committed
+  graph (see the planned ledger contract) prevents a caller from declaring
+  `before` equal to `after`.
+- Increment evidence must now cover the whole decision horizon
+  (`increment_evidence_horizon_not_covered`), as temporal evidence already did.
 - The coverage contract remains optional.
 - The public reason-code registry is unchanged; only issue codes are added.
 
 ## Compatibility
 
 Legacy requests whose checks all pass now return `observe_only` instead of an
-allow-like verdict. Deny and require outcomes are unchanged. Package version
+allow-like verdict. `human_gate_required` and `scope_reduction_required` must be
+booleans; other truthy values are rejected as invalid input. Other deny and
+require outcomes are unchanged. Package version
 `0.2.0.dev0` identifies this unreleased development line.
 
 ## Verification

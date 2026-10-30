@@ -152,3 +152,20 @@ def test_fastgate_shares_the_main_evaluator_decision_tail(overrides: dict, verdi
 
 def test_contract_gap_names_are_stable() -> None:
     assert CONTRACT_GAPS == {"calibration_profile_missing", "increment_contract_missing", "temporal_contract_missing"}
+
+
+def test_seed_on_an_unrelated_node_does_not_charge_the_changed_edge() -> None:
+    request = complete_admission(fastgate_api._request())
+    source = fastgate_api._delta().entries[0].row
+    misplaced = tuple(0.0 if index == source else 1.0 for index in range(request.before_upper.size))
+    evaluation = evaluate_fastgate(replace(request, temporal=replace(request.temporal, initial_upper=misplaced)))
+    assert not evaluation.allowed
+    assert_contract_gated(evaluation.decision, {"temporal_seed_misses_changed_source"})
+
+
+def test_increment_evidence_must_cover_the_whole_decision_horizon() -> None:
+    request = complete_admission(_main())
+    short = replace(request.increment, expires_at="2026-06-09T00:10:01Z")
+    result = evaluate_decision(replace(request, increment=short))
+    assert result.verdict is Verdict.DENY
+    assert result.metrics["issue_code"] == "increment_evidence_horizon_not_covered"

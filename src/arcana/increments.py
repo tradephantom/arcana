@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 import hmac
 import json
@@ -288,9 +288,18 @@ def validate_increment_binding(
     if decision_time < _timestamp(checked.valid_from, ("increment", "valid_from")):
         fail("increment_evidence_not_yet_valid", ReasonCode.DENY_CONTEXT_STALE,
              "do not use evidence before its validity window", ("increment", "valid_from"))
-    if decision_time >= _timestamp(checked.expires_at, ("increment", "expires_at")):
+    expiry = _timestamp(checked.expires_at, ("increment", "expires_at"))
+    if decision_time >= expiry:
         fail("increment_evidence_expired", ReasonCode.DENY_CONTEXT_STALE,
              "refresh the bound evidence before evaluating this increment", ("increment", "expires_at"))
+    try:
+        horizon_end = decision_time + timedelta(seconds=checked.decision_horizon.duration_seconds)
+    except OverflowError:
+        fail("increment_horizon_end_unrepresentable", ReasonCode.DENY_DECISION_HORIZON_MISMATCH,
+             "provide a representable decision horizon", ("increment", "decision_horizon"))
+    if horizon_end > expiry:
+        fail("increment_evidence_horizon_not_covered", ReasonCode.DENY_CONTEXT_STALE,
+             "evidence validity must cover the entire decision horizon", ("increment", "expires_at"))
     for name, actual, expected in (("evidence_hash", checked.evidence_hash, evidence_hash),
                                    ("evidence_source_id", checked.evidence_source_id, evidence_source_id)):
         if expected is not None and actual != expected:

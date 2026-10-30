@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import datetime, timedelta
 
+from arcana.admission import changed_sources
 from arcana.calibration import CalibrationProfile, CalibrationUncertainty, EdgeWeightPolicy, EvidenceWindow
 from arcana.decision import DecisionEvaluationRequest
 from arcana.errors import CalibrationLevel, CertificationStatus, IncrementScope, TemporalMode, Verdict
@@ -62,10 +63,13 @@ def complete_admission(request):
         if isinstance(request, DecisionEvaluationRequest):
             changes["delta_rho_upper"] = None  # scoped budgets recompute it from the bound snapshots
     if request.temporal is None:
+        increment = changes.get("increment", request.increment)
+        sources = set(changed_sources(increment)) if increment is not None else set()
+        seed = tuple(1.0 if index in (sources or {0}) else 0.0 for index in range(after.size))
         changes["temporal"] = TemporalContract(
             mode=TemporalMode.FIXED_OPERATOR, risk_model_version=request.risk_model_version,
             calibration_profile_id=profile_id, decision_horizon=horizon, generations=1,
-            operators=(after,), envelope_upper=after, initial_upper=(1.0,) + (0.0,) * (after.size - 1),
+            operators=(after,), envelope_upper=after, initial_upper=seed,
             operator_semantics="per_generation_expected_offspring", state_units="expected_unsafe_activations",
             exogenous_input="none_after_initial",
             evidence_hash=evidence.get("evidence_hash") or "sha256:" + "a" * 64,

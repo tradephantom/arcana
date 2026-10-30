@@ -2,8 +2,9 @@
 
 Allow-like verdicts require verified accounting: a bound increment contract
 (no caller-declared spectral increment) and an evaluated temporal contract
-with a nonzero initial state (finite-horizon cascade limits, which a spectral
-radius alone does not provide). Requests that pass every check without them
+whose initial state seeds every node whose outgoing propagation the increment
+changes (finite-horizon cascade limits, which a spectral radius alone does not
+provide). Requests that pass every check without them
 are reported as observe-only, never as admission.
 """
 
@@ -12,6 +13,8 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
+
+import numpy as np
 
 from arcana.errors import ReasonCode, Verdict
 from arcana.increments import IncrementContract
@@ -46,7 +49,15 @@ def admission_contract_gaps(
         gaps.append("temporal_contract_missing")
     elif not any(value > 0 for value in temporal.initial_upper):
         gaps.append("temporal_initial_state_zero")
+    elif increment is not None and any(temporal.initial_upper[source] <= 0 for source in changed_sources(increment)):
+        gaps.append("temporal_seed_misses_changed_source")
     return tuple(gaps)
+
+
+def changed_sources(increment: IncrementContract) -> tuple[int, ...]:
+    """Rows (source nodes) whose outgoing propagation differs between the bound snapshots."""
+    before, after = increment.before.upper.values, increment.after.upper.values
+    return tuple(int(index) for index in np.flatnonzero(np.any(before != after, axis=1)))
 
 
 def finalize_admission(tail: AdmissionTail, metrics: Mapping[str, Any]) -> DecisionResult:
@@ -94,4 +105,4 @@ def _result(
     )
 
 
-__all__ = ["ADMISSION_CONTRACT_POLICY", "AdmissionTail", "admission_contract_gaps", "finalize_admission"]
+__all__ = ["ADMISSION_CONTRACT_POLICY", "AdmissionTail", "admission_contract_gaps", "changed_sources", "finalize_admission"]
