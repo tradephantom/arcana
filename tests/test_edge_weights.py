@@ -11,6 +11,7 @@ import pytest
 from admission_support import complete_admission
 import test_decision_reason_codes as main_api
 from arcana.decision import evaluate_decision
+from arcana._numerics import outward_float
 from arcana.edge_weights import (
     EDGE_WEIGHT_MODEL_VERSION,
     UNKNOWN_PROBABILITY,
@@ -30,9 +31,9 @@ P = FactorInterval.point
 CHAIN, MARGINAL = FactorSemantics.CONDITIONAL_CHAIN, FactorSemantics.UNKNOWN_DEPENDENCE
 
 
-def _factors(source="agent", target="tool", edge_type="delegation", *, semantics=CHAIN, activation=P(1.0),
+def _factors(source="agent", target="tool", edge_type="delegation", *, risk=CHAIN, control=CHAIN, activation=P(1.0),
              p_unsafe=P(1.0), exposure=P(1.0), capability=P(1.0), scope=P(1.0), controls=(), horizon=HORIZON):
-    return EdgeFactors(source, target, edge_type, horizon, semantics, activation, p_unsafe, exposure, capability, scope,
+    return EdgeFactors(source, target, edge_type, horizon, risk, control, activation, p_unsafe, exposure, capability, scope,
                        tuple(controls))
 
 
@@ -77,23 +78,29 @@ def test_reversibility_is_not_a_propagation_factor() -> None:
 
 
 def test_identical_marginal_events_are_not_squared() -> None:
-    marginal = exact_edge_weight(_factors(semantics=MARGINAL, p_unsafe=P(0.5), exposure=P(0.5)))
-    chain = exact_edge_weight(_factors(semantics=CHAIN, p_unsafe=P(0.5), exposure=P(0.5)))
+    marginal = exact_edge_weight(_factors(risk=MARGINAL, p_unsafe=P(0.5), exposure=P(0.5)))
+    chain = exact_edge_weight(_factors(risk=CHAIN, p_unsafe=P(0.5), exposure=P(0.5)))
     assert marginal == (Fraction(0), Fraction(1, 4), Fraction(1, 2))
     assert chain == (Fraction(1, 4),) * 3
 
 
 def test_detection_and_gate_are_not_discounted_twice() -> None:
     controls = (EdgeControl("detection", P(0.5)), EdgeControl("gate", P(0.5)))
-    lower, _, upper = exact_edge_weight(_factors(semantics=MARGINAL, controls=controls))
+    lower, _, upper = exact_edge_weight(_factors(control=MARGINAL, controls=controls))
     assert upper == Fraction(1, 2)  # the legacy (1 - d)(1 - g) gave 1/4
     assert lower == 0
-    joint = exact_edge_weight(_factors(semantics=MARGINAL, controls=(EdgeControl("detect_then_gate", P(0.75)),)))
+    joint = exact_edge_weight(_factors(control=MARGINAL, controls=(EdgeControl("detect_then_gate", P(0.75)),)))
     assert joint == (Fraction(3, 4),) * 3
 
 
+def test_risk_chain_with_individually_measured_controls() -> None:
+    controls = (EdgeControl("detection", P(0.5)), EdgeControl("gate", P(0.5)))
+    weight = exact_edge_weight(_factors(p_unsafe=P(0.25), exposure=P(0.5), control=MARGINAL, controls=controls))
+    assert weight == (Fraction(0), Fraction(1, 32), Fraction(1, 16))  # P(risk) * min_i P(pass_i | risk)
+
+
 def test_frechet_lower_bound() -> None:
-    lower, _, upper = exact_edge_weight(_factors(semantics=MARGINAL, p_unsafe=P(0.75), exposure=P(0.75)))
+    lower, _, upper = exact_edge_weight(_factors(risk=MARGINAL, p_unsafe=P(0.75), exposure=P(0.75)))
     assert (lower, upper) == (Fraction(1, 2), Fraction(3, 4))
 
 
@@ -112,15 +119,18 @@ def test_random_intervals_are_enclosed_and_ordered() -> None:
         controls = tuple(EdgeControl(f"c{index}", interval()) for index in range(generator.randrange(4)))
         base = dict(activation=interval(5.0), p_unsafe=interval(), exposure=interval(), capability=interval(),
                     scope=interval(), controls=controls)
-        chain, marginal = (exact_edge_weight(_factors(semantics=semantics, **base)) for semantics in (CHAIN, MARGINAL))
-        assert marginal[0] <= chain[0] and chain[2] <= marginal[2]  # Frechet bounds enclose the chain product
-        assert chain[1] == marginal[1]
-        for exact, semantics in ((chain, CHAIN), (marginal, MARGINAL)):
-            rounded = edge_weight(_factors(semantics=semantics, **base))
+        weights = {(risk, control): exact_edge_weight(_factors(risk=risk, control=control, **base))
+                   for risk in (CHAIN, MARGINAL) for control in (CHAIN, MARGINAL)}
+        chain, marginal = weights[CHAIN, CHAIN], weights[MARGINAL, MARGINAL]
+        for exact in weights.values():  # Frechet bounds enclose the chain product in each group
+            assert marginal[0] <= exact[0] <= chain[0] and chain[2] <= exact[2] <= marginal[2]
+            assert exact[1] == chain[1]
+        for (risk, control), exact in weights.items():
+            rounded = edge_weight(_factors(risk=risk, control=control, **base))
             assert Fraction(rounded.lower) <= exact[0] <= exact[1] <= exact[2] <= Fraction(rounded.upper)
             assert rounded.lower <= rounded.mean <= rounded.upper
             extra = (*controls, EdgeControl("extra", interval()))
-            assert exact_edge_weight(_factors(semantics=semantics, **{**base, "controls": extra}))[2] <= exact[2]
+            assert exact_edge_weight(_factors(risk=risk, control=control, **{**base, "controls": extra}))[2] <= exact[2]
 
 
 # Matrix construction
@@ -129,7 +139,7 @@ def test_random_intervals_are_enclosed_and_ordered() -> None:
 def test_bundle_sums_parallel_edges_and_binds_the_graph() -> None:
     graph = _graph(("agent", "tool", "delegation"), ("agent", "tool", "memory_write"), ("tool", "agent", "result"))
     factors = (_factors(edge_type="delegation", p_unsafe=P(0.25)), _factors(edge_type="memory_write", p_unsafe=P(0.125)),
-               _factors("tool", "agent", "result", semantics=MARGINAL, p_unsafe=P(0.5), exposure=P(0.5)))
+               _factors("tool", "agent", "result", risk=MARGINAL, p_unsafe=P(0.5), exposure=P(0.5)))
     bundle = propagation_bundle(graph, factors, HORIZON)
     assert bundle.upper.node_order == ("agent", "tool")
     assert bundle.upper.graph_hash == main_api.GRAPH_HASH
@@ -143,9 +153,10 @@ def test_bundle_sums_parallel_edges_and_binds_the_graph() -> None:
 def test_parallel_edges_round_once_per_entry() -> None:
     graph = _graph(("agent", "tool", "a"), ("agent", "tool", "b"), ("agent", "tool", "c"))
     factors = tuple(_factors(edge_type=name, p_unsafe=P(0.1)) for name in ("a", "b", "c"))
-    upper = propagation_bundle(graph, factors, HORIZON).upper.values[0, 1]
+    bundle = propagation_bundle(graph, factors, HORIZON)
     exact = 3 * Fraction(0.1)
-    assert Fraction(upper) >= exact and Fraction(float(upper)) - exact < Fraction(2) ** -52
+    assert bundle.upper.values[0, 1] == outward_float(exact, upper=True)
+    assert bundle.lower.values[0, 1] == outward_float(exact, upper=False)
 
 
 def test_built_bundle_feeds_the_evaluator() -> None:
@@ -181,7 +192,8 @@ def test_factor_sets_must_match_graph_edges_one_to_one(factors, code, reason) ->
     ({"activation": FactorInterval(-1.0, 0.0, 1.0)}, "number_invalid"),
     ({"scope": FactorInterval(0.0, float("nan"), 1.0)}, "number_invalid"),
     ({"capability": 0.5}, "edge_factor_invalid"),
-    ({"semantics": "independent"}, "enum_invalid"),
+    ({"risk_semantics": "independent"}, "enum_invalid"),
+    ({"control_semantics": None}, "enum_invalid"),
     ({"controls": (EdgeControl("gate", P(0.5)), EdgeControl("gate", P(0.4)))}, "edge_control_duplicate"),
     ({"controls": (EdgeControl("", P(0.5)),)}, "string_invalid"),
     ({"controls": ("gate",)}, "edge_control_invalid"),
@@ -190,6 +202,21 @@ def test_invalid_factors_are_model_input_errors(changes, code) -> None:
     issue_code, reason = _code(exact_edge_weight, replace(_factors(), **changes))
     assert reason is ReasonCode.DENY_MODEL_INPUT_INVALID
     assert issue_code == code
+
+
+def test_mappings_are_validated_on_parse() -> None:
+    factors = json.loads(json.dumps(CORPUS["cases"][0]["factors"]))
+    factors["exposure"] = {"lower": 0.6, "mean": 0.5, "upper": 0.7}
+    assert _code(EdgeFactors.from_mapping, factors) == ("edge_factor_interval_order_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID)
+    factors["exposure"] = {"lower": 0.5, "mean": 0.5, "upper": 2}
+    assert _code(EdgeFactors.from_mapping, factors) == ("edge_factor_probability_out_of_range", ReasonCode.DENY_MODEL_INPUT_INVALID)
+
+
+def test_malformed_graph_or_factor_list_is_rejected() -> None:
+    duplicated = _graph(("agent", "tool", "delegation"), ("agent", "tool", "delegation"))
+    assert _code(propagation_bundle, duplicated, (_factors(),), HORIZON) == ("graph_edge_duplicate", ReasonCode.DENY_MODEL_INPUT_INVALID)
+    single = _graph(("agent", "tool", "delegation"))
+    assert _code(propagation_bundle, single, None, HORIZON) == ("edge_factors_invalid", ReasonCode.DENY_MODEL_INPUT_INVALID)
 
 
 def test_unrepresentable_weight_is_an_explicit_failure() -> None:

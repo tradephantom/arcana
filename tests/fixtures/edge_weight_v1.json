@@ -14,7 +14,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "conditional_chain",
+        "risk_semantics": "conditional_chain",
+        "control_semantics": "conditional_chain",
         "activation": {
           "lower": 2,
           "mean": 2,
@@ -57,7 +58,7 @@
     },
     {
       "id": "identical_events",
-      "note": "two marginal 1/2 events: Frechet upper 1/2, not the independence value 1/4",
+      "note": "two marginal 1/2 risk events: Frechet upper 1/2, not the independence value 1/4",
       "factors": {
         "source": "agent",
         "target": "tool",
@@ -67,7 +68,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "unknown_dependence",
+        "risk_semantics": "unknown_dependence",
+        "control_semantics": "conditional_chain",
         "activation": {
           "lower": 1,
           "mean": 1,
@@ -120,7 +122,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "conditional_chain",
+        "risk_semantics": "conditional_chain",
+        "control_semantics": "conditional_chain",
         "activation": {
           "lower": 1,
           "mean": 1,
@@ -163,7 +166,7 @@
     },
     {
       "id": "detection_and_gate_marginal",
-      "note": "separate detection and gate pass-throughs under unknown dependence: no double discount",
+      "note": "separately measured detection and gate with unknown dependence: no double discount",
       "factors": {
         "source": "agent",
         "target": "tool",
@@ -173,7 +176,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "unknown_dependence",
+        "risk_semantics": "conditional_chain",
+        "control_semantics": "unknown_dependence",
         "activation": {
           "lower": 1,
           "mean": 1,
@@ -243,7 +247,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "unknown_dependence",
+        "risk_semantics": "conditional_chain",
+        "control_semantics": "unknown_dependence",
         "activation": {
           "lower": 1,
           "mean": 1,
@@ -294,6 +299,77 @@
       }
     },
     {
+      "id": "risk_chain_controls_marginal",
+      "note": "P(risk) * min_i P(pass_i | risk): 0.1 * 0.5 * 0.5",
+      "factors": {
+        "source": "agent",
+        "target": "tool",
+        "edge_type": "delegation",
+        "decision_horizon": {
+          "id": "test_5m",
+          "duration_seconds": 300,
+          "context": "edge weight conformance"
+        },
+        "risk_semantics": "conditional_chain",
+        "control_semantics": "unknown_dependence",
+        "activation": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "p_unsafe": {
+          "lower": 0.1,
+          "mean": 0.1,
+          "upper": 0.1
+        },
+        "exposure": {
+          "lower": 0.5,
+          "mean": 0.5,
+          "upper": 0.5
+        },
+        "capability": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "scope": {
+          "lower": 1,
+          "mean": 1,
+          "upper": 1
+        },
+        "controls": [
+          {
+            "control_id": "detection",
+            "pass_through": {
+              "lower": 0.5,
+              "mean": 0.5,
+              "upper": 0.5
+            }
+          },
+          {
+            "control_id": "gate",
+            "pass_through": {
+              "lower": 0.5,
+              "mean": 0.5,
+              "upper": 0.5
+            }
+          }
+        ]
+      },
+      "expected": {
+        "exact": {
+          "lower": "0",
+          "mean": "3602879701896397/288230376151711744",
+          "upper": "3602879701896397/144115188075855872"
+        },
+        "binary64_hex": {
+          "lower": "0x0.0p+0",
+          "mean": "0x1.999999999999ap-7",
+          "upper": "0x1.999999999999ap-6"
+        }
+      }
+    },
+    {
       "id": "frechet_lower",
       "note": "Frechet lower max(0, 0.9 + 0.9 + 1 + 1 - 3)",
       "factors": {
@@ -305,7 +381,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "unknown_dependence",
+        "risk_semantics": "unknown_dependence",
+        "control_semantics": "unknown_dependence",
         "activation": {
           "lower": 1,
           "mean": 1,
@@ -358,7 +435,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "conditional_chain",
+        "risk_semantics": "conditional_chain",
+        "control_semantics": "conditional_chain",
         "activation": {
           "lower": 1,
           "mean": 1,
@@ -411,7 +489,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "conditional_chain",
+        "risk_semantics": "conditional_chain",
+        "control_semantics": "conditional_chain",
         "activation": {
           "lower": 3,
           "mean": 3,
@@ -473,7 +552,8 @@
           "duration_seconds": 300,
           "context": "edge weight conformance"
         },
-        "semantics": "unknown_dependence",
+        "risk_semantics": "unknown_dependence",
+        "control_semantics": "unknown_dependence",
         "activation": {
           "lower": 1.5,
           "mean": 2,

@@ -302,9 +302,10 @@ w_e(H) =
 ```
 
 Calibration assigns lower, mean, and upper bounds to each factor and declares
-the composition semantics of the edge: `conditional_chain` only when each
-factor was estimated conditional on all preceding ones, `unknown_dependence`
-otherwise.
+the composition semantics of the risk factors and of the controls separately:
+`conditional_chain` only when each factor was estimated conditional on all
+preceding ones in its group, `unknown_dependence` otherwise. Controls measured
+one at a time on unsafe transitions are `unknown_dependence`.
 
 Risk-amplifying factors:
 

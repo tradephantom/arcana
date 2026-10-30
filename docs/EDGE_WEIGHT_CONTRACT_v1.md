@@ -26,7 +26,7 @@ w_e(H) = activation_e(H)
 | `exposure` | `[0, 1]` | the unsafe activation reaches the target |
 | `capability` | `[0, 1]` | the target can act on it |
 | `scope` | `[0, 1]` | the action falls inside the propagating scope |
-| `pass_i` | `[0, 1]` | an unsafe transition passes declared control `i` |
+| `pass_i` | `[0, 1]` | an unsafe transition reaching declared control `i` passes it |
 
 Every factor is an interval `lower <= mean <= upper`. `K_ij` is the sum of the
 weights of every edge from `i` to `j`. Every graph edge needs a factor set:
@@ -37,22 +37,31 @@ no control credit.
 
 ## Composition (audit F8)
 
-The probability factors, from `p_unsafe` through the last control, compose by
-the semantics the edge declares:
+Each edge declares `risk_semantics` for the four risk factors and
+`control_semantics` for its controls. Each group composes by its own semantics:
 
 | Semantics | Lower endpoint | Upper endpoint | Premise |
 | --- | --- | --- | --- |
-| `conditional_chain` | product of lowers | product of uppers | each factor is conditional on all preceding ones, so the product is an identity |
-| `unknown_dependence` | `max(0, sum(lowers) - (k - 1))` | minimum of uppers | factors are marginals; only the Frechet bounds hold |
+| `conditional_chain` | product of lowers | product of uppers | each factor is conditional on all preceding ones in its group, so the product is an identity |
+| `unknown_dependence` | `max(0, sum(lowers) - (k - 1))` | minimum of uppers | only the Frechet bounds hold |
 
-`activation` multiplies both endpoints. The mean is the product of means under
-both semantics; it lies inside both intervals and supports analysis, never
-admission. The `unknown_dependence` interval always contains the
-`conditional_chain` interval for the same numbers.
+The groups multiply, and `activation` multiplies both:
 
-Two marginal events of probability `1/2` therefore give an upper weight of
+```text
+w = activation * R * C        R = risk group, C = control group (1 when no control)
+```
+
+This is valid because every pass-through is defined on unsafe transitions:
+`P(risk and pass) = P(risk) * P(pass | risk)`. The mean is the product of all
+means; it lies inside every interval and supports analysis, never admission.
+For the same numbers, `unknown_dependence` always contains `conditional_chain`.
+
+Two marginal risk events of probability `1/2` therefore give an upper weight of
 `1/2`, not `1/4`, unless the calibration states and supports the conditional
-chain.
+chain. The common calibration, risk factors defined conditionally and controls
+measured one at a time on unsafe transitions, declares
+`risk_semantics = conditional_chain` and `control_semantics = unknown_dependence`:
+`P(risk) * min_i P(pass_i | risk)`.
 
 ## Controls Instead Of Detectability And Gate
 
@@ -60,9 +69,9 @@ The v0.2 factors `(1 - detectability)` and `(1 - gate_effectiveness)` counted a
 gate that acts only on detected transitions twice. In v1 each control declares
 the probability that an unsafe transition passes it. A detector that feeds a
 gate is one control whose pass-through is measured end to end
-(`1 - P(detected and blocked)`). Under `unknown_dependence`, several controls
-earn no more credit than the strongest one; more credit needs a jointly
-measured chain or a supported conditional chain.
+(`1 - P(detected and blocked)`). Under `control_semantics = unknown_dependence`,
+several controls earn no more credit than the strongest one; more credit needs
+a jointly measured chain or a supported conditional chain.
 
 ## Reversibility Belongs To L
 
@@ -84,7 +93,8 @@ beyond binary64 range fails with `edge_weight_unrepresentable`.
 | Issue code | Reason code |
 | --- | --- |
 | `edge_factor_invalid`, `edge_factor_interval_order_invalid`, `edge_factor_probability_out_of_range`, `number_invalid` | `ARCANA_DENY_MODEL_INPUT_INVALID` |
-| `edge_control_invalid`, `edge_control_duplicate`, `enum_invalid` (semantics) | `ARCANA_DENY_MODEL_INPUT_INVALID` |
+| `edge_control_invalid`, `edge_control_duplicate`, `enum_invalid` (either semantics) | `ARCANA_DENY_MODEL_INPUT_INVALID` |
+| `graph_edge_duplicate`, `graph_edge_endpoint_unknown`, `edge_factors_invalid` | `ARCANA_DENY_MODEL_INPUT_INVALID` |
 | `edge_factors_duplicate`, `edge_factors_unknown_edge`, `edge_weight_unrepresentable` | `ARCANA_DENY_MODEL_INPUT_INVALID` |
 | `edge_factors_horizon_mismatch` | `ARCANA_DENY_DECISION_HORIZON_MISMATCH` |
 | `edge_factors_missing` | `ARCANA_DENY_CALIBRATION_INSUFFICIENT` |
@@ -96,13 +106,15 @@ beyond binary64 range fails with `edge_weight_unrepresentable`.
 - `propagation_bundle(graph, edge_factors, decision_horizon)` returns the
   `MatrixBundle` for the evaluator, ordered by `graph.nodes` and bound to
   `graph.graph_hash`.
-- `EdgeFactors.from_mapping` reads the JSON shape used by the conformance
-  corpus `tests/fixtures/edge_weight_v1.json`.
+- `EdgeFactors.from_mapping` reads and fully validates the JSON shape used by
+  the conformance corpus `tests/fixtures/edge_weight_v1.json`.
 
 ## Limits
 
-- The semantics label is a declared premise. ARCANA cannot check that a
+- The semantics labels are declared premises. ARCANA cannot check that a
   `conditional_chain` calibration really estimated conditional factors.
+- Factor sets carry no calibration profile id or evidence hash yet; binding
+  them belongs with the graph builder and canonical graph hash (Fase 2).
 - The graph hash is still supplied by the producer; canonical graph hashing
   (audit F9) is separate.
 - The evaluator does not yet require that its matrices came from this builder.
@@ -112,7 +124,7 @@ beyond binary64 range fails with `edge_weight_unrepresentable`.
 ## Verification
 
 `tests/test_edge_weights.py` reproduces the corpus exactly, checks the
-identical-event and detection-gate cases, Frechet enclosure of the chain
-product, outward enclosure and ordering for 300 seeded random edges, control
+identical-event, detection-gate and mixed-semantics cases, Frechet enclosure
+of the chain product for every semantics pair, outward enclosure and ordering for 300 seeded random edges, control
 monotonicity, order-independent matrix sums, graph/horizon binding and the
 evaluator round trip.

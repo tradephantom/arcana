@@ -122,11 +122,13 @@ All factors must be declared or derived by a calibration profile, as intervals
 `lower <= mean <= upper`.
 
 This factorization defines the declared model, not a general joint-probability
-identity. The contract makes the premise explicit per edge: under
-`conditional_chain` each factor is conditional on all preceding ones and the
-endpoints multiply; under `unknown_dependence` only the Frechet bounds are used
-(upper: minimum of upper endpoints; lower: `max(0, sum(lowers) - (k - 1))`).
-Numeric factor ranges alone do not establish the conditional premise.
+identity. The contract makes the premise explicit per edge, separately for the
+risk factors and for the controls: under `conditional_chain` each factor is
+conditional on all preceding ones in its group and the endpoints multiply;
+under `unknown_dependence` only the Frechet bounds are used (upper: minimum of
+upper endpoints; lower: `max(0, sum(lowers) - (k - 1))`). The two groups
+multiply because pass-throughs are defined on unsafe transitions. Numeric
+factor ranges alone do not establish the conditional premise.
 
 Expected factor domains:
 
