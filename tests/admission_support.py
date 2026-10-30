@@ -14,7 +14,9 @@ from arcana.increments import IncrementContract, IncrementSnapshot
 from arcana.model import DecisionResult, TemporalPolicy
 from arcana.temporal import TemporalContract
 
-CONTRACT_GAPS = frozenset({"calibration_profile_missing", "increment_contract_missing", "temporal_contract_missing"})
+CONTRACT_GAPS = frozenset({"calibration_profile_missing", "calibration_evidence_hash_missing",
+                           "increment_contract_missing", "temporal_contract_missing"})
+PROFILE_EVIDENCE_HASH = "sha256:" + "c" * 64
 _SOURCES = {
     CalibrationLevel.A1: ("static_conservative_prior",),
     CalibrationLevel.A2: ("controlled_redteam",),
@@ -31,7 +33,7 @@ def assert_contract_gated(decision: DecisionResult, gaps=CONTRACT_GAPS) -> None:
 
 
 def complete_admission(request):
-    """Add coherent increment, temporal and (FastGate) profile inputs that the request lacks."""
+    """Add coherent increment, temporal and profile inputs (incl. profile evidence hash) that the request lacks."""
     if isinstance(request, DecisionEvaluationRequest):
         before = after = request.matrix_bundle.upper
         profile_id = request.calibration_profile.profile_id
@@ -77,16 +79,19 @@ def complete_admission(request):
             evidence_scope="joint_generation_envelope", valid_from=valid_from, expires_at=expires_at,
         )
         budget = replace(budget, temporal_policy=TemporalPolicy(TemporalMode.FIXED_OPERATOR, 1, 1e6, 1e6))
+    if isinstance(request.calibration_profile, CalibrationProfile) and request.calibration_profile.evidence_hash is None:
+        changes["calibration_profile"] = replace(request.calibration_profile, evidence_hash=PROFILE_EVIDENCE_HASH)
     if isinstance(request, FastGateRequest) and request.calibration_profile is None:
         level = request.calibration_level
         changes["calibration_profile"] = CalibrationProfile(
             profile_id=profile_id, risk_model_version=request.risk_model_version, level=level,
             decision_horizon=horizon, source=_SOURCES[level],
             evidence_window=EvidenceWindow(_iso(instant - timedelta(minutes=10)), _iso(instant - timedelta(minutes=1)), 3600),
-            confidence=.8, uncertainty=CalibrationUncertainty(0, .1, .3), edge_weight_policy=EdgeWeightPolicy(True, True, True),
+            # Declared rho interval [0, 1] is coherent with every subcritical after-state.
+            confidence=.8, uncertainty=CalibrationUncertainty(0, .1, 1), edge_weight_policy=EdgeWeightPolicy(True, True, True),
             caveats=("synthetic admission test profile",),
             certification_status=CertificationStatus.NON_CERTIFIABLE if level is CalibrationLevel.A1
-            else CertificationStatus.CERTIFIABLE_UNDER_PROFILE,
+            else CertificationStatus.CERTIFIABLE_UNDER_PROFILE, evidence_hash=PROFILE_EVIDENCE_HASH,
         )
     return replace(request, autonomy_budget=budget, **changes)
 

@@ -7,7 +7,7 @@ from typing import Mapping
 
 from arcana._validation import expect_number_min
 from arcana.errors import ReasonCode
-from arcana.model import LossBounds
+from arcana.model import LossBounds, validate_loss_tail_order
 
 
 @dataclass(frozen=True)
@@ -31,7 +31,7 @@ def evaluate_loss_bounds(loss_bounds: LossBounds | None, *, loss_in_scope: bool)
             issue_code="loss_bounds_missing",
         )
 
-    metrics = _loss_metrics(loss_bounds)
+    metrics = validate_loss_bounds(loss_bounds)
     if metrics["aar_99_upper"] > metrics["max_allowed_aar_99"]:
         return LossBoundEvaluation(
             metrics=metrics,
@@ -47,37 +47,19 @@ def evaluate_loss_bounds(loss_bounds: LossBounds | None, *, loss_in_scope: bool)
     return LossBoundEvaluation(metrics=metrics)
 
 
-def _loss_metrics(loss_bounds: LossBounds) -> dict[str, float]:
-    return {
-        "aar_99_upper": expect_number_min(
-            loss_bounds.aar_99_upper,
-            0,
-            ("loss_bounds", "aar_99_upper"),
-            ReasonCode.DENY_LOSS_MODEL_INVALID,
-        ),
-        "aes_99_upper": expect_number_min(
-            loss_bounds.aes_99_upper,
-            0,
-            ("loss_bounds", "aes_99_upper"),
-            ReasonCode.DENY_LOSS_MODEL_INVALID,
-        ),
-        "max_allowed_aar_99": expect_number_min(
-            loss_bounds.max_allowed_aar_99,
-            0,
-            ("loss_bounds", "max_allowed_aar_99"),
-            ReasonCode.DENY_LOSS_MODEL_INVALID,
-        ),
-        "max_allowed_aes_99": expect_number_min(
-            loss_bounds.max_allowed_aes_99,
-            0,
-            ("loss_bounds", "max_allowed_aes_99"),
-            ReasonCode.DENY_LOSS_MODEL_INVALID,
-        ),
+def validate_loss_bounds(loss_bounds: LossBounds) -> dict[str, float]:
+    """Check the loss model itself (non-negative, AES >= AaR) before any limit is compared."""
+    metrics = {
+        name: expect_number_min(getattr(loss_bounds, name), 0, ("loss_bounds", name), ReasonCode.DENY_LOSS_MODEL_INVALID)
+        for name in ("aar_99_upper", "aes_99_upper", "max_allowed_aar_99", "max_allowed_aes_99")
     }
+    validate_loss_tail_order(metrics["aar_99_upper"], metrics["aes_99_upper"], ("loss_bounds", "aes_99_upper"))
+    return metrics
 
 
 __all__ = [
     "LossBoundEvaluation",
     "LossBounds",
     "evaluate_loss_bounds",
+    "validate_loss_bounds",
 ]

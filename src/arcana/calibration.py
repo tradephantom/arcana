@@ -14,6 +14,7 @@ from arcana._validation import (
     expect_number_min,
     expect_number_range,
     expect_risk_model_version,
+    expect_sha256,
     expect_string_list,
     fail,
     require_value,
@@ -21,6 +22,10 @@ from arcana._validation import (
 from arcana.errors import CalibrationLevel, CertificationStatus, ReasonCode
 from arcana.model import DecisionHorizon
 
+
+# Admission floor on a profile's declared confidence in its own rho interval. A policy floor,
+# not a statistical claim: it rejects profiles that rate their interval no better than a coin flip.
+DEFAULT_MIN_CALIBRATION_CONFIDENCE = 0.5
 
 ALLOWED_CALIBRATION_SOURCES = {
     "synthetic_demo",
@@ -137,6 +142,7 @@ class CalibrationProfile:
     caveats: tuple[str, ...]
     certification_status: CertificationStatus
     last_updated_at: str | None = None
+    evidence_hash: str | None = None
 
     @classmethod
     def from_mapping(cls, value: Any, path: tuple[str | int, ...] = ()) -> "CalibrationProfile":
@@ -154,6 +160,7 @@ class CalibrationProfile:
             ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
         )
         last_updated = data.get("last_updated_at")
+        evidence_hash = data.get("evidence_hash")
         sources = expect_string_list(
             require_value(data, "source", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT),
             (*path, "source"),
@@ -179,6 +186,7 @@ class CalibrationProfile:
             caveats=expect_string_list(require_value(data, "caveats", path, ReasonCode.DENY_CALIBRATION_INSUFFICIENT), (*path, "caveats"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT, min_items=1),
             certification_status=status,
             last_updated_at=expect_datetime_string(last_updated, (*path, "last_updated_at"), ReasonCode.DENY_CONTEXT_STALE) if last_updated is not None else None,
+            evidence_hash=expect_sha256(evidence_hash, (*path, "evidence_hash"), ReasonCode.DENY_CALIBRATION_INSUFFICIENT) if evidence_hash is not None else None,
         )
 
 
@@ -276,6 +284,7 @@ __all__ = [
     "CALIBRATION_SOURCE_MIN_LEVEL",
     "CalibrationProfile",
     "CalibrationUncertainty",
+    "DEFAULT_MIN_CALIBRATION_CONFIDENCE",
     "EdgeWeightPolicy",
     "EvidenceWindow",
     "validate_calibration_sources_for_level",

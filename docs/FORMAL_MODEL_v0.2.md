@@ -314,6 +314,14 @@ AaR_99_upper
 AES_99_upper
 ```
 
+Because `AES_alpha >= AaR_alpha` for every loss law, a valid `AES_99_upper` is
+also a valid upper bound for `AaR_99`. Supplied bounds must therefore be in the
+normal form `AaR_99_upper <= AES_99_upper`; reversed bounds indicate swapped
+fields or an estimator that ignores the order and are rejected as an invalid loss
+model (`ARCANA_DENY_LOSS_MODEL_INVALID`, issue `loss_tail_order_invalid`) before
+any spectral or limit check. A supplier with a loose AaR bound can always report
+`min(AaR_99_upper, AES_99_upper)` instead.
+
 Admission-like decisions compare upper loss bounds against declared limits:
 
 ```text

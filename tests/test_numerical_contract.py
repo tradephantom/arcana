@@ -11,6 +11,7 @@ import random
 import numpy as np
 import pytest
 
+from arcana.calibration import CalibrationUncertainty
 from arcana.decision import evaluate_decision
 from arcana.errors import ArcanaValidationError, ReasonCode, Verdict
 from arcana.matrices import MatrixBundle, PropagationMatrix, TolerancePolicy, spectral_bounds, spectral_radius
@@ -207,6 +208,8 @@ def test_shared_threshold_conformance(case) -> None:
 @pytest.mark.parametrize("case", CORPUS["matrix_cases"], ids=lambda case: case["id"])
 def test_shared_matrix_admission_conformance(case) -> None:
     request = _request()
+    # The corpus pins threshold arithmetic; the widest coherent profile interval keeps F6 out of it.
+    request = replace(request, calibration_profile=replace(request.calibration_profile, uncertainty=CalibrationUncertainty(0, 0, 1)))
     matrix = MatrixBundle.from_values(
         case["matrix"], case["matrix"], case["matrix"], node_order=("agent", "tool"), graph_hash=request.graph_hash,
     )

@@ -263,7 +263,7 @@ def test_aar_upper_bound_deny_reason() -> None:
         _request(
             loss_bounds=LossBounds(
                 aar_99_upper=225.0,
-                aes_99_upper=150.0,
+                aes_99_upper=240.0,
                 max_allowed_aar_99=200.0,
                 max_allowed_aes_99=250.0,
             )

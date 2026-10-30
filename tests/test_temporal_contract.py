@@ -74,6 +74,7 @@ def _profile(contract):
         confidence=.8, uncertainty=CalibrationUncertainty(0, .2, .8), edge_weight_policy=EdgeWeightPolicy(True, True, True),
         caveats=("synthetic generation contract, no empirical coverage",),
         certification_status=CertificationStatus.NON_CERTIFIABLE, last_updated_at="2026-09-11T09:59:00Z",
+        evidence_hash=EVIDENCE,
     )
 
 

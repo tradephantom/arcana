@@ -35,6 +35,12 @@ class TolerancePolicy:
         threshold_checked = expect_number_range(threshold, 0, 1, ("threshold",), ReasonCode.DENY_MODEL_INPUT_INVALID)
         return Fraction(value_checked) + Fraction(self.margin(threshold_checked)) < Fraction(threshold_checked)
 
+    def within_upper_with_margin(self, value: float, upper: float) -> bool:
+        """Exact check that value <= upper + max(abs_tolerance, rel_tolerance * upper), for any upper >= 0."""
+        value_checked = expect_number_min(value, 0, ("value",), ReasonCode.DENY_MODEL_INPUT_INVALID)
+        upper_checked = Fraction(expect_number_min(upper, 0, ("upper",), ReasonCode.DENY_MODEL_INPUT_INVALID))
+        return Fraction(value_checked) <= upper_checked + max(Fraction(self.abs_tolerance), Fraction(self.rel_tolerance) * upper_checked)
+
 
 @dataclass(frozen=True)
 class PropagationMatrix:

@@ -191,12 +191,26 @@ class LossBounds:
     @classmethod
     def from_mapping(cls, value: Any, path: tuple[str | int, ...] = ("loss_bounds",)) -> "LossBounds":
         data = expect_mapping(value, path, ReasonCode.DENY_LOSS_MODEL_INVALID)
-        return cls(
+        bounds = cls(
             aar_99_upper=expect_number_min(require_value(data, "aar_99_upper", path, ReasonCode.DENY_LOSS_MODEL_INVALID), 0, (*path, "aar_99_upper"), ReasonCode.DENY_LOSS_MODEL_INVALID),
             aes_99_upper=expect_number_min(require_value(data, "aes_99_upper", path, ReasonCode.DENY_LOSS_MODEL_INVALID), 0, (*path, "aes_99_upper"), ReasonCode.DENY_LOSS_MODEL_INVALID),
             max_allowed_aar_99=expect_number_min(require_value(data, "max_allowed_aar_99", path, ReasonCode.DENY_LOSS_MODEL_INVALID), 0, (*path, "max_allowed_aar_99"), ReasonCode.DENY_LOSS_MODEL_INVALID),
             max_allowed_aes_99=expect_number_min(require_value(data, "max_allowed_aes_99", path, ReasonCode.DENY_LOSS_MODEL_INVALID), 0, (*path, "max_allowed_aes_99"), ReasonCode.DENY_LOSS_MODEL_INVALID),
         )
+        validate_loss_tail_order(bounds.aar_99_upper, bounds.aes_99_upper, (*path, "aes_99_upper"))
+        return bounds
+
+
+def validate_loss_tail_order(aar_upper: float, aes_upper: float, path: tuple[str | int, ...]) -> None:
+    """Require the normal form aar_upper <= aes_upper.
+
+    AES_alpha averages the loss quantiles above alpha, so AES_alpha >= AaR_alpha for any loss law and a valid
+    AES upper bound is also a valid AaR upper bound. Reversed bounds signal swapped fields or an estimator that
+    ignores the order; they are rejected rather than silently tightened.
+    """
+    if aes_upper < aar_upper:
+        fail("loss_tail_order_invalid", ReasonCode.DENY_LOSS_MODEL_INVALID,
+             "aes_99_upper must be >= aar_99_upper; a valid AES_99 upper bound also bounds AaR_99", path)
 
 
 @dataclass(frozen=True)
@@ -649,4 +663,5 @@ __all__ = [
     "TemporalPolicy",
     "ValidationIssue",
     "Verdict",
+    "validate_loss_tail_order",
 ]
