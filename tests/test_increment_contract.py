@@ -21,6 +21,7 @@ from arcana.increments import IncrementContract, IncrementSnapshot, evaluate_inc
 from arcana.matrices import MatrixBundle, PropagationMatrix
 from arcana.model import AutonomyBudget, DecisionHorizon
 from arcana.schemas import EXAMPLE_DIR, load_typed_fixture, parse_typed_document, validate_document
+from admission_support import assert_contract_gated, complete_admission
 
 
 GRAPH = "sha256:" + "1" * 64
@@ -130,7 +131,7 @@ def test_c02_latent_increment_budget_is_not_upper_model_increment(api, lower):
 @pytest.mark.parametrize("api", ["main", "exact", "collatz"])
 def test_explicit_upper_model_scope_retains_only_represented_model_guarantee(api):
     contract = _contract(IncrementScope.UPPER_MODEL)
-    result = _evaluate(_request(api, contract))
+    result = _evaluate(complete_admission(_request(api, contract)))
     assert result.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
     assert Fraction(1, 8) <= Fraction(result.metrics["delta_rho_upper"]) < Fraction(1, 4)
     assert result.metrics["increment_scope"] == "upper_model"
@@ -140,7 +141,7 @@ def test_explicit_upper_model_scope_retains_only_represented_model_guarantee(api
 def test_nonzero_calibration_lower_can_avoid_zero_fallback_denial():
     matrix = lambda value: _matrix([[value]], order=("a",))
     contract = replace(_contract(), before=IncrementSnapshot(matrix(.5), matrix(.375)), after=IncrementSnapshot(matrix(.625)))
-    request = _main(contract)
+    request = complete_admission(_main(contract))
     result = evaluate_decision(request)
     assert result.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
     assert result.metrics["delta_rho_upper"] == .25
@@ -270,7 +271,7 @@ def test_exact_fallback_preserves_calibration_envelope_scope(method, vector):
     contract = _contract()
     request = _fastgate(contract, FastGateMode.PERRON_COLLATZ_BOUND)
     request = replace(request, autonomy_budget=_budget(contract, 2), positive_vector=replace(request.positive_vector, method=method, values=vector))
-    evaluated = evaluate_fastgate(request)
+    evaluated = evaluate_fastgate(complete_admission(request))
     assert evaluated.fastgate.mode is FastGateMode.EXACT_RECOMPUTE
     assert evaluated.allowed
     assert evaluated.decision.metrics["increment_binding_hash"] == contract.binding_hash
@@ -291,7 +292,7 @@ def test_cache_cannot_reuse_legacy_scope_or_changed_calibration_lower():
     contract = _contract()
     request = _fastgate(contract)
     request = replace(request, autonomy_budget=_budget(contract, 1), cache_binding=_cache(request))
-    assert evaluate_fastgate(request).allowed
+    assert_contract_gated(evaluate_fastgate(request).decision)
     legacy_cache = replace(request.cache_binding, increment_scope=None, increment_binding_hash=None)
     assert evaluate_fastgate(replace(request, cache_binding=legacy_cache)).decision.metrics["issue_code"] == "fastgate_cache_increment_scope_mismatch"
     new_lower = replace(contract, before=IncrementSnapshot(contract.before.upper, _matrix([[0, 0], [0, 0]])))
@@ -476,7 +477,7 @@ def test_legacy_scalar_and_fastgate_paths_are_explicitly_labelled():
     request = _main(_contract())
     request = replace(request, increment=None, autonomy_budget=replace(request.autonomy_budget, increment_scope=None))
     result = evaluate_decision(request)
-    assert result.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
+    assert_contract_gated(result)
     assert result.metrics["increment_scope"] == "legacy_caller_declared"
     assert result.metrics["delta_rho_upper"] == 0
     request = _fastgate(_contract())

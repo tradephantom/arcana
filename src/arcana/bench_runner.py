@@ -68,6 +68,7 @@ _STATIC_PROVENANCE_PATHS = (
     "src/arcana/_numerics.py",
     "src/arcana/_resources.py",
     "src/arcana/_validation.py",
+    "src/arcana/admission.py",
     "src/arcana/artifacts.py",
     "src/arcana/bench.py",
     "src/arcana/bench_runner.py",

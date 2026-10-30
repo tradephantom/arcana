@@ -26,6 +26,7 @@ from arcana.fastgate import (
 from arcana.matrices import PropagationMatrix, TolerancePolicy
 from arcana.model import AutonomyBudget, DecisionHorizon, EvidenceReference, LossBounds, RhoInterval, RiskContext
 from arcana.schemas import validate_document
+from admission_support import assert_contract_gated, complete_admission
 
 
 GRAPH_HASH = "sha256:" + "6" * 64
@@ -136,7 +137,7 @@ def _assert_result(evaluation, verdict: Verdict, reason_code: ReasonCode) -> Non
 
 
 def test_exact_recompute_allows_when_after_rho_is_below_threshold() -> None:
-    evaluation = evaluate_fastgate(_request())
+    evaluation = evaluate_fastgate(complete_admission(_request()))
 
     _assert_result(evaluation, Verdict.ALLOW_BOUNDED_AUTONOMY, ReasonCode.ALLOW_BOUNDED_AUTONOMY)
     assert evaluation.fastgate.mode is FastGateMode.EXACT_RECOMPUTE
@@ -159,10 +160,10 @@ def test_threshold_above_subcritical_limit_returns_model_input_invalid() -> None
 
 def test_warm_path_allows_with_valid_positive_vector() -> None:
     evaluation = evaluate_fastgate(
-        _request(
+        complete_admission(_request(
             mode=FastGateMode.PERRON_COLLATZ_BOUND,
             positive_vector=_positive_vector(),
-        )
+        ))
     )
 
     _assert_result(evaluation, Verdict.ALLOW_BOUNDED_AUTONOMY, ReasonCode.ALLOW_BOUNDED_AUTONOMY)
@@ -240,11 +241,11 @@ def test_irreducible_method_rejects_reducible_after_state_even_if_declared() -> 
 
 def test_scc_decomposition_with_valid_closure_allows() -> None:
     evaluation = evaluate_fastgate(
-        _request(
+        complete_admission(_request(
             mode=FastGateMode.PERRON_COLLATZ_BOUND,
             positive_vector=_positive_vector(PositiveVectorMethod.SCC_DECOMPOSITION),
             reducible_graph_declared=True,
-        )
+        ))
     )
 
     _assert_result(evaluation, Verdict.ALLOW_BOUNDED_AUTONOMY, ReasonCode.ALLOW_BOUNDED_AUTONOMY)
@@ -603,7 +604,7 @@ def test_fallback_exact_method_delegates_to_exact_recompute() -> None:
         method=PositiveVectorMethod.FALLBACK_EXACT,
     )
 
-    evaluation = evaluate_fastgate(_request(mode=FastGateMode.PERRON_COLLATZ_BOUND, positive_vector=vector))
+    evaluation = evaluate_fastgate(complete_admission(_request(mode=FastGateMode.PERRON_COLLATZ_BOUND, positive_vector=vector)))
 
     _assert_result(evaluation, Verdict.ALLOW_BOUNDED_AUTONOMY, ReasonCode.ALLOW_BOUNDED_AUTONOMY)
     assert evaluation.fastgate.mode is FastGateMode.EXACT_RECOMPUTE
