@@ -61,24 +61,27 @@ keep returning `observe_only` before either check.
 | Check | Rule | Issue code |
 | --- | --- | --- |
 | Confidence floor | `profile.confidence >= min_calibration_confidence` (request field, default `0.5`, must lie in `(0, 1]`) | `calibration_confidence_below_minimum` |
-| Profile-rho coherence, upper | verified `rho_upper` (FastGate: the after-state bound) `<= profile.uncertainty.rho_upper + margin` | `rho_upper_above_calibration_profile` |
-| Profile-rho coherence, lower | verified `rho_upper + margin >= profile.uncertainty.rho_lower` | `rho_upper_below_calibration_profile` |
+| Profile-rho coherence | verified `rho_upper` (FastGate: the after-state bound) `<= profile.uncertainty.rho_upper + margin` | `rho_upper_above_calibration_profile` |
 
 Both deny with `ARCANA_DENY_CALIBRATION_INSUFFICIENT`. The margin is
 `max(abs_tolerance, rel_tolerance * profile rho_upper)` from the request's
-tolerance policy. An invalid floor denies with `ARCANA_DENY_MODEL_INPUT_INVALID`
-(`min_calibration_confidence_invalid`). The confidence check runs right after
-the calibration level check; coherence runs after the spectral threshold check,
-so a threshold breach keeps `ARCANA_DENY_RHO_UPPER_BOUND`.
+tolerance policy, compared exactly. An invalid floor denies with
+`ARCANA_DENY_MODEL_INPUT_INVALID` (`min_calibration_confidence_invalid`). The
+confidence check runs right after the calibration level check; coherence runs
+after the spectral threshold check, so a threshold breach keeps
+`ARCANA_DENY_RHO_UPPER_BOUND`. On the Collatz path a bound above the profile
+interval is inconclusive like a bound above the threshold: with
+`exact_recompute_on_uncertain` it falls back to exact recompute.
 
 The default floor is a policy floor, not a statistical claim: it rejects
 profiles that rate their own interval no better than a coin flip, including the
-zero-confidence profile of the external audit. Integrators should raise it.
-Coherence means the operator under evaluation lies inside the rho interval the
-profile was calibrated for. Above it the operator is outside the calibrated
-regime; below its lower end the matrices claim less propagation than the
-calibration evidence supports, which also catches an acyclic high-weight action
-when the profile declares a positive floor.
+zero-confidence profile of the external audit. Like `rho_threshold`, it is
+integrator policy carried on the request; integrators should raise it and must
+not let the evaluated agent set it.
+Coherence means the operator under evaluation does not exceed the rho interval
+the profile was calibrated for; above it the operator is outside the calibrated
+regime. The lower end is not enforced, because scope reductions and edge
+removals legitimately move the operator below the calibrated graph's floor.
 
 ## Shared Decision Tail
 
@@ -124,8 +127,8 @@ fallback) apply the same order once risk, loss, budget and temporal checks pass:
 
 Legacy requests whose checks all pass now return `observe_only` instead of an
 allow-like verdict. Profiles without `evidence_hash` now also stay
-`observe_only`; profiles below the confidence floor or incoherent with the
-verified `rho_upper` now deny, and loss bounds with `AES_99_upper <
+`observe_only`; profiles below the confidence floor or whose rho interval the
+verified `rho_upper` exceeds now deny, and loss bounds with `AES_99_upper <
 AaR_99_upper` deny as an invalid loss model. `human_gate_required` and `scope_reduction_required` must be
 booleans; other truthy values are rejected as invalid input. Other deny and
 require outcomes are unchanged. Package version

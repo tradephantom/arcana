@@ -479,6 +479,10 @@ def _evaluate_fastgate_checked(request: FastGateRequest) -> FastGateEvaluation:
                 fastgate_context,
                 after_upper,
             )
+        if (request.calibration_profile is not None and request.exact_recompute_available and request.exact_recompute_on_uncertain
+                and not tolerance_policy.within_upper_with_margin(bound, request.calibration_profile.uncertainty.rho_upper)):
+            # A loose bound above the calibrated interval is inconclusive, exactly as for the threshold.
+            return _exact_recompute_evaluation(request, after_upper, before_bounds, threshold, tolerance_policy, decision_time, increment, temporal_metrics, tail)
         return _admission_evaluation(request, tail, bound, tolerance_policy, metrics, fastgate_context, after_upper)
 
     return _evaluation(

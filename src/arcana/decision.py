@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from datetime import datetime
-from fractions import Fraction
 from typing import Any, Mapping
 
 from arcana._validation import (
@@ -414,26 +413,18 @@ def _calibration_confidence_failure(
 def _calibration_coherence_failure(
     profile: CalibrationProfile, rho_upper: float, tolerance_policy: TolerancePolicy, metrics: Mapping[str, Any],
 ) -> DecisionResult | None:
-    """The verified rho_upper must lie inside the rho interval the profile was calibrated for.
+    """The verified rho_upper must not exceed the rho interval the profile was calibrated for.
 
-    Above it the operator is outside the calibrated regime; below its lower end the matrices claim
-    less propagation than the calibration evidence supports. Either way the profile does not cover
-    the operator being admitted.
+    Above it the operator is outside the calibrated regime. The lower end is not enforced: scope
+    reductions and edge removals legitimately move the operator below the calibrated graph's floor.
     """
-    declared_lower, declared_upper = Fraction(profile.uncertainty.rho_lower), Fraction(profile.uncertainty.rho_upper)
-    margin = max(Fraction(tolerance_policy.abs_tolerance), Fraction(tolerance_policy.rel_tolerance) * declared_upper)
-    value = Fraction(rho_upper)
-    if value > declared_upper + margin:
-        issue_code = "rho_upper_above_calibration_profile"
-    elif value + margin < declared_lower:
-        issue_code = "rho_upper_below_calibration_profile"
-    else:
+    if tolerance_policy.within_upper_with_margin(rho_upper, profile.uncertainty.rho_upper):
         return None
     return _deny(
         ReasonCode.DENY_CALIBRATION_INSUFFICIENT,
-        issue_code,
-        "verified rho_upper lies outside the rho interval declared by the calibration profile",
-        {**metrics, "calibration_rho_lower": profile.uncertainty.rho_lower, "calibration_rho_upper": profile.uncertainty.rho_upper},
+        "rho_upper_above_calibration_profile",
+        "verified rho_upper exceeds the rho interval declared by the calibration profile",
+        {**metrics, "calibration_rho_upper": profile.uncertainty.rho_upper},
     )
 
 

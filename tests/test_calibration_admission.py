@@ -13,7 +13,6 @@ from arcana.calibration import DEFAULT_MIN_CALIBRATION_CONFIDENCE, CalibrationPr
 from arcana.decision import evaluate_decision
 from arcana.errors import ArcanaValidationError, CalibrationLevel, FastGateMode, ReasonCode, SchemaVersion, Verdict
 from arcana.fastgate import evaluate_fastgate
-from arcana.matrices import MatrixBundle
 from arcana.model import LossBounds
 from arcana.schemas import validate_document
 
@@ -110,12 +109,24 @@ def test_rho_above_the_profile_interval_is_denied(build) -> None:
 
 
 @pytest.mark.parametrize("build", APIS)
-def test_rho_below_the_profile_interval_is_denied(build) -> None:
+def test_rho_below_the_profile_floor_is_admitted(build) -> None:
+    # Scope reductions legitimately move the operator below the calibrated graph's floor.
     request = build()
     floor = min(1.0, 2 * _rho_upper(_decide(request)))
     decision = _decide(_with_profile(request, uncertainty=CalibrationUncertainty(floor, floor, floor)))
-    _assert_denied(decision, ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "rho_upper_below_calibration_profile")
-    assert decision.metrics["calibration_rho_lower"] == floor
+    assert decision.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
+
+
+def test_loose_collatz_bound_above_the_profile_falls_back_to_exact_recompute() -> None:
+    exact_rho = _rho_upper(_decide(_exact()))
+    request = _with_profile(_collatz(), uncertainty=CalibrationUncertainty(0, 0, exact_rho))
+    assert _rho_upper(evaluate_fastgate(replace(request, calibration_profile=None)).decision) > exact_rho
+    evaluation = evaluate_fastgate(request)
+    assert evaluation.fastgate.mode is FastGateMode.EXACT_RECOMPUTE
+    assert evaluation.decision.verdict is Verdict.ALLOW_BOUNDED_AUTONOMY
+    strict = evaluate_fastgate(replace(request, exact_recompute_on_uncertain=False))
+    assert strict.fastgate.mode is FastGateMode.PERRON_COLLATZ_BOUND
+    _assert_denied(strict.decision, ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "rho_upper_above_calibration_profile")
 
 
 @pytest.mark.parametrize("build", APIS)
@@ -130,17 +141,6 @@ def test_profile_interval_endpoints_are_coherent(build) -> None:
 def test_audit_r2_profile_claiming_zero_rho_is_incoherent() -> None:
     request = _with_profile(_main(), uncertainty=CalibrationUncertainty(0, 0, 0))
     _assert_denied(evaluate_decision(request), ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "rho_upper_above_calibration_profile")
-
-
-def test_acyclic_operator_below_the_calibrated_floor_is_denied() -> None:
-    values = [[0.0, 1e6, 0.0], [0.0, 0.0, 1e6], [0.0, 0.0, 0.0]]
-    dag = MatrixBundle.from_values(values, values, values, node_order=("agent", "tool", "external"),
-                                   graph_hash=main_api.GRAPH_HASH)
-    request = main_api._request(matrix_bundle=dag)
-    assert request.calibration_profile.uncertainty.rho_lower > 0
-    decision = evaluate_decision(request)
-    assert decision.metrics["rho_upper"] == 0.0
-    _assert_denied(decision, ReasonCode.DENY_CALIBRATION_INSUFFICIENT, "rho_upper_below_calibration_profile")
 
 
 def test_threshold_breach_keeps_its_own_reason_code() -> None:

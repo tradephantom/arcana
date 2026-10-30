@@ -224,6 +224,8 @@ def _validate_verdict(
     if verdict is Verdict.ALLOW_BOUNDED_AUTONOMY and required_controls:
         fail("allow_without_controls_has_controls", ReasonCode.DENY_MODEL_INPUT_INVALID, "allow_bounded_autonomy cannot carry required controls", (*path, "required_controls"))
     if verdict not in _ALLOW_VERDICTS:
+        if loss_bounds is not None:
+            _validate_loss_bounds(loss_bounds, path, enforce_limits=False)
         return
 
     lower = expect_number_min(rho_interval.lower, 0, (*path, "rho_interval", "lower"), ReasonCode.DENY_MODEL_INPUT_INVALID)
@@ -239,12 +241,14 @@ def _validate_verdict(
     _validate_loss_bounds(loss_bounds, path)
 
 
-def _validate_loss_bounds(loss_bounds: LossBounds, path: tuple[str, ...]) -> None:
+def _validate_loss_bounds(loss_bounds: LossBounds, path: tuple[str, ...], *, enforce_limits: bool = True) -> None:
     aar = expect_number_min(loss_bounds.aar_99_upper, 0, (*path, "loss_bounds", "aar_99_upper"), ReasonCode.DENY_LOSS_MODEL_INVALID)
     aes = expect_number_min(loss_bounds.aes_99_upper, 0, (*path, "loss_bounds", "aes_99_upper"), ReasonCode.DENY_LOSS_MODEL_INVALID)
     max_aar = expect_number_min(loss_bounds.max_allowed_aar_99, 0, (*path, "loss_bounds", "max_allowed_aar_99"), ReasonCode.DENY_LOSS_MODEL_INVALID)
     max_aes = expect_number_min(loss_bounds.max_allowed_aes_99, 0, (*path, "loss_bounds", "max_allowed_aes_99"), ReasonCode.DENY_LOSS_MODEL_INVALID)
     validate_loss_tail_order(aar, aes, (*path, "loss_bounds", "aes_99_upper"))
+    if not enforce_limits:
+        return
     if aar > max_aar:
         fail("allow_aar_upper_exceeded", ReasonCode.DENY_AAR_UPPER_BOUND, "allow-like verdict exceeds max_allowed_aar_99", (*path, "loss_bounds", "aar_99_upper"))
     if aes > max_aes:

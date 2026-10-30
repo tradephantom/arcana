@@ -656,7 +656,6 @@ __all__ = [
     "GraphNode",
     "GraphState",
     "LossBounds",
-    "validate_loss_tail_order",
     "NodeClass",
     "ReasonCode",
     "RhoInterval",
@@ -664,4 +663,5 @@ __all__ = [
     "TemporalPolicy",
     "ValidationIssue",
     "Verdict",
+    "validate_loss_tail_order",
 ]

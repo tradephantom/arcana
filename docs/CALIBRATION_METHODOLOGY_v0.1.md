@@ -402,7 +402,7 @@ caveats      -> include sparse-evidence note
 If widened upper bounds breach the allowed threshold, the decision must deny or reduce scope.
 
 The evaluator enforces the minimum of this behavior that it can check: a
-confidence floor, coherence between the verified `rho_upper` and the profile's
+confidence floor, a verified `rho_upper` that does not exceed the profile's
 declared rho interval, and a profile `evidence_hash` for allow-like verdicts
 (see [Admission Contract v1](ADMISSION_CONTRACT_v1.md#calibration-support-checks)).
 It does not check that confidence actually decreased with sparse evidence.
