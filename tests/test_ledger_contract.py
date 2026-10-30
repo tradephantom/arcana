@@ -110,3 +110,22 @@ def test_committed_state_is_an_immutable_snapshot() -> None:
     with pytest.raises(ValueError):
         state.upper.values[0][1] = 1.0
     assert ledger.current().state_hash == state.state_hash
+
+
+def test_malformed_main_request_is_denied_not_raised() -> None:
+    request = complete_admission(main_api._request())
+    ledger = ReferenceAdmissionLedger(request.increment.before.upper)
+    outcome = ledger.admit_decision(replace(request, matrix_bundle=None), expected_version=0)
+    assert outcome.decision.verdict is Verdict.DENY
+    assert not outcome.committed and ledger.current().version == 0
+    assert outcome.decision.metrics["ledger_version_before"] == 0
+
+
+@pytest.mark.parametrize("request_value", [None, "not a request"])
+def test_non_request_inputs_are_denied_with_ledger_metrics(request_value) -> None:
+    ledger = ReferenceAdmissionLedger(_zero())
+    for admit in (ledger.admit_fastgate, ledger.admit_decision):
+        outcome = admit(request_value, expected_version=0)
+        assert outcome.decision.verdict is Verdict.DENY
+        assert outcome.decision.metrics["ledger_version_before"] == 0
+        assert not outcome.committed

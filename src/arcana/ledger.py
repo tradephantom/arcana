@@ -69,7 +69,8 @@ class ReferenceAdmissionLedger:
             if failure is not None:
                 return LedgerOutcome(failure, False, self._state)
             decision = evaluate_decision(request)
-            return self._commit(decision, request.matrix_bundle.upper)
+            after = getattr(getattr(request, "matrix_bundle", None), "upper", None)
+            return self._commit(decision, after)
 
     def _precondition_failure(self, expected_version: Any, before: Any) -> DecisionResult | None:
         try:
@@ -92,7 +93,7 @@ class ReferenceAdmissionLedger:
     def _commit(self, decision: DecisionResult, after: PropagationMatrix | None,
                 evaluation: FastGateEvaluation | None = None) -> LedgerOutcome:
         before = self._state
-        committed = decision.verdict in _ALLOW and after is not None
+        committed = decision.verdict in _ALLOW and isinstance(after, PropagationMatrix)
         if committed:
             self._state = _state(before.version + 1, _committable(after))
         metrics = {**decision.metrics, **_metrics(self._state), "ledger_version_before": before.version,
@@ -128,7 +129,8 @@ def _deny(issue_code: str, message: str, state: CommittedGraphState,
     return DecisionResult(
         verdict=Verdict.DENY,
         reason_codes=(ReasonCode.DENY_CONTEXT_STALE,),
-        metrics={**_metrics(state), **(extra or {}), "issue_code": issue_code, "ledger_committed": False},
+        metrics={**_metrics(state), **(extra or {}), "issue_code": issue_code,
+                 "ledger_version_before": state.version, "ledger_committed": False},
         caveats=(message,),
     )
 
